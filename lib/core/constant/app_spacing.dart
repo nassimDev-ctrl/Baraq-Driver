@@ -1,0 +1,31 @@
+class AppSpacing {
+  static const double x72negtive = -72;
+  static const double xxs = 4;
+  static const double xs = 8;
+  static const double sm = 12;
+  static const double md = 16;
+  static const double lg = 20;
+  static const double xlg = 24;
+  static const double xxlg = 28;
+  static const double xxxlg = 32;
+  static const double xxxxlg = 36;
+  static const double x45 = 45;
+  static const double x70 = 70;
+  static const double x80 = 80;
+  static const double x30 = 30;
+  static const double x95 = 95;
+  static const double x110 = 110;
+  static const double x120 = 120;
+  static const double x132 = 132;
+  static const double x145 = 145;
+  static const double x118 = 118;
+  static const double xxxxxxxlg = 232;
+  static const double x160 = 160;
+  static const double x25 = 25;
+  static const double x35 = 35;
+  static const double x320 = 280;
+  static const double x340 = 340;
+  static const double x800 = 800;
+  static const double x90 = 90;
+  static const double spaceAboveAppBar = 20;
+}
