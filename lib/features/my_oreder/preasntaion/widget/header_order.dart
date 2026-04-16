@@ -24,11 +24,11 @@ class _HeaderOrderState extends State<HeaderOrder> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisSize: MainAxisSize.min, // ليأخذ العمود أصغر مساحة ممكنة
+      mainAxisSize: MainAxisSize.min, 
       children: [
         SizedBox(height: 40.h),
         Row(
-          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        
           children: [
             SizedBox(width: 20.w),
             GestureDetector(
@@ -44,7 +44,7 @@ class _HeaderOrderState extends State<HeaderOrder> {
             Center(
               child: Container(
                 height: 70,
-                //decoration: const BoxDecoration(shape: BoxShape.circle),
+             
                 child: Image.asset(
                   ImageAssets.imageprofail,
                   height: 65.h,
@@ -56,11 +56,11 @@ class _HeaderOrderState extends State<HeaderOrder> {
             SizedBox(width: 80.w),
             AnimatedContainer(
               duration: const Duration(milliseconds: 200),
-              width: 50.w, // عرض الزر
-              height: 26.h, // ارتفاع الزر
+              width: 50.w, 
+              height: 26.h, 
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20.r),
-                // تغيير اللون بناءً على الحالة (أزرق في التفعيل، رمادي في الإيقاف)
+              
                 color: soundEnabled
                     ? const Color(0xFF1595C7)
                     : Colors.grey.shade400,
@@ -68,7 +68,7 @@ class _HeaderOrderState extends State<HeaderOrder> {
               padding: EdgeInsets.symmetric(horizontal: 2.w),
               child: AnimatedAlign(
                 duration: const Duration(milliseconds: 200),
-                // تحريك الدائرة يمين أو يسار حسب الحالة
+           
                 alignment: soundEnabled
                     ? Alignment.centerLeft
                     : Alignment.centerRight,
@@ -77,7 +77,7 @@ class _HeaderOrderState extends State<HeaderOrder> {
                   height: 20.h,
                   decoration: const BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.white, // الدائرة البيضاء
+                    color: Colors.white, 
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black12,
@@ -107,11 +107,11 @@ class _HeaderOrderState extends State<HeaderOrder> {
             child: CustomText(
               "هناك 5 طلبات فورية و 6 طلبات مجدولة",
               color: Colors.white,
-              textAlign: TextAlign.right, // محاذاة لليمين
+              textAlign: TextAlign.right,  
               type: AppTextType.bodyMedium,
             ),
           ),
-        // النصوص في المنتصف تماماً
+        
       ],
     );
   }

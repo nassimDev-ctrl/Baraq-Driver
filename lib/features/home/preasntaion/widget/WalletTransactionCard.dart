@@ -6,7 +6,7 @@ import 'package:drever_warr/core/constant/app_colors.dart';
 class WalletTransactionCard extends StatelessWidget {
   final String date;
   final String amount;
-  final bool isCredit; // true للتحويل (بنفسجي)، false للخصم (أحمر)
+  final bool isCredit;  
 
   const WalletTransactionCard({
     super.key,
@@ -23,19 +23,19 @@ class WalletTransactionCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(15.r),
-        // 1. نجعل الإطار موحد اللون والسماكة ليعمل الـ borderRadius
+       
         border: Border.all(color: AppColors.main1.withOpacity(0.5), width: 1),
-        // 2. نستخدم الظل لمحاكاة الخط السفلي السميك (بدون بلر وبإزاحة لأسفل)
+        
         boxShadow: [
           BoxShadow(
-            color: AppColors.main1, // نفس لون الخط السفلي الذي تريده
+            color: AppColors.main1, 
             offset: const Offset(
               0,
               3,
-            ), // الإزاحة لأسفل فقط (قيمة الـ 3 هي سماكة الخط)
-            blurRadius: 0, // نجعله 0 ليكون الخط حاداً وليس ضبابياً
+            ), 
+            blurRadius: 0, 
           ),
-          // ظل إضافي جمالي (اختياري)
+         
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
             offset: const Offset(0, 8),

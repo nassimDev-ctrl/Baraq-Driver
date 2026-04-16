@@ -1,17 +1,24 @@
+ 
 import 'dart:io';
+import 'package:drever_warr/core/asset/icon_asset.dart';
 import 'package:drever_warr/core/utiles/faledtor.dart';
-import 'package:drever_warr/core/widgets/customTextFieldname.dart';
-import 'package:drever_warr/core/widgets/logo_app.dart';
-import 'package:drever_warr/features/preasntaion/view/WaitingReviewScreen.dart';
+import 'package:drever_warr/core/widgets/coustm_text_fild_all.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
-// استيراد ملفاتك الخاصة (تأكد من صحة المسارات لديك)
-import 'package:drever_warr/core/asset/image_asset.dart';
+
+ 
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/widgets/customButton.dart';
 import 'package:drever_warr/core/widgets/customText.dart';
-import 'package:drever_warr/core/widgets/customTextField.dart'; // الملف الذي أرسلته
+import 'package:drever_warr/core/widgets/customTextFieldname.dart';
+import 'package:drever_warr/core/widgets/logo_app.dart';
+import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_category/cubit.dart';
+import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_category/cubit_stat.dart';
+import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_information_car/cubit.dart';
+import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_information_car/cubit_stat.dart';
+import 'package:drever_warr/features/preasntaion/view/WaitingReviewScreen.dart';
 
 class CarRegistrationScreen extends StatefulWidget {
   const CarRegistrationScreen({super.key});
@@ -21,29 +28,28 @@ class CarRegistrationScreen extends StatefulWidget {
 }
 
 class _CarRegistrationScreenState extends State<CarRegistrationScreen> {
-  // Controllers
   final TextEditingController _carTypeController = TextEditingController();
   final TextEditingController _carModelController = TextEditingController();
   final TextEditingController _plateNumberController = TextEditingController();
-
-  // Images
-  File? _carImage;
-  File? _plateImage;
+  final TextEditingController _color = TextEditingController();
+  final GlobalKey _categoryKey = GlobalKey();  
+  final TextEditingController _categoryController =
+      TextEditingController();  
   final ImagePicker _picker = ImagePicker();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  // Settings
   bool _acceptTerms = false;
   String? _selectedColor;
-  String? _selectedCategory;
+  String? _selectedCategoryId;
 
   Future<void> _pickImage(ImageSource source, bool isCar) async {
     final XFile? pickedFile = await _picker.pickImage(source: source);
     if (pickedFile != null) {
       setState(() {
         if (isCar) {
-          _carImage = File(pickedFile.path);
+          context.read<CarInfoCubit>().carImage = File(pickedFile.path);
         } else {
-          _plateImage = File(pickedFile.path);
+          context.read<CarInfoCubit>().carPlateImage = File(pickedFile.path);
         }
       });
     }
@@ -53,168 +59,278 @@ class _CarRegistrationScreenState extends State<CarRegistrationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        //  bottom: false,
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(height: 10.h),
-              LogoSection(),
-              // SizedBox(height: 30.h),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 0.h),
-                child: Container(
-                  padding: EdgeInsets.all(16.w),
-                  decoration: BoxDecoration(
-                    // نستخدم Border لتحديد الأضلاع بشكل منفصل
-                    border: Border(
-                      top: BorderSide(color: AppColors.main1, width: 1.5),
-                      left: BorderSide(color: AppColors.main1, width: 1.5),
-                      right: BorderSide(color: AppColors.main1, width: 1.5),
-                      bottom: BorderSide.none,
-                    ),
-
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(15),
-                      topRight: Radius.circular(15),
-                    ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Center(
-                        child: CustomText(
-                          "Register",
-                          type: AppTextType.bodyLarge,
-                          color: AppColors.main1,
-                        ),
+      body: BlocListener<CarInfoCubit, CarInfoState>(
+        listener: (context, state) {
+          if (state is CarInfoSuccess) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const WaitingReviewScreen(),
+              ),
+            );
+          } else if (state is CarInfoFailure) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.errMessage),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        },
+        child: SafeArea(
+          child: SingleChildScrollView(
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  SizedBox(height: 10.h),
+                  const LogoSection(),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
+                    child: Container(
+                      padding: EdgeInsets.all(16.w),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: AppColors.main1, width: 1.5),
+                        borderRadius: BorderRadius.circular(15),
                       ),
-                      SizedBox(height: 20.h),
-
-                      // نوع السيارة
-                      _buildLabel("car_type"),
-                      CustomTextFieldname(
-                        validator: (val) =>
-                            Validators.validatePhone(val, context),
-                        controller: _carTypeController,
-                        hintText: "",
-                        // يمكنك إضافة الأيقونة هنا حسب الـ Widget الخاص بك
-                      ),
-
-                      SizedBox(height: 15.h),
-
-                      // موديل السنة
-                      _buildLabel("car_model_year"),
-                      CustomTextFieldname(
-                        validator: (val) =>
-                            Validators.validatePhone(val, context),
-                        controller: _carModelController,
-                        hintText: "",
-                      ),
-
-                      SizedBox(height: 15.h),
-
-                      // لون السيارة (Dropdown)
-                      _buildLabel("car_color"),
-                      _buildDropdown(
-                        value: _selectedColor,
-                        items: ["أبيض", "أسود", "فضي", "أحمر"],
-                        onChanged: (val) =>
-                            setState(() => _selectedColor = val),
-                      ),
-
-                      SizedBox(height: 20.h),
-
-                      // صورة السيارة
-                      _buildLabel("add_plate_photo"),
-                      _buildImagePickerBox(
-                        image: _carImage,
-                        onTap: () => _pickImage(ImageSource.gallery, true),
-                      ),
-
-                      SizedBox(height: 20.h),
-
-                      // صورة اللوحة
-                      _buildLabel("add_plate_photo"),
-                      _buildImagePickerBox(
-                        image: _plateImage,
-                        onTap: () => _pickImage(ImageSource.gallery, false),
-                      ),
-
-                      SizedBox(height: 15.h),
-
-                      // نمرة السيارة
-                      _buildLabel("plate_number"),
-                      CustomTextFieldname(
-                        validator: (val) =>
-                            Validators.validatePhone(val, context),
-                        controller: _plateNumberController,
-                        hintText: "",
-                      ),
-
-                      SizedBox(height: 15.h),
-
-                      // الفئة (Dropdown)
-                      _buildLabel("category"),
-                      _buildDropdown(
-                        value: _selectedCategory,
-                        items: ["اقتصادية", "عائلية", "فاخرة"],
-                        onChanged: (val) =>
-                            setState(() => _selectedCategory = val),
-                      ),
-
-                      SizedBox(height: 20.h),
-
-                      CustomText(
-                        type: AppTextType.caption,
-                        "disclaimer",
-                        textAlign: TextAlign.left,
-                        // اجعل الخط صغيراً كما في الصورة
-                      ),
-
-                      // الموافقة على الشروط
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Checkbox(
-                            value: _acceptTerms,
-                            activeColor: AppColors.main1,
-                            onChanged: (val) =>
-                                setState(() => _acceptTerms = val!),
+                          Center(
+                            child: CustomText(
+                              "Register",
+                              type: AppTextType.bodyLarge,
+                              color: AppColors.main1,
+                            ),
                           ),
+                          SizedBox(height: 20.h),
+
+                          _buildLabel("نوع السيارة"),
+                          CustomTextFieldname(
+                            validator: (val) => val!.isEmpty ? "مطلوب" : null,
+                            controller: _carTypeController,
+                            hintText: "مثلاً: Kia Rio",
+                          ),
+
+                          SizedBox(height: 15.h),
+
+                          _buildLabel("سنة الصنع"),
+                          CustomTextFieldname(
+                            validator: (val) => val!.isEmpty ? "مطلوب" : null,
+                            controller: _carModelController,
+                            hintText: "مثلاً: 2020",
+                            keyboardType: TextInputType.number,
+                          ),
+
+                          SizedBox(height: 15.h),
+
+                          _buildLabel("لون السيارة"),
+                          AppCustomTextField(
+                            controller: _color,
+                            hintText: "",
+                            validator: (val) =>
+                                Validators.isEmptyValue(val, context),
+                          ),
+
+                           
+                          SizedBox(height: 20.h),
+
+                          _buildLabel("صورة السيارة"),
+                          _buildImagePickerBox(
+                            image: context.watch<CarInfoCubit>().carImage,
+                            onTap: () => _pickImage(ImageSource.gallery, true),
+                          ),
+
+                          SizedBox(height: 20.h),
+
+                          _buildLabel("صورة اللوحة"),
+                          _buildImagePickerBox(
+                            image: context.watch<CarInfoCubit>().carPlateImage,
+                            onTap: () => _pickImage(ImageSource.gallery, false),
+                          ),
+
+                          SizedBox(height: 15.h),
+
+                          _buildLabel("رقم اللوحة"),
+                          CustomTextFieldname(
+                            validator: (val) => val!.isEmpty ? "مطلوب" : null,
+                            controller: _plateNumberController,
+                            hintText: "رقم اللوحة",
+                          ),
+
+                          SizedBox(height: 15.h),
+
+                          _buildLabel("فئة السيارة"),
+
+                          BlocBuilder<CarCategoryCubit, CarCategoryState>(
+                            builder: (context, state) {
+                              return GestureDetector(
+                                onTap: () async {
+                                  final cubit = context
+                                      .read<CarCategoryCubit>();
+
+                                 
+                                  if (state is! CarCategorySuccess) {
+                                    await cubit.getCarCategories();
+                                  }
+
+                                  if (cubit.state is CarCategorySuccess) {
+                                    final categoryState =
+                                        cubit.state as CarCategorySuccess;
+
+                                    
+                                    final RenderBox button =
+                                        _categoryKey.currentContext!
+                                                .findRenderObject()
+                                            as RenderBox;
+                                    final RenderBox overlay =
+                                        Overlay.of(
+                                              context,
+                                            ).context.findRenderObject()
+                                            as RenderBox;
+
+                                    final Offset position = button
+                                        .localToGlobal(
+                                          Offset.zero,
+                                          ancestor: overlay,
+                                        );
+
+                                    
+                                    final selected = await showMenu<String>(
+                                      context: context,
+                                      position: RelativeRect.fromLTRB(
+                                        position.dx,
+                                        position.dy + button.size.height,
+                                        position.dx + button.size.width,
+                                        0,
+                                      ),
+                                      constraints: BoxConstraints(
+                                        maxHeight: 180.h,
+                                        minWidth: button
+                                            .size
+                                            .width,  
+                                        maxWidth: button.size.width,
+                                      ),
+                                      items: categoryState.categories.map((
+                                        category,
+                                      ) {
+                                        return PopupMenuItem<String>(
+                                          value: category.id,
+                                          child: Align(
+                                            alignment: Alignment.centerRight,
+                                            child: Text(category.name ?? ""),
+                                          ),
+                                        );
+                                      }).toList(),
+                                    );
+
+                                    if (selected != null) {
+                                      setState(() {
+                                        _selectedCategoryId = selected;
+                                      
+                                        _categoryController.text =
+                                            categoryState.categories
+                                                .firstWhere(
+                                                  (element) =>
+                                                      element.id == selected,
+                                                )
+                                                .name ??
+                                            "";
+                                      });
+                                    }
+                                  }
+                                },
+                                child: AbsorbPointer(
+                                  child: AppCustomTextField(
+                                    key: _categoryKey,  
+                                    iconImage: IconsAssets
+                                        .drowpdawn, 
+                                    controller: _categoryController,
+                                    hintText: "اختر فئة السيارة",
+                                    validator: (val) =>
+                                        val!.isEmpty ? "مطلوب" : null,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+
+                          SizedBox(height: 20.h),
+
                           CustomText(
-                            "accept_terms",
-                            type: AppTextType.bodyMedium,
+                            "disclaimer",
+                            type: AppTextType.caption,
+                            textAlign: TextAlign.left,
                           ),
+
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Checkbox(
+                                value: _acceptTerms,
+                                activeColor: AppColors.main1,
+                                onChanged: (val) =>
+                                    setState(() => _acceptTerms = val!),
+                              ),
+                              CustomText(
+                                "الموافقة على الشروط",
+                                type: AppTextType.bodyMedium,
+                              ),
+                            ],
+                          ),
+
+                          SizedBox(height: 20.h),
+
+                          BlocBuilder<CarInfoCubit, CarInfoState>(
+                            builder: (context, state) {
+                              if (state is CarInfoLoading) {
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              }
+                              return CustomButton(
+                                title: "تأكيد",
+                                onTap: () {
+                                  if (_formKey.currentState!.validate() &&
+                                      _acceptTerms) {
+                                    if (_selectedCategoryId == null) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text("يرجى اختيار الفئة"),
+                                        ),
+                                      );
+                                      return;
+                                    }
+
+                                    context.read<CarInfoCubit>().submitCarInfo(
+                                      carName: _carTypeController.text,
+                                      
+                                      category: _selectedCategoryId!,
+                                      carPlateNumber:
+                                          _plateNumberController.text,
+                                      carYearMade: _carModelController.text,
+                                    );
+                                  }
+                                },
+                              );
+                            },
+                          ),
+                          SizedBox(height: 20.h),
                         ],
                       ),
-
-                      SizedBox(height: 20.h),
-
-                      // زر تأكيد
-                      CustomButton(
-                        title: "confirm",
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => WaitingReviewScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  // ويجيت العنوان الصغير فوق الحقل
   Widget _buildLabel(String text) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),
@@ -223,7 +339,6 @@ class _CarRegistrationScreenState extends State<CarRegistrationScreen> {
         children: [
           CustomText(
             text,
-
             textAlign: TextAlign.right,
             type: AppTextType.bodyMedium,
           ),
@@ -232,7 +347,6 @@ class _CarRegistrationScreenState extends State<CarRegistrationScreen> {
     );
   }
 
-  // ويجيت القائمة المنسدلة بتصميم متناسق
   Widget _buildDropdown({
     String? value,
     required List<String> items,
@@ -257,7 +371,6 @@ class _CarRegistrationScreenState extends State<CarRegistrationScreen> {
     );
   }
 
-  // ويجيت اختيار الصورة بنفس تصميمك السابق
   Widget _buildImagePickerBox({File? image, required VoidCallback onTap}) {
     return GestureDetector(
       onTap: onTap,
@@ -265,7 +378,8 @@ class _CarRegistrationScreenState extends State<CarRegistrationScreen> {
         height: 100.h,
         width: double.infinity,
         decoration: BoxDecoration(
-          border: Border.all(color: Color(0xFF1595C7), width: 2.5),
+          color: const Color(0xFFF9F9F9),
+          border: Border.all(color: const Color(0xFF1595C7), width: 2.5),
           borderRadius: BorderRadius.circular(5),
         ),
         child: Stack(
@@ -276,6 +390,7 @@ class _CarRegistrationScreenState extends State<CarRegistrationScreen> {
                 child: Image.file(
                   image,
                   width: double.infinity,
+                  height: double.infinity,
                   fit: BoxFit.cover,
                 ),
               ),

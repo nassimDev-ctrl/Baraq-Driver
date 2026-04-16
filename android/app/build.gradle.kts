@@ -15,8 +15,12 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
+    // تم تحديث هذا الجزء ليستخدم compilerOptions بدلاً من kotlinOptions
+    // ليتوافق مع نسخة كوتلن الحديثة 2.3.0
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
+        }
     }
 
     defaultConfig {

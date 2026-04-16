@@ -1,161 +1,26 @@
-// import 'package:drever_warr/core/asset/icon_asset.dart';
-// import 'package:drever_warr/core/asset/image_asset.dart';
-// import 'package:drever_warr/core/constant/app_colors.dart';
-// import 'package:drever_warr/core/constant/app_spacing.dart';
-// import 'package:drever_warr/core/widgets/customText.dart';
-// import 'package:drever_warr/core/widgets/customTextFieldsearch.dart';
-// import 'package:drever_warr/features/my_tripe/preasntaion/widget/TopColoumnDetailsTripEnd.dart';
-// import 'package:drever_warr/features/my_tripe/preasntaion/widget/detals_row.dart';
-// import 'package:drever_warr/features/preasntaion/widhets/icon_bak.dart';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_screenutil/flutter_screenutil.dart';
-// import 'package:flutter_svg/svg.dart';
-
-// class DetailsOfTheCompletedTrip extends StatefulWidget {
-//   const DetailsOfTheCompletedTrip({super.key});
-
-//   @override
-//   State<DetailsOfTheCompletedTrip> createState() =>
-//       _DetailsOfTheCompletedTripState();
-// }
-
-// class _DetailsOfTheCompletedTripState extends State<DetailsOfTheCompletedTrip> {
-//   final TextEditingController option = TextEditingController();
-//   double userRating = 4.0;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: Colors.white,
-//       body: SingleChildScrollView(
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.start, // محاذاة العناصر لليمين
-//           children: [
-//             SizedBox(height: 40.h),
-//             const IconBak(), // زر الرجوع
-//             // 1. عنوان "تفاصيل الرحلة"
-//             Padding(
-//               padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 10.h),
-//               child: CustomText(
-//                 "تفاصيل الرحلة",
-//                 type: AppTextType.titleMedium,
-//                 color: AppColors.blue,
-//               ),
-//             ),
-
-//             // 2. كرت المسار (السيارة والموقع)
-//             TopColoumnDetailsTripEnd(),
-//             SizedBox(height: AppSpacing.lg.h),
-
-//             // 3. قسم بيانات المسافة والوقت
-//             _buildInfoRow("6.25 m", "المسافة :"),
-//             _buildInfoRow("10 min", "وقت داخل السيارة :"),
-//             _buildInfoRow("1 min", "وقت الانتظار :"),
-
-//             SizedBox(height: AppSpacing.xxxxlg.h),
-
-//             // 4. قسم اسم العميل (أو السفير)
-//             _buildSectionTitle("اسم العميل :"),
-//             Padding(
-//               padding: EdgeInsets.symmetric(horizontal: 24.w),
-//               child: Column(
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 children: [
-//                   CustomText(
-//                     "عبدالله محمد محمد",
-//                     color: Colors.black,
-//                     type: AppTextType.titlelarge,
-//                   ),
-//                   CustomText(
-//                     "0966655444",
-//                     color: Colors.black,
-//                     type: AppTextType.titlelarge,
-//                   ),
-//                 ],
-//               ),
-//             ),
-
-//             SizedBox(height: AppSpacing.xxxxlg.h),
-
-//             // 5. قسم تفاصيل الفاتورة
-//             _buildSectionTitle("تفاصيل الفاتورة :"),
-//             _buildInfoRow("15000 SYP", "سعر الرحلة :"),
-//             _buildInfoRow("0 SYP", "الخصم :"),
-//             _buildInfoRow("15000 SYP", "المجموع :"),
-//             _buildInfoRow("1200 SYP", "عمولة الإدارة:"),
-//             _buildInfoRow("نقداً", "طريقة الدفع :"),
-
-//             SizedBox(height: AppSpacing.xxxxlg.h),
-
-//             // 6. قسم التقييم
-//             _buildSectionTitle("تقييمك :"),
-//             Padding(
-//               padding: EdgeInsets.symmetric(horizontal: 24.w),
-//               child: Row(
-//                 mainAxisAlignment:
-//                     MainAxisAlignment.end, // النجوم تبدأ من اليمين
-//                 children: List.generate(5, (index) {
-//                   return Icon(
-//                     index < 4 ? Icons.star : Icons.star_border,
-//                     color: Colors.amber,
-//                     size: 30.sp,
-//                   );
-//                 }),
-//               ),
-//             ),
-
-//             Padding(
-//               padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 10.h),
-//               child: CustomText(
-//                 ". الرحلة ممتازة",
-//                 type: AppTextType.bodyMedium,
-//               ),
-//             ),
-
-//             SizedBox(height: 50.h),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-
-//   // ودجت مساعد لرسم العناوين الزرقاء
-//   Widget _buildSectionTitle(String title) {
-//     return Padding(
-//       padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 8.h),
-//       child: Row(
-//         mainAxisAlignment: MainAxisAlignment.start,
-//         children: [
-//           CustomText(title, type: AppTextType.bodyLarge, color: AppColors.blue),
-//         ],
-//       ),
-//     );
-//   }
-
-//   // ودجت مساعد لرسم صفوف البيانات (نص يمين ونص يسار)
-//   Widget _buildInfoRow(String value, String label) {
-//     return Padding(
-//       padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 4.h),
-//       child: Row(
-//         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//         children: [
-//           CustomText(label, type: AppTextType.titleSmall, color: Colors.black),
-//           CustomText(value, type: AppTextType.titleSmall, color: Colors.black),
-//         ],
-//       ),
-//     );
-//   }
-// }
+ 
+import 'package:drever_warr/core/asset/icon_asset.dart';
+import 'package:drever_warr/core/asset/image_asset.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/constant/app_spacing.dart';
 import 'package:drever_warr/core/widgets/customText.dart';
+import 'package:drever_warr/core/widgets/customTextFieldsearch.dart';
+import 'package:drever_warr/features/home/preasntaion/data/cubit/model/model_finsh_trips.dart';
+import 'package:drever_warr/features/my_tripe/data/cubit/cubit_ratting/cubit.dart';
+import 'package:drever_warr/features/my_tripe/data/cubit/cubit_ratting/cubit_stat.dart';
 import 'package:drever_warr/features/my_tripe/preasntaion/widget/TopColoumnDetailsTripEnd.dart';
+import 'package:drever_warr/features/my_tripe/preasntaion/widget/detals_row.dart';
 import 'package:drever_warr/features/preasntaion/widhets/icon_bak.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 
 class DetailsOfTheCompletedTrip extends StatefulWidget {
-  const DetailsOfTheCompletedTrip({super.key});
+  final FinishedTripModel trip;
+
+  const DetailsOfTheCompletedTrip({super.key, required this.trip});
 
   @override
   State<DetailsOfTheCompletedTrip> createState() =>
@@ -164,123 +29,293 @@ class DetailsOfTheCompletedTrip extends StatefulWidget {
 
 class _DetailsOfTheCompletedTripState extends State<DetailsOfTheCompletedTrip> {
   final TextEditingController option = TextEditingController();
-  double userRating = 4.0;
+  int userRating = 0;  
+
+  @override
+  void dispose() {
+    option.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            SizedBox(height: 40.h),
-            const IconBak(),
+    final trip = widget.trip;
 
-            // 1. عنوان "تفاصيل الرحلة"
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 10.h),
-              child: CustomText(
-                "trip_details",
-                type: AppTextType.titleMedium,
-                color: AppColors.blue,
-              ),
+    return BlocConsumer<AddRatingCubit, AddRatingState>(
+      listener: (context, state) {
+        if (state is AddRatingSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: Colors.green,
             ),
-
-            // 2. كرت المسار
-            TopColoumnDetailsTripEnd(),
-            SizedBox(height: AppSpacing.lg.h),
-
-            // 3. قسم بيانات المسافة والوقت
-            _buildInfoRow("6.25 m", "distance"),
-            _buildInfoRow("10 min", "in_car_time"),
-            _buildInfoRow("1 min", "waiting_time"),
-
-            SizedBox(height: AppSpacing.xxxxlg.h),
-
-            // 4. قسم اسم العميل
-            _buildSectionTitle("client_name"),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24.w),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  CustomText(
-                    "عبدالله محمد محمد", // عادة تأتي من API فلا تترجم
-                    color: Colors.black,
-                    type: AppTextType.titlelarge,
+          );
+          Navigator.pop(context);  
+        } else if (state is AddRatingFailure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.errMessage),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      },
+      builder: (context, state) {
+        return Scaffold(
+          backgroundColor: Colors.white,
+          body: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                const IconBak(),
+                SizedBox(height: AppSpacing.xxxlg.h),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 32.w),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      CustomText(
+                        "تفاصيل الرحلة",
+                        type: AppTextType.caption,
+                        color: AppColors.blue,
+                      ),
+                    ],
                   ),
-                  CustomText(
-                    "0966655444",
-                    color: Colors.black,
-                    type: AppTextType.titlelarge,
+                ),
+                SizedBox(height: AppSpacing.xxxxlg.h),
+
+               
+                TopColoumnDetailsTripEnd(
+                  startAddress: trip.startAddress,
+                  destinationAddress: trip.destinationAddress,
+                ),
+
+                SizedBox(height: AppSpacing.xxxlg.h),
+
+               
+                details_row(t1: "${trip.distance} m", t2: "المسافة المقطوعة"),
+                SizedBox(height: AppSpacing.sm.h),
+                details_row(
+                  t1: "${trip.durationInsideCar} min",
+                  t2: "الوقت المستغرق",
+                ),
+                SizedBox(height: AppSpacing.sm.h),
+                details_row(
+                  t1: "${trip.waitingDuration} min",
+                  t2: "وقت الانتظار",
+                ),
+
+                SizedBox(height: AppSpacing.x45.h),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24.w),
+                  child: CustomText(
+                    "السفير",
+                    type: AppTextType.titleMedium,
+                    color: AppColors.blue,
                   ),
-                ],
-              ),
+                ),
+                SizedBox(height: AppSpacing.lg.h),
+
+               
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24.w),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          CustomText(
+                            trip.driverName,
+                            type: AppTextType.titleSmall,
+                            color: AppColors.secondary2,
+                          ),
+                          SizedBox(height: AppSpacing.xs.h),
+                          CustomText(
+                            trip.driverPhone,
+                            type: AppTextType.titleSmall,
+                            color: AppColors.secondary2,
+                          ),
+                        ],
+                      ),
+                      SizedBox(width: AppSpacing.sm.w),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(50),
+                        child:
+                            (trip.driverImage != null &&
+                                trip.driverImage!.isNotEmpty)
+                            ? Image.network(
+                                'https://api.taxiwaar.com/${trip.driverImage}',
+                                height: 75.h,
+                                width: 75.w,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Image.asset(
+                                      ImageAssets.imageprofail,
+                                      height: 75.h,
+                                      width: 75.w,
+                                      fit: BoxFit.cover,
+                                    ),
+                              )
+                            : Image.asset(
+                                ImageAssets.imageprofail,
+                                height: 75.h,
+                                width: 75.w,
+                                fit: BoxFit.cover,
+                              ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                SizedBox(height: AppSpacing.lg.h),
+
+              
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24.w),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      CustomText(
+                        "${trip.carName} - ${trip.carPlateNumber}",
+                        type: AppTextType.titleSmall,
+                        color: AppColors.secondary2,
+                      ),
+                      CustomText(
+                        "نوع السيارة",
+                        type: AppTextType.titleMedium,
+                        color: AppColors.blue,
+                      ),
+                    ],
+                  ),
+                ),
+
+                SizedBox(height: AppSpacing.lg.h),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24.w),
+                  child: CustomText(
+                    "تفاصيل الفاتورة",
+                    type: AppTextType.titleMedium,
+                    color: AppColors.blue,
+                  ),
+                ),
+                SizedBox(height: AppSpacing.xxxlg.h),
+
+               
+                details_row(t1: "${trip.totalPrice} SYP", t2: "سعر الرحلة"),
+                SizedBox(height: AppSpacing.sm.h),
+                details_row(t1: "0", t2: "الخصم"),
+                SizedBox(height: AppSpacing.sm.h),
+                details_row(t1: "${trip.totalPrice} SYP", t2: "الإجمالي"),
+                SizedBox(height: AppSpacing.sm.h),
+                details_row(
+                  t1: trip.paymentWay == "cash" ? "نقدي" : trip.paymentWay,
+                  t2: "طريقة الدفع",
+                ),
+
+                SizedBox(height: AppSpacing.xxxxlg.h),
+
+                
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24.w),
+                  child: CustomText(
+                    "تقييم الرحلة",
+                    type: AppTextType.titleMedium,
+                    color: AppColors.secondary1,
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 32.w),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: List.generate(5, (index) {
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            userRating = index + 1;
+                          });
+                        },
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 4.w),
+                          child: SvgPicture.asset(
+                            index < userRating
+                                ? IconsAssets.staroption
+                                : IconsAssets.stareoptionborder,
+                            height: 35.h,
+                          ),
+                        ),
+                      );
+                    }),
+                  ),
+                ),
+                SizedBox(height: AppSpacing.xxxxlg.h),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  child: CustomTextFieldsearch(
+                    controller: option,
+                    hintText: "اكتب رأيك هنا...",
+                  ),
+                ),
+
+                SizedBox(height: 40.h),
+
+               
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: state is AddRatingLoading
+                          ? null
+                          : () {
+                              if (userRating == 0) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      "يرجى اختيار عدد النجوم للتقييم",
+                                    ),
+                                  ),
+                                );
+                                return;
+                              }
+                              context.read<AddRatingCubit>().submitRating(
+                                tripId: trip.id,
+                                note: option.text,
+                                rating: userRating,
+                              );
+                            },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.main1,
+                        padding: EdgeInsets.symmetric(vertical: 14.h),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
+                      ),
+                      child: state is AddRatingLoading
+                          ? SizedBox(
+                              height: 20.h,
+                              width: 20.h,
+                              child: const CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : const Text(
+                              "تأكيد وإرسال التقييم",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 100.h),
+              ],
             ),
-
-            SizedBox(height: AppSpacing.xxxxlg.h),
-
-            // 5. قسم تفاصيل الفاتورة
-            _buildSectionTitle("invoice_details"),
-            _buildInfoRow("15000", "trip_price"),
-            _buildInfoRow("0", "discount"),
-            _buildInfoRow("15000", "total"),
-            _buildInfoRow("1200 ", "admin_commission"),
-            _buildInfoRow("cash", "payment_method"),
-
-            SizedBox(height: AppSpacing.xxxxlg.h),
-
-            // 6. قسم التقييم
-            _buildSectionTitle("your_rating"),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24.w),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: List.generate(5, (index) {
-                  return Icon(
-                    index < 4 ? Icons.star : Icons.star_border,
-                    color: Colors.amber,
-                    size: 30.sp,
-                  );
-                }),
-              ),
-            ),
-
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 10.h),
-              child: CustomText("excellent_trip", type: AppTextType.bodyMedium),
-            ),
-
-            SizedBox(height: 50.h),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSectionTitle(String title) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 8.h),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          CustomText(title, type: AppTextType.bodyLarge, color: AppColors.blue),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildInfoRow(String value, String label) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 4.h),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          CustomText(value, type: AppTextType.titleSmall, color: Colors.black),
-          CustomText(label, type: AppTextType.titleSmall, color: Colors.black),
-        ],
-      ),
+          ),
+        );
+      },
     );
   }
 }

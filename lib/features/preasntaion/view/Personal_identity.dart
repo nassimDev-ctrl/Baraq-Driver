@@ -1,12 +1,15 @@
+ 
 import 'dart:io';
-import 'package:drever_warr/core/asset/image_asset.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/widgets/customButton.dart';
 import 'package:drever_warr/core/widgets/customText.dart';
 import 'package:drever_warr/core/widgets/logo_app.dart';
+import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_car_image/cubit.dart';
+import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_car_image/cubit_stat.dart';
 import 'package:drever_warr/features/preasntaion/view/CarRegistrationScreen.dart';
 import 'package:drever_warr/features/preasntaion/widhets/icon_bak.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -18,19 +21,21 @@ class Personalidentity extends StatefulWidget {
 }
 
 class _PersonalidentityState extends State<Personalidentity> {
-  File? _idFrontImage;
-  File? _idBackImage;
   final ImagePicker _picker = ImagePicker();
 
-  Future<void> _pickIdImage(ImageSource source, bool isFront) async {
+  Future<void> _pickIdImage(
+    BuildContext context,
+    ImageSource source,
+    bool isFront,
+  ) async {
     final XFile? pickedFile = await _picker.pickImage(source: source);
 
     if (pickedFile != null) {
       setState(() {
         if (isFront) {
-          _idFrontImage = File(pickedFile.path);
+          context.read<UploadIdCubit>().frontImage = File(pickedFile.path);
         } else {
-          _idBackImage = File(pickedFile.path);
+          context.read<UploadIdCubit>().backImage = File(pickedFile.path);
         }
       });
     }
@@ -40,83 +45,101 @@ class _PersonalidentityState extends State<Personalidentity> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        top: false,
-        child: Column(
-          children: [
-            const IconBak(),
-
-            Center(child: LogoSection()),
-
-            // SizedBox(height: 40.h),
-            Expanded(
-              child: Container(
-                width: double.infinity,
-                margin: EdgeInsets.symmetric(horizontal: 8.w),
-                padding: EdgeInsets.symmetric(horizontal: 20.w),
-                decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(15),
-                    topRight: Radius.circular(15),
+      body: BlocListener<UploadIdCubit, UploadIdState>(
+        listener: (context, state) {
+          if (state is UploadIdSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("تم رفع صور الهوية بنجاح"),
+                backgroundColor: Colors.green,
+              ),
+            );
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const CarRegistrationScreen(),
+              ),
+            );
+          } else if (state is UploadIdFailure) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.errMessage),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        },
+        child: SafeArea(
+          top: false,
+          child: Column(
+            children: [
+              const IconBak(),
+              Center(child: LogoSection()),
+              Expanded(
+                child: Container(
+                  width: double.infinity,
+                  margin: EdgeInsets.symmetric(horizontal: 8.w),
+                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(15),
+                      topRight: Radius.circular(15),
+                    ),
+                    border: Border.all(color: AppColors.main1, width: 1.5),
                   ),
-                  border: Border.all(color: AppColors.main1, width: 1.5),
-                ),
-                child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  child: Column(
-                    children: [
-                      SizedBox(height: 25.h),
-                      CustomText(
-                        "Register",
-                        type: AppTextType.bodyLarge,
-                        color: AppColors.main1,
-                      ),
-
-                      SizedBox(height: 35.h),
-
-                      _buildIdCaptureBox(
-                        label: "add_front_id_photo",
-                        imageFile: _idFrontImage,
-                        onTap: () => _pickIdImage(ImageSource.gallery, true),
-                      ),
-
-                      SizedBox(height: 30.h),
-
-                      _buildIdCaptureBox(
-                        label: "add_back_id_photo",
-                        imageFile: _idBackImage,
-                        onTap: () => _pickIdImage(ImageSource.gallery, false),
-                      ),
-
-                      SizedBox(height: 50.h),
-
-                      CustomButton(
-                        title: "next",
-                        onTap:
-                            //(_idFrontImage != null && _idBackImage != null)
-                            () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => CarRegistrationScreen(),
-                                ),
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: Column(
+                      children: [
+                        SizedBox(height: 25.h),
+                        CustomText(
+                          "Register",
+                          type: AppTextType.bodyLarge,
+                          color: AppColors.main1,
+                        ),
+                        SizedBox(height: 35.h),
+                        _buildIdCaptureBox(
+                          label: "add_front_id_photo",
+                          imageFile: context.read<UploadIdCubit>().frontImage,
+                          onTap: () =>
+                              _pickIdImage(context, ImageSource.gallery, true),
+                        ),
+                        SizedBox(height: 30.h),
+                        _buildIdCaptureBox(
+                          label: "add_back_id_photo",
+                          imageFile: context.read<UploadIdCubit>().backImage,
+                          onTap: () =>
+                              _pickIdImage(context, ImageSource.gallery, false),
+                        ),
+                        SizedBox(height: 50.h),
+                        BlocBuilder<UploadIdCubit, UploadIdState>(
+                          builder: (context, state) {
+                            if (state is UploadIdLoading) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
                               );
-                            },
-                        // الزر يكون معطلاً حتى تُرفع الهوية بالكامل
-                      ),
-                      SizedBox(height: 20.h),
-                    ],
+                            }
+                            return CustomButton(
+                              title: "next",
+                              onTap: () {
+                                context.read<UploadIdCubit>().uploadIdImages();
+                              },
+                            );
+                          },
+                        ),
+                        SizedBox(height: 20.h),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
-  // ويجيت بناء مربع رفع الهوية
   Widget _buildIdCaptureBox({
     required String label,
     File? imageFile,
@@ -143,7 +166,6 @@ class _PersonalidentityState extends State<Personalidentity> {
             ),
             child: Stack(
               children: [
-                // عرض الصورة إذا تم اختيارها
                 if (imageFile != null)
                   ClipRRect(
                     borderRadius: BorderRadius.circular(10),
@@ -154,8 +176,6 @@ class _PersonalidentityState extends State<Personalidentity> {
                       fit: BoxFit.cover,
                     ),
                   ),
-
-                // رسم زوايا التركيز (Corners)
                 _buildCornerPositioned(
                   top: 8,
                   left: 8,
@@ -188,7 +208,6 @@ class _PersonalidentityState extends State<Personalidentity> {
     );
   }
 
-  // دالة مساعدة لتحديد مكان الزوايا
   Widget _buildCornerPositioned({
     double? top,
     double? bottom,

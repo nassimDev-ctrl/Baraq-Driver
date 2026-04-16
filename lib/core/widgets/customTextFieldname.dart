@@ -1,18 +1,15 @@
+ 
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/style/text_style.dart';
 import 'package:drever_warr/core/transleat/app_translat.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
- 
 
 class CustomTextFieldname extends StatelessWidget {
   const CustomTextFieldname({
     super.key,
     required this.hintText,
-
     this.isPassword = false,
-
     required this.controller,
     this.focusNode,
     this.compareWith,
@@ -26,12 +23,11 @@ class CustomTextFieldname extends StatelessWidget {
     this.readOnly = false,
     this.keyboardType,
     this.autofocus = false,
+    this.onTap,  
   });
 
   final String hintText;
-
   final bool isPassword;
-
   final TextEditingController controller;
   final FocusNode? focusNode;
   final TextEditingController? compareWith;
@@ -45,15 +41,17 @@ class CustomTextFieldname extends StatelessWidget {
   final bool readOnly;
   final TextInputType? keyboardType;
   final bool autofocus;
+  final VoidCallback? onTap;  
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      onTap: onTap, 
       onTapOutside: (event) {
         FocusManager.instance.primaryFocus?.unfocus();
       },
       autofocus: autofocus,
-      textDirection: TextDirection.rtl, // استخدام الخاصية هنا
+      textDirection: TextDirection.rtl,
       textAlign: TextAlign.start,
       readOnly: readOnly,
       onChanged: onChanged,
@@ -64,15 +62,16 @@ class CustomTextFieldname extends StatelessWidget {
       cursorWidth: 1,
       textCapitalization: textCapitalization,
       autovalidateMode: autovalidateMode,
-
       style: AppTextStyles.bodySmall,
       decoration: InputDecoration(
         isDense: true,
         filled: true,
         fillColor: AppColors.secondary1,
-
         contentPadding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
-
+        
+       
+        suffixIcon: readOnly ? Icon(Icons.keyboard_arrow_down, color: AppColors.main1) : null,
+        
         hintText: AppTranslations.getText(context, hintText),
         hintStyle: TextStyle(fontSize: 12.sp),
 
@@ -100,7 +99,6 @@ class CustomTextFieldname extends StatelessWidget {
         errorMaxLines: 2,
         errorStyle: TextStyle(fontSize: 11.sp),
       ),
-
       keyboardType: keyboardType,
       validator: validator,
       onFieldSubmitted: (value) {},

@@ -1,7 +1,7 @@
 import 'package:drever_warr/core/cash/preferences_servis.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-enum Language { english, arabic, kurdish } // إضافة الكردية هنا
+enum Language { english, arabic, kurdish }  
 
 class LanguageCubit extends Cubit<Language> {
   static const _langKey = 'app_language';
@@ -16,14 +16,14 @@ class LanguageCubit extends Cubit<Language> {
     if (savedLang == 'ar') {
       emit(Language.arabic);
     } else if (savedLang == 'ku') {
-      // إضافة التحقق من الكردية
+     
       emit(Language.kurdish);
     } else {
       emit(Language.english);
     }
   }
 
-  // دالة لتغيير اللغة مباشرة
+ 
   Future<void> setLanguage(Language lang) async {
     String langCode;
     if (lang == Language.arabic)

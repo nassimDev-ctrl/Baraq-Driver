@@ -1,61 +1,61 @@
-// import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:warr2/features/Auth/preasntaion/data/repo/cubit/cubit_verificationRepo/cubite_state.dart';
-//  import 'package:warr2/features/Auth/preasntaion/data/repo/repo/repo_verificationRepo/repo.dart';
- 
-// class VerificationCubit extends Cubit<VerificationState> {
-//   final VerificationRepo _verificationRepo;
+import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_verificationRepo/cubite_state.dart';
+import 'package:drever_warr/features/preasntaion/data/repo/repo/repo_verificationRepo/repo.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-//   VerificationCubit(this._verificationRepo) : super(VerificationInitial());
+class VerificationCubit extends Cubit<VerificationState> {
+  final VerificationRepo _verificationRepo;
 
-//   // 1. وظيفة طلب إرسال الكود
-//   Future<void> sendVerificationCode({
-//     required String mobilePhone,
-//     required String typeOfUse,
-//   }) async {
-//     emit(VerificationLoading());
-//     print("⏳ [CUBIT]: Sending Verification Code to $mobilePhone...");
+  VerificationCubit(this._verificationRepo) : super(VerificationInitial());
 
-//     var result = await _verificationRepo.createVerificationCode(
-//       mobilePhone: mobilePhone,
-//       typeOfUse: typeOfUse,
-//     );
+   
+  Future<void> sendVerificationCode({
+    required String mobilePhone,
+    required String typeOfUse,
+  }) async {
+    emit(VerificationLoading());
+    print("⏳ [CUBIT]: Sending Verification Code to $mobilePhone...");
 
-//     result.fold(
-//       (failure) {
-//         print("📢 [CUBIT ERROR]: ${failure.errMassage}");
-//         emit(VerificationFailure(failure.errMassage));
-//       },
-//       (success) {
-//         print("📢 [CUBIT SUCCESS]: OTP Sent Successfully!");
-//         emit(CreateVerificationCodeSuccess(success));
-//       },
-//     );
-//   }
+    var result = await _verificationRepo.createVerificationCode(
+      mobilePhone: mobilePhone,
+      typeOfUse: typeOfUse,
+    );
 
-//   // 2. وظيفة التحقق من الكود المدخل (Verify)
-//   Future<void> verifyCode({
-//     required String mobilePhone,
-//     required String typeOfUse,
-//     required String code,
-//   }) async {
-//     emit(VerificationLoading());
-//     print("⏳ [CUBIT]: Verifying Code $code for $mobilePhone...");
+    result.fold(
+      (failure) {
+        print("📢 [CUBIT ERROR]: ${failure.errMassage}");
+        emit(VerificationFailure(failure.errMassage));
+      },
+      (success) {
+        print("📢 [CUBIT SUCCESS]: OTP Sent Successfully!");
+        emit(CreateVerificationCodeSuccess(success));
+      },
+    );
+  }
 
-//     var result = await _verificationRepo.verifyMobileNumber(
-//       mobilePhone: mobilePhone,
-//       typeOfUse: typeOfUse,
-//       code: code,
-//     );
+  
+  Future<void> verifyCode({
+    required String mobilePhone,
+    required String typeOfUse,
+    required String code,
+  }) async {
+    emit(VerificationLoading());
+    print("⏳ [CUBIT]: Verifying Code $code for $mobilePhone...");
 
-//     result.fold(
-//       (failure) {
-//         print("📢 [CUBIT ERROR]: ${failure.errMassage}");
-//         emit(VerificationFailure(failure.errMassage));
-//       },
-//       (success) {
-//         print("📢 [CUBIT SUCCESS]: Phone Verified!");
-//         emit(VerifyMobileNumberSuccess(success));
-//       },
-//     );
-//   }
-// }
+    var result = await _verificationRepo.verifyMobileNumber(
+      mobilePhone: mobilePhone,
+      typeOfUse: typeOfUse,
+      code: code,
+    );
+
+    result.fold(
+      (failure) {
+        print("📢 [CUBIT ERROR]: ${failure.errMassage}");
+        emit(VerificationFailure(failure.errMassage));
+      },
+      (success) {
+        print("📢 [CUBIT SUCCESS]: Phone Verified!");
+        emit(VerifyMobileNumberSuccess(success));
+      },
+    );
+  }
+}

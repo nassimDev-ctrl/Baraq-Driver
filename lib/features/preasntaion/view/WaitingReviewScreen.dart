@@ -16,7 +16,7 @@ class WaitingReviewScreen extends StatelessWidget {
         child: Column(
           children: [
             SizedBox(height: 50.h),
-            // شعار التطبيق في الأعلى
+             
             Center(
               child: Image.asset(
                 ImageAssets.logo_warr,
@@ -25,7 +25,7 @@ class WaitingReviewScreen extends StatelessWidget {
               ),
             ),
 
-            const Spacer(), // دفع المربع ليكون في المنتصف تقريباً كما في الصورة
+            const Spacer(),  
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -46,10 +46,10 @@ class WaitingReviewScreen extends StatelessWidget {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(15.r),
                     border: Border.all(
-                      color: AppColors.main1, // اللون البنفسجي
+                      color: AppColors.main1,  
                       width: 1.5,
                     ),
-                    // إضافة الظل (BoxShadow) ليعطي نفس شكل الصورة
+                   
                     boxShadow: [
                       BoxShadow(
                         color: AppColors.main1.withOpacity(0.3),
@@ -67,18 +67,14 @@ class WaitingReviewScreen extends StatelessWidget {
                         textAlign: TextAlign.center,
                       ),
                       SizedBox(height: 10.h),
-                      // CustomText(
-                      //   "admin_review_status",
-                      //   type: AppTextType.bodyLarge,
-                      //   textAlign: TextAlign.center,
-                      // ),
+                     
                     ],
                   ),
                 ),
               ),
             ),
 
-            const Spacer(flex: 2), // مسافة إضافية في الأسفل
+            const Spacer(flex: 2), 
           ],
         ),
       ),

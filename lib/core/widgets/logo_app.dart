@@ -22,7 +22,7 @@ class LogoSection extends StatelessWidget {
 
         SizedBox(height: AppSpacing.lg.h),
 
-        // نص ترحيبي أو Widget إضافي كمثال
+       
       ],
     );
   }

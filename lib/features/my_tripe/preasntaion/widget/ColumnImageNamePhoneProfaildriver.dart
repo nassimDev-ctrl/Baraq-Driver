@@ -1,28 +1,51 @@
+ 
 import 'package:drever_warr/core/asset/image_asset.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/constant/app_spacing.dart';
 import 'package:drever_warr/core/widgets/customText.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
- 
 
 class ColumnImageNamePhoneProfaildriver extends StatelessWidget {
-  const ColumnImageNamePhoneProfaildriver({super.key});
+  final String? imagePath;
+  final String fullName;
+  final String phone;
+
+  const ColumnImageNamePhoneProfaildriver({
+    super.key,
+    this.imagePath,
+    required this.fullName,
+    required this.phone,
+  });
 
   @override
   Widget build(BuildContext context) {
+    const String baseUrl = 'https://api.taxiwaar.com/';  
+
     return Column(
       children: [
-        Image.asset(ImageAssets.imageprofail, height: 121.h, width: 121.w),
+       
+        ClipOval(
+          child: (imagePath != null && imagePath!.isNotEmpty)
+              ? Image.network(
+                  imagePath!.startsWith('http') ? imagePath! : "$baseUrl$imagePath",
+                  height: 121.h,
+                  width: 121.w,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) =>
+                      Image.asset(ImageAssets.imageprofail, height: 121.h, width: 121.w),
+                )
+              : Image.asset(ImageAssets.imageprofail, height: 121.h, width: 121.w),
+        ),
         SizedBox(height: AppSpacing.md.h),
         CustomText(
-          "اسم السائق",
+          fullName,
           type: AppTextType.titleSmall,
           color: AppColors.secondary1,
         ),
         SizedBox(height: AppSpacing.sm.h),
         CustomText(
-          "+970 6666666666",
+          phone,
           type: AppTextType.titleSmall,
           color: AppColors.secondary1,
         ),

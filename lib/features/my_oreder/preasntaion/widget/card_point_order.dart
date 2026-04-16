@@ -12,7 +12,7 @@ class ColumnSearch extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.only(right: 8.0, top: 5),
       child: Column(
-        //  mainAxisAlignment: MainAxisAlignment.center,
+       
         children: [
           Icon(Icons.circle, color: AppColors.main1, size: 25.sp),
 

@@ -3,26 +3,53 @@ import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:drever_warr/core/cash/preferences_servis.dart';
-   
+
 class ApiService {
-  static const _baseURL = 'https://api.waslninow.com/';
+  static const _baseURL = 'https://api.taxiwaar.com/';
   static const int sendTimeOut = 60;
   static const int reciveTimeOut = 60;
   static const int sendTimeOutFormData = 300;
   final Dio dio;
-  ApiService({required this.dio});
+  ApiService(this.dio);
 
+  // Future<Options?> _preparationOptionsRequest(
+  //   bool needToken, {
+
+  //   bool isFormData = false,
+  // }) async {
+  //   Map<String, dynamic>? header = {};
+  //   if (needToken) {
+  //     String? token = await CacheManager.getData('token');
+  //     header["Authorization"] = "Bearer $token";
+  //   }
+  //   String content = (isFormData) ? 'multipart/form-data' : 'application/json';
+  //   return Options(
+  //     contentType: content,
+  //     headers: header,
+  //     receiveTimeout: Duration(seconds: reciveTimeOut),
+  //     sendTimeout: Duration(
+  //       seconds: isFormData ? sendTimeOutFormData : sendTimeOut,
+  //     ),
+  //   );
+  // }
   Future<Options?> _preparationOptionsRequest(
     bool needToken, {
-
     bool isFormData = false,
   }) async {
     Map<String, dynamic>? header = {};
+
+    // 1. Add the Language Header (The missing piece)
+    // Replace 'ar' or 'en' with your app's current locale logic
+    header["lang"] = "ar"; // Or try header["Accept-Language"] = "ar";
+
+    // 2. Existing Token logic
     if (needToken) {
       String? token = await CacheManager.getData('token');
       header["Authorization"] = "Bearer $token";
     }
+
     String content = (isFormData) ? 'multipart/form-data' : 'application/json';
+
     return Options(
       contentType: content,
       headers: header,
@@ -100,14 +127,10 @@ class ApiService {
     required dynamic data,
     bool isFormData = false,
   }) async {
-   
     Response response = await dio.patch(
       "$_baseURL$endPoint",
       data: data,
-      options: await _preparationOptionsRequest(
-        true,
-        isFormData: isFormData,
-      ),
+      options: await _preparationOptionsRequest(true, isFormData: isFormData),
     );
     return response;
   }

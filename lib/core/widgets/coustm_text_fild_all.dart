@@ -1,3 +1,4 @@
+ 
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/style/text_style.dart';
 import 'package:drever_warr/core/transleat/app_translat.dart';
@@ -6,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
- 
 
 class AppCustomTextField extends StatelessWidget {
   final String hintText;
@@ -23,6 +23,7 @@ class AppCustomTextField extends StatelessWidget {
   final double iconSize;
   final TextAlign textAlign;
   final VoidCallback? onIconTap;
+  final VoidCallback? onTap;  
   final void Function(String)? onChanged;
   final String? countryCode;
   final EdgeInsetsGeometry? contentPadding;
@@ -43,6 +44,7 @@ class AppCustomTextField extends StatelessWidget {
     this.iconSize = 15,
     this.textAlign = TextAlign.start,
     this.onIconTap,
+    this.onTap,
     this.onChanged,
     this.countryCode,
     this.contentPadding,
@@ -52,9 +54,9 @@ class AppCustomTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     bool isArabic = context.read<LanguageCubit>().state == Language.arabic;
 
-    // استخدام FormField لتحويل الـ TextFormField التقليدي إلى شكل مخصص مع التحكم بالخطأ
     return FormField<String>(
       validator: validator,
+      // نربط القيمة الأولية بنص التحكم
       initialValue: controller.text,
       builder: (FormFieldState<String> state) {
         return Column(
@@ -95,10 +97,11 @@ class AppCustomTextField extends StatelessWidget {
                       obscureText: obscure,
                       readOnly: readOnly,
                       autofocus: autofocus,
+                      onTap: onTap, 
                       onChanged: (value) {
                         state.didChange(
                           value,
-                        ); // إبلاغ FormField بتغير النص ليقوم بالتحقق
+                        ); // تحديث حالة FormField فوراً للتحقق
                         if (onChanged != null) onChanged!(value);
                       },
                       keyboardType: keyboardType,
@@ -122,10 +125,7 @@ class AppCustomTextField extends StatelessWidget {
                           fontSize: 12.sp,
                           color: Colors.grey,
                         ),
-                        errorStyle: const TextStyle(
-                          height: 0,
-                          fontSize: 0,
-                        ), // إخفاء الخطأ الافتراضي
+                        errorStyle: const TextStyle(height: 0, fontSize: 0),
                         prefixIconConstraints: BoxConstraints(minWidth: 35.w),
                         prefixIcon: iconImage != null
                             ? GestureDetector(
@@ -183,7 +183,7 @@ class AppCustomTextField extends StatelessWidget {
               ),
             ),
 
-            /// 🔴 عرض رسالة الخطأ فقط إذا كان هناك خطأ (بعد التفاعل)
+            
             if (state.hasError)
               Padding(
                 padding: EdgeInsets.only(top: 4.h, left: 8.w, right: 8.w),
@@ -193,7 +193,7 @@ class AppCustomTextField extends StatelessWidget {
                 ),
               )
             else
-              SizedBox(height: 4.h),
+              SizedBox(height: 12.h),  
           ],
         );
       },

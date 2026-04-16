@@ -1,22 +1,24 @@
-// import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:warr2/features/Auth/preasntaion/data/repo/cubit/cubit_governorates/cubit_state.dart';
-// import 'package:warr2/features/Auth/preasntaion/data/repo/repo/repo_governorates/repo.dart';
+ 
  
  
 
-// class GovernoratesCubit extends Cubit<GovernoratesState> {
-//   final RepoGovernorates repo;
+import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_governorates/cubit_state.dart';
+import 'package:drever_warr/features/preasntaion/data/repo/repo/repo_governorates/repo.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-//   GovernoratesCubit(this.repo) : super(GovernoratesInitial());
+class GovernoratesCubit extends Cubit<GovernoratesState> {
+  final RepoGovernorates repo;
 
-//   Future<void> getGovernorates() async {
-//     emit(GovernoratesLoading());
+  GovernoratesCubit(this.repo) : super(GovernoratesInitial());
 
-//     var result = await repo.fetchGovernorates();
+  Future<void> getGovernorates() async {
+    emit(GovernoratesLoading());
 
-//     result.fold(
-//       (failure) => emit(GovernoratesFailure(failure.errMassage)),
-//       (governorates) => emit(GovernoratesSuccess(governorates)),
-//     );
-//   }
-// }
+    var result = await repo.fetchGovernorates();
+
+    result.fold(
+      (failure) => emit(GovernoratesFailure(failure.errMassage)),
+      (governorates) => emit(GovernoratesSuccess(governorates)),
+    );
+  }
+}

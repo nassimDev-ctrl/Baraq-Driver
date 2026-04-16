@@ -1,6 +1,6 @@
 class GovernorateModel {
   final String id;
-  final String name;
+  final String name;  
   final bool status;
   final int? numberOfVipCars;
 
@@ -13,9 +13,10 @@ class GovernorateModel {
 
   factory GovernorateModel.fromJson(Map<String, dynamic> json) {
     return GovernorateModel(
-      id: json['_id'],
-      name: json['name'],
-      status: json['status'],
+      id: json['_id'] ?? '',  
+     
+      name: json['nameAr'] ?? json['nameEn'] ?? 'بدون اسم',
+      status: json['status'] ?? false,
       numberOfVipCars: json['numberOfVipCars'] ?? 0,
     );
   }

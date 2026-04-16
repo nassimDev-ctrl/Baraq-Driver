@@ -20,7 +20,7 @@ class TripLocationPath extends StatelessWidget {
     required this.startLocation,
     required this.endLocation,
     this.startIconColor = Colors.grey,
-    this.endIconColor, // سيأخذ القيمة الافتراضية داخل الودجيت إذا كان نول
+    this.endIconColor,  
     this.dashHeight,
   });
 
@@ -31,9 +31,7 @@ class TripLocationPath extends StatelessWidget {
         ? Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // قسم الأيقونات والخط المنقط
-
-              // قسم النصوص
+              
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
@@ -61,19 +59,14 @@ class TripLocationPath extends StatelessWidget {
                   CustomPaint(
                     size: Size(1, dashHeight ?? 30.h),
                     painter:
-                        DashedLinePainter(), // تأكد أن الكلاس موجود في مشروعك
+                        DashedLinePainter(), 
                   ),
                   SvgPicture.asset(
                     IconsAssets.locationsearch,
                     color: endIconColor ?? const Color(0xFF9C4DB9),
                     height: 20,
                   ),
-                  // Icon(
-                  //   Icons.location_on,
-                  //   color:
-                  //       endIconColor ?? const Color(0xFF9C4DB9), // لون افتراضي بنفسجي
-                  //   size: 20.sp,
-                  // ),
+                  
                 ],
               ),
             ],
@@ -81,9 +74,7 @@ class TripLocationPath extends StatelessWidget {
         : Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // قسم الأيقونات والخط المنقط
-
-              // قسم النصوص
+              
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
@@ -111,19 +102,14 @@ class TripLocationPath extends StatelessWidget {
                   CustomPaint(
                     size: Size(1, dashHeight ?? 30.h),
                     painter:
-                        DashedLinePainter(), // تأكد أن الكلاس موجود في مشروعك
+                        DashedLinePainter(), 
                   ),
                   SvgPicture.asset(
                     IconsAssets.locationsearch,
                     color: endIconColor ?? const Color(0xFF9C4DB9),
                     height: 20,
                   ),
-                  // Icon(
-                  //   Icons.location_on,
-                  //   color:
-                  //       endIconColor ?? const Color(0xFF9C4DB9), // لون افتراضي بنفسجي
-                  //   size: 20.sp,
-                  // ),
+                  
                 ],
               ),
             ],

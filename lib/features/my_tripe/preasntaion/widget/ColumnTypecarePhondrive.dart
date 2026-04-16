@@ -9,9 +9,9 @@ class ColumnTypecarePhondrive extends StatelessWidget {
     required this.diplay,
     required this.tybe,
     required this.colors,
-    required this.carType, // نوع السيارة (VIP، اقتصادية، إلخ)
-    required this.carNumber, // رقم اللوحة
-    required this.driverPhone, // هاتف السائق
+    required this.carType, 
+    required this.carNumber, 
+    required this.driverPhone,  
   });
 
   final bool diplay;
@@ -72,50 +72,4 @@ class ColumnTypecarePhondrive extends StatelessWidget {
   }
 }
 
-// class ColumnTypecarePhondrive extends StatelessWidget {
-//   const ColumnTypecarePhondrive({
-//     super.key,
-//     required this.diplay,
-//     required this.tybe,
-//     required this.colors
-//   });
-//   final bool diplay;
-//   final AppTextType tybe;
-//   final Color colors;
-//   @override
-//   Widget build(BuildContext context) {
-//     return Column(
-//       // crossAxisAlignment: CrossAxisAlignment.center,
-//       children: [
-//         Row(
-//           children: [
-//             CustomText("xxxxxxxxxxx", type: tybe,color: colors,),
-//             SizedBox(width: AppSpacing.x160.w),
-//             CustomText("نوع السيارة", type: tybe,color: colors,),
-//           ],
-//         ),
-//         SizedBox(height: AppSpacing.xs.h),
-//         Padding(
-//           padding: EdgeInsets.symmetric(horizontal: 0.0),
-//           child: Row(
-//             //  mainAxisAlignment: MainAxisAlignment.end,
-//             children: [
-//               CustomText("xxxxxxxxxxx", type: tybe,color: colors,),
-//               SizedBox(width: 153.w),
-//               CustomText("نمرة السيارة", type: tybe,color: colors,),
-//             ],
-//           ),
-//         ),
-//         SizedBox(height: AppSpacing.xs.h),
-//         if (diplay)
-//           Row(
-//             children: [
-//               CustomText("xxxxxxxxxxx", type: AppTextType.bodyMedium),
-//               SizedBox(width: AppSpacing.x160.w),
-//               CustomText("رقم السائق", type: AppTextType.bodyMedium),
-//             ],
-//           ),
-//       ],
-//     );
-//   }
-// }
+ 

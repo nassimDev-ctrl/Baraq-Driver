@@ -3,48 +3,50 @@ import 'package:drever_warr/core/widgets/customText.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+ 
 class Selectgender extends StatefulWidget {
-  const Selectgender({super.key});
+  final Function(String) onGenderSelected; // إضافة callback
+  const Selectgender({super.key, required this.onGenderSelected});
 
   @override
   State<Selectgender> createState() => _SelectgenderState();
 }
 
 class _SelectgenderState extends State<Selectgender> {
-  String selectedGender = "ذكر";
+  String selectedGender =
+      "male"; 
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _buildGenderOption("female"),
+        _buildGenderOption("female", "female"),
         SizedBox(width: 150.w),
-
-        _buildGenderOption("male"),
+        _buildGenderOption("male", "male"),
       ],
     );
   }
 
-  Widget _buildGenderOption(String value) {
+  Widget _buildGenderOption(String value, String label) {
     bool isSelected = selectedGender == value;
 
     return Row(
       children: [
-        CustomText(value, type: AppTextType.bodyMedium),
+        CustomText(label, type: AppTextType.bodyMedium),  
         SizedBox(width: 5.w),
         GestureDetector(
           onTap: () {
             setState(() {
               selectedGender = value;
             });
+            widget.onGenderSelected(value);  
           },
           child: Container(
             width: 35.w,
             height: 35.h,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              // color: const Color(0xFFF2F2F2),
               border: Border.all(color: AppColors.main1, width: 1),
             ),
             child: Center(
@@ -52,7 +54,7 @@ class _SelectgenderState extends State<Selectgender> {
                   ? Container(
                       width: 10.w,
                       height: 10.h,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         shape: BoxShape.circle,
                         color: Color(0xFF1595C7),
                       ),

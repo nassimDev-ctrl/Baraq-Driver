@@ -15,7 +15,7 @@ class Validators {
     return null;
   }
 
-  // Validate email
+  
   static String? validateEmail(String? value, BuildContext context) {
     if (value == null || value.trim().isEmpty) {
       return AppTranslations.getStaticText(context,  'This Feild is Empty');
@@ -37,7 +37,7 @@ class Validators {
     return null;
   }
 
-  // Validate URL
+   
   static String? validateURL(String? value,BuildContext context) {
     if (value == null || value.trim().isEmpty) {
       return AppTranslations.getStaticText(context, 'Please enter the URL');

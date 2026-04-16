@@ -1,15 +1,16 @@
 import 'package:drever_warr/core/asset/image_asset.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
-import 'package:drever_warr/core/constant/app_spacing.dart';
 import 'package:drever_warr/core/widgets/customButton.dart';
+import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_verificationRepo/cubit.dart';
+import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_verificationRepo/cubite_state.dart';
 import 'package:drever_warr/features/preasntaion/widhets/icon_bak.dart';
 import 'package:drever_warr/features/preasntaion/widhets/row_verification_code.dart';
 import 'package:drever_warr/features/preasntaion/widhets/text_verification_code.dart';
 import 'package:drever_warr/features/setting/preasntaion/view/new_password.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
- 
+import 'package:pin_code_fields/pin_code_fields.dart';  
 
 class VerificationCodeforgetpassword2 extends StatefulWidget {
   final String mobilePhone;
@@ -22,161 +23,149 @@ class VerificationCodeforgetpassword2 extends StatefulWidget {
 
 class _VerificationCodeforgetpasswordState
     extends State<VerificationCodeforgetpassword2> {
-  // متغير لتخزين الكود المدخل
-  // String otpCode = "";
+  String otpCode = "";
+  
+  TextEditingController? _pinController;
+
+  @override
+  void initState() {
+    super.initState();
+    
+    _pinController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+  
+    _pinController?.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.secondary1,
       resizeToAvoidBottomInset: true,
-      body: CustomScrollView(
-        slivers: [
-          SliverFillRemaining(
-            hasScrollBody: false,
-            child: Column(
-              children: [
-                const IconBak(), // زر الرجوع
+      body: BlocConsumer<VerificationCubit, VerificationState>(
+        listener: (context, state) {
+          if (state is VerifyMobileNumberSuccess) {
+          
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    NewPassword(mobilePhone1: widget.mobilePhone),
+              ),
+            );
+          } else if (state is VerificationFailure) {
+           
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.errMessage),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        },
+        builder: (context, state) {
+          return CustomScrollView(
+            slivers: [
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Column(
+                  children: [
+                    const IconBak(),
 
-                Image.asset(ImageAssets.phone, height: 250.h, width: 250.w),
+                    Image.asset(ImageAssets.phone, height: 250.h, width: 250.w),
 
-                // النص اللي بيعرض الرقم اللي انرسل له الكود
-                TextVerificationCode(phone: widget.mobilePhone),
+                    TextVerificationCode(phone: widget.mobilePhone),
 
-                SizedBox(height: 25.h),
+                    SizedBox(height: 25.h),
 
-                // حقول إدخال الكود (PIN Code)
-                // Padding(
-                //   padding: EdgeInsets.symmetric(horizontal: 20.w),
-                //   child: PinCodeTextField(
-                //     mainAxisAlignment: MainAxisAlignment.center,
-                //     appContext: context,
-                //     length: 4,
-                //     onChanged: (value) => otpCode = value,
-                //     keyboardType: TextInputType.number,
-                //     animationType: AnimationType.fade,
-                //     pinTheme: PinTheme(
-                //       shape: PinCodeFieldShape.box,
-                //       borderRadius: BorderRadius.circular(12.r),
-                //       fieldHeight: 60.h,
-                //       fieldWidth: 60.w,
-                //       fieldOuterPadding: EdgeInsets.symmetric(horizontal: 10.w),
-                //       activeFillColor: Colors.white,
-                //       inactiveFillColor: Colors.white,
-                //       selectedFillColor: Colors.white,
-                //       activeColor: Colors.transparent,
-                //       inactiveColor: Colors.transparent,
-                //       selectedColor: Colors.green,
-                //     ),
-                //     cursorColor: Colors.black,
-                //     enableActiveFill: true,
-                //   ),
-                // ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: List.generate(4, (index) {
-                    // غير 4 لـ 6 إذا كان الكود أطول
-                    return SizedBox(
-                      height: 60.h,
-                      width: 60.w,
-                      child: TextFormField(
-                        onChanged: (value) {
-                          if (value.length == 1 && index < 3) {
-                            FocusScope.of(
-                              context,
-                            ).nextFocus(); // ينتقل للمربع التالي تلقائياً
-                          }
-                          if (value.isEmpty && index > 0) {
-                            FocusScope.of(
-                              context,
-                            ).previousFocus(); // يرجع للمربع السابق عند الحذف
-                          }
-                          // هنا يمكنك تجميع الكود في متغير otpCode
-                        },
-                        style: Theme.of(context).textTheme.headlineMedium,
-                        keyboardType: TextInputType.number,
-                        textAlign: TextAlign.center,
-                        inputFormatters: [
-                          // يمنع إدخال أكثر من رقم واحد في المربع
-                          //  import 'package:flutter/services.dart'; // تحتاج لهذا الـ import
-                          LengthLimitingTextInputFormatter(1),
-                          FilteringTextInputFormatter.digitsOnly,
-                        ],
-                        decoration: InputDecoration(
-                          fillColor: Colors.white,
-                          filled: true,
-                          border: OutlineInputBorder(
+                   
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 40.w),
+                      child: Directionality(
+                        textDirection: TextDirection.ltr,
+                        child: PinCodeTextField(
+                          appContext: context,
+                          length: 4,
+                      
+                          keyboardType: TextInputType.number,
+                          animationType: AnimationType.scale,
+                          autoFocus: true,
+                          cursorColor: AppColors.main1,
+
+                          pinTheme: PinTheme(
+                            shape: PinCodeFieldShape.box,
                             borderRadius: BorderRadius.circular(12.r),
-                            borderSide: BorderSide(color: AppColors.main1),
+                            fieldHeight: 60.h,
+                            fieldWidth: 60.w,
+                            activeFillColor: Colors.white,
+                            inactiveFillColor: Colors.white,
+                            selectedFillColor: Colors.white,
+                            activeColor: AppColors.main1,
+                            inactiveColor: const Color(0xFFE0E0E0),
+                            selectedColor: AppColors.main1,
                           ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12.r),
-                            borderSide: BorderSide(
-                              color: AppColors
-                                  .main1, // غير اللون من هنا (مثلاً رمادي فاتح)
-                              width: 1.5,
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12.r),
-                            borderSide: BorderSide(
-                              color: AppColors.main1,
-                            ), // لون المربع عند الاختيار
-                          ),
+
+                          enableActiveFill: true,
+                          animationDuration: const Duration(milliseconds: 300),
+                          onChanged: (value) {
+                            otpCode = value;
+                          },
+                          onCompleted: (value) {
+                            // _verifyCodeAction(context);
+                          },
                         ),
                       ),
-                    );
-                  }),
-                ),
-                SizedBox(height: 20.h),
+                    ),
 
-                // السطر الخاص بإعادة الإرسال
-                RowVerificationCode(
-                  onResend: () {
-                    // منطق إعادة الإرسال (UI فقط حالياً)
-                    debugPrint("Resending code to ${widget.mobilePhone}");
-                  },
-                ),
+                    SizedBox(height: 20.h),
 
-                SizedBox(height: AppSpacing.x110.h),
+                    
+                    RowVerificationCode(
+                     
+                      onResend: () {
+                       
+                        String formattedPhone = widget.mobilePhone;
+                        if (formattedPhone.startsWith('0')) {
+                          formattedPhone = formattedPhone.substring(1);
+                        }
 
-                // زر التحقق
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 40.w),
-                  child: CustomButton(
-                    title: "verification_title",
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              NewPassword(mobilePhone1: widget.mobilePhone),
-                        ),
-                      );
-                      // if (otpCode.length == 4) {
-                      //   // الانتقال لصفحة تعيين كلمة المرور الجديدة (UI Flow)
-                      //   Navigator.push(
-                      //     context,
-                      //     MaterialPageRoute(
-                      //       builder: (context) => ConfermPassword(
-                      //         mobilePhone1: widget.mobilePhone,
-                      //       ),
-                      //     ),
-                      //   );
-                      // } else {
-                      //   ScaffoldMessenger.of(context).showSnackBar(
-                      //     const SnackBar(
-                      //       content: Text("يرجى إدخال الكود كاملاً"),
-                      //     ),
-                      //   );
-                      // }
-                    },
-                  ),
+                        context.read<VerificationCubit>().sendVerificationCode(
+                          // الدمج الصحيح ليكون الناتج 963991111111
+                          mobilePhone: "963$formattedPhone",
+                          typeOfUse: "reset-password",
+                        );
+                      },
+                    ),
+
+                    const Spacer(),  
+                 
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 40.w,
+                        vertical: 30.h,
+                      ),
+                      child: state is VerificationLoading
+                          ? const Center(child: CircularProgressIndicator())
+                          : CustomButton(
+                              title: "verification_title",
+                              onTap: () =>
+                                  context.read<VerificationCubit>().verifyCode(
+                                    mobilePhone: "963${widget.mobilePhone}",
+                                    typeOfUse: "reset-password",
+                                    code: otpCode,
+                                  ),
+                            ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-        ],
+              ),
+            ],
+          );
+        },
       ),
     );
   }

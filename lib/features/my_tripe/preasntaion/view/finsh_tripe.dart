@@ -1,64 +1,98 @@
-import 'package:drever_warr/core/constant/app_colors.dart';
+ 
 import 'package:drever_warr/core/widgets/customText.dart';
+import 'package:drever_warr/features/home/preasntaion/data/cubit/cubit_finsh_trips/cubit.dart';
+import 'package:drever_warr/features/home/preasntaion/data/cubit/cubit_finsh_trips/cubit_stat.dart';
 import 'package:drever_warr/features/my_tripe/preasntaion/view/details_trip.dart';
 import 'package:drever_warr/features/my_tripe/preasntaion/widget/CountainerJournyOngoing.dart';
 import 'package:drever_warr/features/preasntaion/widhets/icon_bak.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-// استيراد الكلاس الذي صممناه في الخطوة السابقة
-// import 'package:your_project/widgets/countainer_journy_ongoing.dart';
+class OngoingJourney extends StatefulWidget {
+  const OngoingJourney({super.key});
 
-class FinishedTripsScreen extends StatelessWidget {
-  const FinishedTripsScreen({super.key});
+  @override
+  State<OngoingJourney> createState() => _OngoingJourneyState();
+}
+
+class _OngoingJourneyState extends State<OngoingJourney> {
+  @override
+  void initState() {
+    super.initState();
+    
+    context.read<GetFinishedTripsCubit>().fetchFinishedTrips();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      body: BlocBuilder<GetFinishedTripsCubit, GetFinishedTripsState>(
+        builder: (context, state) {
+          if (state is GetFinishedTripsLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is GetFinishedTripsSuccess) {
+            if (state.trips.isEmpty) {
+              return const Center(child: Text("لا يوجد رحلات حالية"));
+            }
 
-      body: Column(
-        children: [
-          IconBak(),
-          SizedBox(height: 20.h),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 40.w),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+            return Column(
               children: [
-                CustomText(
-                  "finished_trips",
-                  color: Colors.blue.shade400, // اللون السماوي في الصورة
-                  type: AppTextType
-                      .titleMedium, // تأكدي من وجود هذا النوع في CustomText
+                IconBak(),
+                SizedBox(height: 20.h),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 40.w),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      CustomText(
+                        "finished_trips",
+                        color: Colors.blue.shade400,  
+                        type: AppTextType
+                            .titleMedium, 
+                      ),
+                    ],
+                  ),
                 ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              padding: EdgeInsets.symmetric(vertical: 10.h),
-              itemCount: 5, // عدد افتراضي للرحلات
-              itemBuilder: (context, index) {
-                // استخدام الكلاس الخاص بكِ هنا
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DetailsOfTheCompletedTrip(),
+                Expanded(
+                  child: ListView.builder(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 0.w,
+                      vertical: 10.h,
+                    ),
+                    itemCount: state.trips.length,  
+                    itemBuilder: (context, index) {
+                      final trip = state.trips[index];
+                      return Padding(
+                        padding: EdgeInsets.symmetric(vertical: 8.0.h),
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DetailsOfTheCompletedTrip(
+                                  trip:
+                                      trip, 
+                                ),
+                              ),
+                            );
+                          },
+                          child: CountainerJournyOngoing(
+                            trip: trip,
+                          ),  
                         ),
                       );
                     },
-                    child: const CountainerJournyOngoing(),
                   ),
-                );
-              },
-            ),
-          ),
-        ],
+                ),
+              ],
+            );
+          } else if (state is GetFinishedTripsFailure) {
+            return Center(child: Text(state.errMessage));
+          }
+          return const SizedBox();
+        },
       ),
     );
   }

@@ -145,6 +145,7 @@ class AppTranslations {
     "phone": "Phone Number",
     "wallet_record": "Wallet Record",
 "current_balance": "Current Balance",
+
     },
     'ar': {
       "distances": "المسافات",
@@ -286,6 +287,7 @@ class AppTranslations {
       "validate_password": "كلمة المرور ضعيفة جداً",
       "wallet_record": "سجل الرصيد",
 "current_balance": "رصيدك الحالي",
+
     },
     'ku': {
       "distances": "Dûrî",
@@ -417,9 +419,10 @@ class AppTranslations {
       "validate_password": "Şîfre pir lawaz e",
       "wallet_record": "Siclê balansê",
 "current_balance": "Balansa te ya niha",
+
     },
   };
-  // التابع الجديد (للـ Validation والـ Buttons والـ Logic)
+  
   static String getStaticText(BuildContext context, String key) {
     final language = context.read<LanguageCubit>().state;
     String locale;

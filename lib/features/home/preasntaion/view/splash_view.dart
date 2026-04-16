@@ -1,4 +1,5 @@
 import 'package:drever_warr/core/asset/image_asset.dart';
+import 'package:drever_warr/features/preasntaion/view/location_drever.dart';
 import 'package:drever_warr/features/preasntaion/widhets/regster.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -15,12 +16,12 @@ class _SplashViewState extends State<SplashView> {
   @override
   void initState() {
     super.initState();
-    // الانتقال التلقائي بعد 3 ثوانٍ
+    
     Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const Regsterview()),
+          MaterialPageRoute(builder: (context) => const AddLocation()),
         );
       }
     });
@@ -35,10 +36,10 @@ class _SplashViewState extends State<SplashView> {
         width: double.infinity,
         child: Column(
           children: [
-            // مساحة مرنة علوية لدفع الشعار للمنتصف
+           
             const Spacer(),
 
-            // الشعار في المنتصف
+            
             Image.asset(
               ImageAssets.logo_warr,
               width: 250.w,
@@ -46,14 +47,14 @@ class _SplashViewState extends State<SplashView> {
               fit: BoxFit.contain,
             ),
 
-            // مساحة مرنة تدفع الـ Row للأسفل
+           
             const Spacer(),
 
-            // مؤشر التقدم السفلي
+           
             Padding(
               padding: EdgeInsets.only(
                 bottom: 50.h,
-              ), // مسافة عن حافة الشاشة السفلية
+              ),  
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -69,7 +70,7 @@ class _SplashViewState extends State<SplashView> {
     );
   }
 
-  // ويدجت مخصص لرسم الخطوط البنفسجية في الأسفل
+ 
   Widget _buildProgressStep({required bool isActive}) {
     return Container(
       width: 60.w,

@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 
-class buildMenuItem extends StatelessWidget {
-  const buildMenuItem({super.key, required this.icon, required this.title});
+class BuildMenuItem extends StatelessWidget {
+  const BuildMenuItem({super.key, required this.icon, required this.title});
   final String title;
   final String icon;
   @override
@@ -20,29 +20,29 @@ class buildMenuItem extends StatelessWidget {
                 CustomText(
                   color: AppColors.secondary1,
                   title,
-                  type: AppTextType.titleSmall, // حسب طلبك
+                  type: AppTextType.titleSmall,  
                 ),
                 const SizedBox(width: 20),
                 SizedBox(
                   width: 24,
                   height: 24,
-                  child: SvgPicture.asset(icon), // هنا الـ SVG اللي نزلته
+                  child: SvgPicture.asset(icon), 
                 ),
               ],
             )
           : Row(
-              // mainAxisAlignment: MainAxisAlignment.end,
+            
               children: [
                 SizedBox(
                   width: 24,
                   height: 24,
-                  child: SvgPicture.asset(icon), // هنا الـ SVG اللي نزلته
+                  child: SvgPicture.asset(icon),  
                 ),
                 SizedBox(width: 20.w),
                 CustomText(
                   color: AppColors.secondary1,
                   title,
-                  type: AppTextType.titleSmall, // حسب طلبك
+                  type: AppTextType.titleSmall,  
                 ),
               ],
             ),

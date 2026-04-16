@@ -1,44 +1,65 @@
-// import 'package:flutter/material.dart';
-// import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:warr2/features/Auth/preasntaion/data/repo/cubit/cubit_regster.dart/cubit_regster_state.dart';
-// import 'package:warr2/features/Auth/preasntaion/data/repo/repo.dart';
-  
+import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_regster.dart/cubit_regster_state.dart';
+import 'package:drever_warr/features/preasntaion/data/repo/repo.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-// class RegisterCubit extends Cubit<RegisterState> {
-//   final RepoRegister repo;
+ 
+class RegisterCubit extends Cubit<RegisterState> {
+  final RepoRegister repo;
 
-//   RegisterCubit(this.repo) : super(RegisterInitial());
+  RegisterCubit(this.repo) : super(RegisterInitial());
 
-//   // المتحكمات للحقول المطلوبة في الـ JSON
-//   final firstName = TextEditingController();
-//   final lastName = TextEditingController();
-//   final mobilePhone = TextEditingController();
-//   final governorate = TextEditingController();
-//   final gender = TextEditingController();
-//   final emergencyNumber = TextEditingController();
-//   final password = TextEditingController();
+  Map<String, dynamic>? temporaryUserData;
 
-//   Future<void> registerUser({required String otp}) async {
-//     emit(RegisterLoading());
+  void setUserData({
+    required String firstName,
+    required String lastName,
+    required String mobilePhone,
+    required String governorateId,
+    required String password,
+    required String emergencyNumber,
+    required String gender,
+    required String addres,
+    required double lat,
+    required double lng,
+  }) {
+    temporaryUserData = {
+      "firstName": firstName,
+      "lastName": lastName,
+      "mobilePhone": "963$mobilePhone",
+      "city": governorateId,
+      "gender": gender,
+      "emergencyNumber": "963$emergencyNumber",
+      "password": password,
+      "userType": "driver",
+      "address": {
+        "type": "Point",
+        "coordinates": [
+          lat,
+          lng,
+        ],  
+        "address": addres,
+      },
+    };
 
-//     final Map<String, dynamic> userData = {
-//       "firstName": firstName.text,
-//       "lastName": lastName.text.isEmpty ? "ككككك" : lastName.text,
-//       "mobilePhone":
-//           "963${mobilePhone.text}", // تأكد من التنسيق (0 أو 963) حسب تجاربك السابقة
-//       "governorate": "696df8dfd5776d96bddfa2b6",
-//       "gender": gender.text.isEmpty ? "male" : gender.text,
-//       "userType": "client",
-//       "emergencyNumber": "963${emergencyNumber.text}",
-//       "password": password.text,
-//       "code": otp, // إضافة الكود الذي أدخله المستخدم هنا
-//     };
+    print("User Data Set: $temporaryUserData");
+  }
 
-//     var result = await repo.register(userData: userData);
+  Future<void> registerUser({required String otp}) async {
+    if (temporaryUserData == null) {
+      emit(RegisterFailure("بيانات المستخدم مفقودة، يرجى المحاولة من جديد"));
+      return;
+    }
 
-//     result.fold(
-//       (failure) => emit(RegisterFailure(failure.errMassage)),
-//       (success) => emit(RegisterSuccess(success)),
-//     );
-//   }
-// }
+    emit(RegisterLoading());
+
+    // دمج كود الـ OTP
+    final Map<String, dynamic> finalData = {...temporaryUserData!, "code": otp};
+
+    var result = await repo.register(userData: finalData);
+
+    result.fold(
+      (failure) => emit(RegisterFailure(failure.errMassage)),
+      (success) => emit(RegisterSuccess(success)),
+    );
+  }
+}

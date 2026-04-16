@@ -41,7 +41,7 @@ class SettingItemContainer extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // الجزء الأيسر (السهم أو الـ Switch)
+           
             trailing ??
                 Icon(
                   Icons.arrow_back_ios_new,
@@ -49,7 +49,7 @@ class SettingItemContainer extends StatelessWidget {
                   size: 18.sp,
                 ),
 
-            // الجزء الأيمن (النص والأيقونة)
+          
             Row(
               children: [
                 Text(
