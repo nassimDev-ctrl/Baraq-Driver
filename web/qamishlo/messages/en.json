@@ -1,0 +1,1059 @@
+{
+    "project name": {
+        "waar_qamishlo": "Waar Qamishlo"
+    },
+    "loginPage": {
+        "Sign In to waar qamishlo": "Sign In to waar now",
+        "Email": "Email",
+        "Password": "Password",
+        "Email is required": "Email is required",
+        "Password is required": "Password is required",
+        "enter email address": "Enter Email Address",
+        "enter your password": "Enter Your Password",
+        "Sign In": "Sign In",
+        "success": "logged in successfully"
+    },
+    "sidebar": {
+        "home": "Home",
+        "drivers": "Drivers",
+        "clients": "Clients",
+        "trips": "Trips",
+        "categories": "Categories",
+        "emergencies": "Emergencies",
+        "permission": "Permissions",
+        "groups": "Groups",
+        "report": "Financial Reports",
+        "notifications": "Notifications",
+        "settings": "Settings",
+        "roles": "Roles",
+        "drivers_balance_history": "Drivers Balance History",
+        "complaints": "Complaints",
+        "cities": "Cities",
+        "discount_codes": "Discount code",
+        "employees": "Employees",
+        "apps": "Apps"
+    },
+    "HomePage": {
+        "welcome": "Welcome to the Waar Qamishlo dashboard"
+    },
+    "stats": {
+        "totalTrips": "Total Trips",
+        "totalRevenue": "Total Revenue",
+        "activeDrivers": "Active Drivers",
+        "totalClients": "Total Clients",
+        "tripsPerWeek": "Trips Per Week",
+        "tripsPerDay": "Trips Per Day",
+        "driverStatusDistribution": "Driver Status Distribution",
+        "clientsPerMonth": "Clients Per Month",
+        "revenueMissing": "Revenue not provided"
+    },
+    "go_back_button": {
+        "back": "Back"
+    },
+    "EmployeesPage": {
+        "title": "Employees",
+        "create_admin": {
+            "title": "Create Admin",
+            "add_admin": "Add New Admin",
+            "first_name": "First Name",
+            "last_name": "Last Name",
+            "email": "Email",
+            "password": "Password",
+            "select_roles": "Select Roles",
+            "cancel": "Cancel",
+            "create": "Create",
+            "success": "Admin created successfully",
+            "error": "Failed to create admin",
+            "errors": {
+                "first_name_required": "First name is required",
+                "last_name_required": "Last name is required",
+                "invalid_email": "Invalid email address",
+                "weak_password": "Password is not strong enough",
+                "select_role": "Select at least one role"
+            }
+        },
+        "update_admin_roles": {
+            "title": "Update admin roles",
+            "trigger": "Update roles",
+            "current_roles": "Current roles",
+            "no_roles": "No roles",
+            "add_role": "Add New Role",
+            "no_roles_available": "No available Roles",
+            "cancel": "Cancel",
+            "save": "Save Changes",
+            "success": "Updated successfully",
+            "error": "An error occurred while updating"
+        },
+        "admins_table": {
+            "columns": {
+                "id": "ID",
+                "full_name": "Full Name",
+                "email": "Email",
+                "roles": "Roles",
+                "created_at": "Created At",
+                "index": "#"
+            },
+            "filters": {
+                "search_name": "Search by name...",
+                "search_email": "Search by email...",
+                "search_role": "Search by role..."
+            }
+        },
+        "delete_admin": {
+            "title": "Delete",
+            "trigger": "Delete Admin",
+            "description": "Are you sure you want to delete this admin?",
+            "cancel": "Cancel",
+            "delete": "Delete",
+            "success": "Admin deleted successfully",
+            "error": "An error occurred while deleting the admin"
+        }
+    },
+    "RolesPage": {
+        "title": "Roles",
+        "table": {
+            "columns": {
+                "name": "Role Name",
+                "groups": "Groups",
+                "created_at": "Created At"
+            }
+        },
+        "edit_role_groups": {
+            "edit": "Edit",
+            "title": "Edit Role Groups",
+            "current_groups": "Current Groups",
+            "no_groups": "No groups",
+            "add_group": "Add Group",
+            "no_available_groups": "No available groups",
+            "cancel": "Cancel",
+            "save": "Save",
+            "success": "Role groups updated successfully",
+            "error": "An error occurred while updating role groups"
+        },
+        "delete_role": {
+            "delete": "Delete",
+            "title": "Delete Role",
+            "description": "Are you sure you want to delete this role?",
+            "cancel": "Cancel",
+            "confirm": "Confirm Delete",
+            "success": "Role deleted successfully",
+            "error": "Failed to delete role"
+        },
+        "create_role": {
+            "add_role": "Add New Role",
+            "title": "Create Role",
+            "role_name": "Role name",
+            "select_groups": "Select Groups",
+            "cancel": "Cancel",
+            "create": "Create",
+            "success": "Role created successfully",
+            "error": "Failed to create role",
+            "errors": {
+                "name_required": "Role name is required",
+                "select_group": "Select at least one group"
+            }
+        }
+    },
+    "permissionsPage": {
+        "title": "Permissions"
+    },
+    "permissions": {
+        "Create trip": "Create trip",
+        "Update Client": "Update Client",
+        "Delete Client": "Delete Client",
+        "Get Client": "Get Client",
+        "Get All Clients": "Get All Clients",
+        "Get Single Client": "Get Single Client",
+        "Update Driver": "Update Driver",
+        "Get Driver": "Get Driver",
+        "Get All Drivers": "Get All Drivers",
+        "Get All Drviers": "Get All Drivers",
+        "Get Single Driver": "Get Single Driver",
+        "Get Single Drvier": "Get Single Driver",
+        "Update Driver Car Category": "Update Driver Car Category",
+        "Accept Driver Change Category": "Accept Driver Change Category",
+        "Accept Driver": "Accept Driver",
+        "Reject Driver": "Reject Driver",
+        "Delete Driver": "Delete Driver",
+        "Get Single User": "Get Single User",
+        "Get All Users": "Get All Users",
+        "Block User": "Block User",
+        "Unblock User": "Unblock User",
+        "Un Block User": "Unblock User",
+        "Update Mobile Phone": "Update Mobile Phone",
+        "Create Admin": "Create Admin",
+        "Update Admin Roles": "Update Admin Roles",
+        "Delete Admin": "Delete Admin",
+        "Get Single Admin": "Get Single Admin",
+        "Get Admin Profile": "Get Admin Profile",
+        "Get All Admins": "Get All Admins",
+        "Reset Admin Password": "Reset Admin Password",
+        "Create Car Category": "Create Car Category",
+        "Update Car Category": "Update Car Category",
+        "Update Car Category Status": "Update Car Category Status",
+        " Update Driver Car Category": "Update Driver Car Category",
+        "Delete Car Category": "Delete Car Category",
+        "Get Single Car Category": "Get Single Car Category",
+        "Get All Car Categories": "Get All Car Categories",
+        "Get Client Discount Codes": "Get Client Discount Codes",
+        "Update Commission": "Update Commission",
+        "Get Commission": "Get Commission",
+        "Mark Complain As Read": "Mark Complain As Read",
+        "Get All Complains": "Get All Complains",
+        "Create Discount Code": "Create Discount Code",
+        "Update Discount Code": "Update Discount Code",
+        "Delete Discount Code": "Delete Discount Code",
+        "Get Single Discount Code": "Get Single Discount Code",
+        "Get All Discount Codes": "Get All Discount Codes",
+        "Get All Cities": "Get All Cities",
+        "Get Single City": "Get Single City",
+        "Update City Status": "Update City Status",
+        " Update City Status": "Update City Status",
+        "Get All Groups": "Get All Groups",
+        "Get Single Group": "Get Single Group",
+        "Update Group Permissions": "Update Group Permissions",
+        " Update Group Permissions": "Update Group Permissions",
+        "Delete Group": "Delete Group",
+        "Create Group": "Create Group",
+        "Create Notification": "Create Notification",
+        "Delete Notification": "Delete Notification",
+        "Get Single Notification": "Get Single Notification",
+        "Get All Notifications": "Get All Notifications",
+        "Get All Permissions": "Get All Permissions",
+        "Get Reports": "Get Reports",
+        "Get Statistics": "Get Statistics",
+        "Get All Trips": "Get All Trips",
+        "Get Single Trip": "Get Single Trip",
+        "Get All Emergencies": "Get All Emergencies",
+        "Get All Roles": "Get All Roles",
+        "Get Single Role": "Get Single Role",
+        "Update Role Groups": "Update Role Groups",
+        " Update Role Groups": "Update Role Groups",
+        "Delete Role": "Delete Role",
+        "Create Role": "Create Role",
+        "Confirm password": "Confirm password",
+        "Change password": "Change password",
+        "Update Fcm": "Update FCM",
+        "Create Complain": "Create complaint",
+        "get User Complains": "Get user complaints",
+        "Send Message": "Send message",
+        "Get Messages": "Get messages",
+        "Get User Notification": "Get user notifications",
+        "Get Finished Trips": "Get finished trips",
+        "Get Started Trips": "Get started trips",
+        "Get Trip": "Get trip",
+        "Activate Emergency": "Activate emergency",
+        "Get Client Profile": "Get client profile",
+        "Update Client Location": "Update client location",
+        "Add Code To Client": "Add code to client",
+        "Create Saved Place": "Create saved place",
+        "Get Client Saved Places": "Get client saved places",
+        "Delete Saved Place": "Delete saved place",
+        "Get Car Categories For Trips": "Get car categories for trips",
+        "Select Category": "Select category",
+        "Add Discount Code To Trip": "Add discount code to trip",
+        "Scheduling Trip": "Schedule trip",
+        "Add Notes": "Add notes",
+        "Searching For Driver": "Search for driver",
+        "Cancel Searching": "Cancel searching",
+        "Confirm Driver": "Confirm driver",
+        "Add Evaluation And Rating": "Add evaluation and rating",
+        "Get Driver Profile": "Get driver profile",
+        "Update Driver Location": "Update driver location",
+        "Activate Driver": "Activate driver",
+        "Get My Balance Operations": "Get my balance operations",
+        "Accept Trip": "Accept trip",
+        "Start Trip": "Start trip",
+        "Get Searching Trips": "Get searching trips",
+        "Get Scheduled Trips": "Get scheduled trips",
+        "Complete Trip": "Complete trip",
+        "Create Trip": "Create trip",
+        "Update mobile phone": "Update mobile phone",
+        "Get User Notifications": "Get user notifications"
+    },
+    "groupsPage": {
+        "title": "Groups",
+        "permissions_view": {
+            "view_permissions": "View Permissions",
+            "manage_permissions": "Manage Permissions",
+            "save_changes": "Save Changes",
+            "update_success": "Permissions updated successfully",
+            "update_error": "Failed to update permissions"
+        },
+        "delete_group": {
+            "title": "Delete Group",
+            "confirm_message": "Are you sure you want to delete this group?",
+            "cancel": "Cancel",
+            "delete": "Delete"
+        }
+    },
+    "groups_dialog": {
+        "title": "Create New Group",
+        "form": {
+            "name": {
+                "placeholder": "Group Name",
+                "required": "Group name is required",
+                "message": "Please enter a name for the group"
+            },
+            "permissions": {
+                "title": "Permissions",
+                "label": "Permissions",
+                "message": "Please select permissions for the group"
+            }
+        },
+        "actions": {
+            "cancel": "Cancel",
+            "create": "Create"
+        }
+    },
+    "settingsPage": {
+        "title": "Settings",
+        "description": "Manage your account settings and preferences.",
+        "language": {
+            "title": "Language",
+            "description": "Choose your preferred language.",
+            "switch": "Switch application language"
+        },
+        "commission": {
+            "title": "Commission Settings",
+            "description": "Update the app commission rate.",
+            "commission": "Commission"
+        },
+        "security": {
+            "title": "Security",
+            "description": "Update your password and secure your account.",
+            "currentPassword": "Current Password",
+            "newPassword": "New Password",
+            "confirmPassword": "Confirm New Password",
+            "changePassword": "Change Password",
+            "updating": "Updating..."
+        },
+        "logout": {
+            "button": "Logout"
+        }
+    },
+    "commission": {
+        "commission": "Commission",
+        "updateTitle": "Update Commission Rate",
+        "percentageLabel": "Commission Percentage",
+        "cancel": "Cancel",
+        "update": "Update",
+        "updating": "Updating...",
+        "success": "Commission updated successfully",
+        "error": "Failed to update commission",
+        "minTripPrice": {
+            "rangeError": "Commission must be between 0 and 100",
+            "minPrice": "Min Trip Price",
+            "updateMinPriceTitle": "Update Minimum Trip Price",
+            "minPriceLabel": "Minimum Price of Trip",
+            "minPriceError": "Price cannot be negative",
+            "success": "Updated successfully",
+            "error": "An error occurred",
+            "cancel": "Cancel",
+            "update": "Update",
+            "updating": "Updating..."
+        }
+    },
+    "cities": {
+        "title": "Cities"
+    },
+    "cities_status": {
+        "active": "Active",
+        "inactive": "Inactive",
+        "activate": "Activate",
+        "deactivate": "Deactivate"
+    },
+    "createCity": {
+        "title": "Add City",
+        "form": {
+            "nameEn": "English Name",
+            "nameAr": "Arabic Name",
+            "nameKu": "Kurdish Name"
+        },
+        "actions": {
+            "create": "Create",
+            "cancel": "Cancel"
+        },
+        "success": "City created successfully",
+        "error": "Something went wrong",
+        "errors": {
+            "nameEn": "English name must be at least 2 characters",
+            "nameAr": "Arabic name must be at least 2 characters",
+            "nameKu": "Kurdish name must be at least 2 characters"
+        }
+    },
+    "CategoryPage": {
+        "title": "Main Categories",
+        "view": "View",
+        "edit": "Edit",
+        "delete": "Delete"
+    },
+    "deleteCategory": {
+        "title": "Delete category",
+        "delete": "delete",
+        "confirm_message": "Are you sure you want to delete this category?",
+        "cancel": "Cancel",
+        "confirm": "Confirm Delete"
+    },
+    "createCategory": {
+        "title": "Create New Category",
+        "form": {
+            "nameAr": {
+                "placeholder": "Category Name (Arabic)",
+                "required": "Category name in Arabic is required"
+            },
+            "nameEn": {
+                "placeholder": "Category Name (English)",
+                "required": "Category name in English is required"
+            },
+            "nameKu": {
+                "placeholder": "Category Name (Kurdish)",
+                "required": "Category name in Kurdish is required"
+            },
+            "price": {
+                "placeholder": "Price",
+                "min": "Price must be greater than 0"
+            },
+            "category_image": {
+                "required": "Category image is required",
+                "maxSize": "Maximum size is 5MB",
+                "format": "Only JPG, PNG, WEBP are supported"
+            }
+        },
+        "actions": {
+            "cancel": "Cancel",
+            "create": "Create"
+        }
+    },
+    "updateCategory": {
+        "title": "Update Category",
+        "form": {
+            "nameAr": {
+                "placeholder": "Category Name (Arabic)"
+            },
+            "nameEn": {
+                "placeholder": "Category Name (English)"
+            },
+            "nameKu": {
+                "placeholder": "Category Name (Kurdish)"
+            },
+            "price": {
+                "placeholder": "Price"
+            },
+            "category_image": {
+                "required": "Category image is required",
+                "maxSize": "Maximum file size is 5MB",
+                "format": "Invalid image format (PNG, JPEG, WebP)"
+            }
+        },
+        "actions": {
+            "cancel": "Cancel",
+            "update": "Update"
+        },
+        "messages": {
+            "success": "Category updated successfully",
+            "error": "Failed to update category"
+        }
+    },
+    "currency": {
+        "SYP": "Syrian Pound"
+    },
+    "notificationPage": {
+        "title": "Notifications"
+    },
+    "notificationColumns": {
+        "titleAr": "Title in Arabic",
+        "titleEn": "Title in English",
+        "titleKmr": "Title in Kurdish",
+        "messageAr": "Message in Arabic",
+        "messageEn": "Message in English",
+        "messageKmr": "Message in Kurdish",
+        "governorate": "Governorate",
+        "createdAt": "Date",
+        "target": "Target",
+        "client": "Client",
+        "driver": "Driver",
+        "All": "All",
+        "specific": "Specific"
+    },
+    "notifyDialog": {
+        "openButton": "Send Notification",
+        "title": "Create Notification",
+        "form": {
+            "titleAr": {
+                "placeholder": "Title in Arabic",
+                "titleRequired": "Title in Arabic is required"
+            },
+            "titleEn": {
+                "placeholder": "Title in English",
+                "titleRequired": "Title in English is required"
+            },
+            "titleKu": {
+                "placeholder": "Title in Kurdish",
+                "titleRequired": "Title in Kurdish is required"
+            },
+            "messageAr": {
+                "placeholder": "Message in Arabic",
+                "messageRequired": "Message in Arabic is required"
+            },
+            "messageEn": {
+                "placeholder": "Message in English",
+                "messageRequired": "Message in English is required"
+            },
+            "messageKu": {
+                "placeholder": "Message in Kurdish",
+                "messageRequired": "Message in Kurdish is required"
+            },
+            "target": {
+                "label": "Target Users",
+                "all": "All Users",
+                "drivers": "Drivers",
+                "clients": "Clients"
+            },
+            "cities": {
+                "label": "Cities"
+            },
+            "categories": {
+                "label": "Categories"
+            }
+        },
+        "actions": {
+            "cancel": "Cancel",
+            "send": "Send"
+        },
+        "titleRequired": "Title is required",
+        "messageRequired": "Message is required",
+        "categoriesRequired": "At least one category is required"
+    },
+    "DriversBalanceHistoryPage": {
+        "title": "Drivers Balance History",
+        "balance_operations": {
+            "columns": {
+                "driver": "Driver",
+                "operation": "Operation",
+                "amount": "Amount",
+                "createdAt": "Created At",
+                "updatedAt": "Updated At"
+            },
+            "operationTypes": {
+                "charge": "Charge",
+                "withdraw": "Withdraw"
+            }
+        }
+    },
+    "CitiesViewOnly": {
+        "title": "Cities",
+        "all": "All Cities",
+        "governorate": "cities"
+    },
+    "discountCodePage": {
+        "title": "Discount Codes",
+        "discountCodesTable": {
+            "code": "Code",
+            "searchCode": "Search code...",
+            "discount": "Discount Amount",
+            "categories": "Categories",
+            "usage": "Usage",
+            "cities": "Cities",
+            "city": "City",
+            "minimum": "Minimum trip price for discount",
+            "status": "Status",
+            "active": "Active",
+            "finish": "Finished",
+            "expired": "Expired",
+            "startedAt": "Started At",
+            "expiryDate": "Expiry Date",
+            "edit": "Edit",
+            "delete": "Delete",
+            "all": "All cities"
+        },
+        "discountDialog": {
+            "title": "Create Discount Code",
+            "create": "Create Discount Code",
+            "success": "Discount code created successfully",
+            "error": "Something went wrong",
+            "sy": "SYP",
+            "form": {
+                "fixed": "Fixed Amount",
+                "percentage": "Percentage",
+                "discount": "Discount Amount",
+                "percentageLabel": "Percentage Discount",
+                "trips": "Max Trips",
+                "minimum": "Minimum Trip Value",
+                "numberOfUsers": "Number of Users",
+                "startAt": "Start Date",
+                "expiredAt": "Expiry Date",
+                "cities": {
+                    "label": "Select Cities",
+                    "helper": "Leave empty to apply to all cities"
+                },
+                "categories": {
+                    "label": "Select Categories"
+                }
+            },
+            "actions": {
+                "create": "Create",
+                "cancel": "Cancel"
+            },
+            "errors": {
+                "discount_required": "Discount is required",
+                "trips_required": "Trips is required",
+                "minimum_required": "Minimum value is required",
+                "start_required": "Start date is required",
+                "expired_required": "Expiry date is required",
+                "expired_invalid": "Expiry date must be after start date",
+                "categoriesRequired": "Please select at least one category"
+            }
+        },
+        "deleteDiscountCode": {
+            "delete": "Delete",
+            "title": "Delete Role",
+            "description": "Are you sure you want to delete this discount code?",
+            "cancel": "Cancel",
+            "confirm": "Confirm Delete",
+            "success": "Discount code deleted successfully",
+            "error": "Failed to delete discount code"
+        },
+        "updateDiscountCodeCity": {
+            "title": "Update Cities",
+            "all": "All cities",
+            "city": "city",
+            "save": "Save",
+            "success": "Updated successfully",
+            "error": "Something went wrong"
+        },
+        "updateDiscountCodeCategories": {
+            "title": "Update Categories",
+            "all": "All categories",
+            "category": "category",
+            "save": "Save",
+            "success": "Updated successfully",
+            "error": "Something went wrong"
+        },
+        "updateDiscountCode": {
+            "edit": "Edit",
+            "title": "Update Discount Code",
+            "fields": {
+                "fixed": "Fixed Amount",
+                "percentage": "Percentage",
+                "discountAmount": {
+                    "label": "Discount Amount",
+                    "description": "Enter fixed discount value",
+                    "minError": "Discount must be greater than 0"
+                },
+                "percentageDiscount": {
+                    "label": "Discount Percentage",
+                    "description": "Enter percentage value",
+                    "maxError": "Percentage must be less than or equal to 100"
+                },
+                "maxTrips": {
+                    "label": "Maximum Trips",
+                    "minError": "Must be at least 1 trip"
+                },
+                "minimum": {
+                    "label": "Minimum Trip Amount",
+                    "minError": "Minimum must be 0 or more"
+                },
+                "numberOfUsers": {
+                    "label": "Number of Users",
+                    "minError": "Must be 0 or more"
+                },
+                "expiredAt": {
+                    "label": "Expiration Date"
+                }
+            },
+            "actions": {
+                "save": "Save",
+                "success": "Updated successfully",
+                "error": "Something went wrong",
+                "noChanges": "No changes to update"
+            }
+        }
+    },
+    "complaintsPage": {
+        "complaints": "Complaints"
+    },
+    "complaints_columns": {
+        "note": "Complaint",
+        "phone": "Phone Number",
+        "status": "Status",
+        "read": "Read",
+        "unread": "Unread",
+        "createdAt": "Created At",
+        "mark_as_read": "Mark as Read",
+        "image": "Image"
+    },
+    "emergencyPage": {
+        "title": "Emergencies"
+    },
+    "emergency_columns": {
+        "location": "Location",
+        "client": "Client",
+        "client_number": "Client Number",
+        "driver": "Driver",
+        "driver_number": "Driver Number",
+        "emergency_status": "Status",
+        "emergency_time": "Emergency Time",
+        "city": "City"
+    },
+    "emergency_status": {
+        "started": "Started",
+        "finished": "Finished"
+    },
+    "emergency_map": {
+        "title": "Emergency Location",
+        "viewLocation": "View Location",
+        "noData": "No location data available",
+        "client": "Client",
+        "emergency": "Emergency",
+        "driver": "Driver",
+        "location": "Location",
+        "time": "Time"
+    },
+    "clientsPage": {
+        "clients": "Clients"
+    },
+    "gender": {
+        "male": "Male",
+        "female": "Female"
+    },
+    "client_columns": {
+        "fullname": "Full name",
+        "firstName": "First name",
+        "lastName": "Last name",
+        "phoneNumber": "Phone number",
+        "gender": "Gender",
+        "city": "City",
+        "emergencyNumber": "Emergency number",
+        "phoneNumberPlaceholder": "Search by phone number...",
+        "fullNamePlaceholder": "Search names..."
+    },
+    "delete_client": {
+        "trigger": "Delete",
+        "title": "Delete User",
+        "description": "Are you sure you want to delete this user?",
+        "confirm": "Confirm Delete",
+        "cancel": "Cancel",
+        "success": "User deleted successfully",
+        "error": "Something went wrong. Please try again later."
+    },
+    "block_client": {
+        "trigger": "Block",
+        "title": "Block User",
+        "description": "Are you sure you want to block this user?",
+        "warning": "User will not be able to access the system after blocking.",
+        "confirm": "_confirmation",
+        "cancel": "Cancel",
+        "success": "User blocked successfully",
+        "error": "Something went wrong. Please try again later."
+    },
+    "unblock_client": {
+        "trigger": "Unblock",
+        "success": "User unblocked successfully",
+        "error": "Something went wrong. Please try again later."
+    },
+    "clientNumber": {
+        "title": "Update Client Phone Number",
+        "label": "Phone Number",
+        "updateButton": "Update Phone",
+        "update": "Update",
+        "updating": "Updating...",
+        "cancel": "Cancel",
+        "success": "Phone number updated successfully",
+        "error": "Failed to update phone number"
+    },
+    "driversPage": {
+        "title": "Drivers",
+        "driver_trips": {
+            "title": "Driver trips"
+        },
+        "drivers_columns": {
+            "fullname": "Full name",
+            "status": "Status",
+            "gender": "Gender",
+            "car": "Car",
+            "city": "City",
+            "mobilePhone": "Mobile phone",
+            "name_placeholder": "Search names...",
+            "car_placeholder": "Search car...",
+            "phone_placeholder": "Search phone...",
+            "emergencyNumber": "Emergency Number"
+        },
+        "driver_status": {
+            "waiting": "Waiting",
+            "active": "Active",
+            "rejected": "Rejected",
+            "frozen": "Frozen",
+            "blocked": "blocked",
+            "change-sub-category": "change subcategory"
+        },
+        "DeleteDriver": {
+            "trigger": "Delete",
+            "title": "Delete Driver",
+            "description": "Are you sure you want to delete this driver?",
+            "cancel": "Cancel",
+            "confirm": "Confirm Delete",
+            "success": "Driver deleted successfully",
+            "error": "An error occurred, please try again"
+        },
+        "UnblockDriver": {
+            "action": "Unblock",
+            "success": "Driver unblocked successfully",
+            "error": "An error occurred, please try again"
+        },
+        "BlockDriver": {
+            "trigger": "Block",
+            "title": "Block User",
+            "descriptionPart1": "Are you sure you want to block this user?",
+            "descriptionPart2": "They will not be able to access the system afterwards.",
+            "cancel": "Cancel",
+            "confirm": "Confirm Block",
+            "success": "User blocked successfully",
+            "error": "An error occurred, please try again"
+        },
+        "driver_dropdown": {
+            "accept": "Accept",
+            "accept_change_sub_category": "Accept change sub category",
+            "reject_dialog": {
+                "trigger": "Reject",
+                "title": "Reject Driver",
+                "select_step": "Select Step",
+                "select_field_to_update": "Select Field To Update",
+                "message": "Rejection Message",
+                "cancel": "Cancel",
+                "confirm": "Confirm",
+                "fields": {
+                    "personalImage": "Vehicle Image",
+                    "personalCardImageFront": "Front ID Card Image",
+                    "personalCardImageBack": "Back ID Card Image",
+                    "carImage": "Car Image",
+                    "carPlateNumber": "Plate Number",
+                    "carName": "Car Name"
+                }
+            }
+        }
+    },
+    "driver_details": {
+        "evaluation": "Evaluation",
+        "car_category": "Car Category",
+        "city": "City",
+        "address": "Address",
+        "car": "Car",
+        "balance": "Balance",
+        "frozen_by": "Frozen by",
+        "price": "Price",
+        "plate_number": "Plate number",
+        "driver_trips": "Driver Trips",
+        "AddDriverBalanceDialog": {
+            "title": "Driver Balance",
+            "trigger": "Add balance to driver",
+            "current_balance": "Current Balance",
+            "amount": "Add Amount",
+            "cancel": "Cancel",
+            "add_balance": "Add Balance",
+            "error_amount": "Please enter a valid amount",
+            "success": "Balance added successfully",
+            "error": "Failed to add balance",
+            "form": {
+                "amount": {
+                    "placeholder": "Enter amount",
+                    "error_message": "insufficient amount"
+                }
+            }
+        },
+        "driverBalance": {
+            "openButton": "View Balance History",
+            "title": "Balance History",
+            "currentBalance": "Current Balance",
+            "charge": "Balance Charge",
+            "withdraw": "Balance Withdrawal",
+            "noOperations": "No operations yet"
+        },
+        "updateDriverCategory": {
+            "openButton": "Update category",
+            "title": "Update driver category",
+            "selectCategoryError": "Please select a category",
+            "success": "Category updated successfully",
+            "cancel": "Cancel",
+            "update": "Update"
+        }
+    },
+    "tripsPage": {
+        "showTripsList": "show Trips List",
+        "ongoingTrips": "Ongoing Trips",
+        "finishedTrips": "Finished Trips"
+    },
+    "finishedTripsStatus": {
+        "completed": "Completed",
+        "canceled": "Canceled",
+        "driver_accepted": "Driver accepted",
+        "driver_canceled": "Driver canceled",
+        "client_confirmed": "Client confirmed",
+        "requested": "Requested",
+        "searching": "Searching for driver",
+        "no_driver_available": "No driver available",
+        "started": "Trip started"
+    },
+    "finishedTripsColumns": {
+        "client": "Client",
+        "driver": "Driver",
+        "startedAt": "Started At",
+        "completedAt": "Completed At",
+        "totalPrice": "Total Price",
+        "startLocation": "Start Location",
+        "destinationLocation": "Destination Location",
+        "distance": "Distance",
+        "emergency": "Emergency",
+        "status": "Status",
+        "totalTime": "Total time",
+        "city": "City",
+        "durationInsideCar": "Duration inside car"
+    },
+    "ongoingTripsStatus": {
+        "started": "Started",
+        "waiting driver": "Waiting driver",
+        "On the way to the destination": "On the way to the destination"
+    },
+    "ongoingTripsColumns": {
+        "client": "Client",
+        "driver": "Driver",
+        "waitingDuration": "WaitingDuration",
+        "emergency": "Emergency",
+        "status": "Status",
+        "city": "City"
+    },
+    "client_trips": {
+        "title": "Client Trips",
+        "view_discount_code": "View discount codes"
+    },
+    "client_used_discount_codes": {
+        "title": "Used Discount Codes",
+        "active": "Active",
+        "finished": "Finished",
+        "code": "Code",
+        "codePlaceholder": "Search by code...",
+        "discountAmount": "Discount Amount",
+        "percentage": "Discount Percentage",
+        "minimum": "Minimum Order",
+        "maxTrips": "Max Trips",
+        "remainingTrips": "Remaining Trips",
+        "clientsUsed": "Clients Used",
+        "discount": "Discount",
+        "status": "Status",
+        "startDate": "Start Date",
+        "expiredDate": "Expiry Date"
+    },
+    "financialReportsPage": {
+        "title": "Financial Reports",
+        "drivers": "Drivers",
+        "revenue_title": "Public Revenue Report",
+        "drivers_title": "Driver Performance Report",
+        "cities_title": "City-Based Report",
+        "cash_collection_title": "Cash Collection Report",
+        "comparison_title": "Trip Comparison Report",
+        "export": "Export to Excel",
+        "reset": "Reset Filters",
+        "revenue": {
+            "trip_id": "Trip ID",
+            "date": "Date",
+            "city": "City",
+            "driver": "Driver",
+            "before": "Price Before",
+            "discount": "Discount",
+            "after": "Total Price",
+            "app_share": "App Commission",
+            "driver_share": "Driver Share",
+            "payment": "Payment Method"
+        },
+        "cashCollection": {
+            "driver": "Driver",
+            "total_trips": "Total Trips",
+            "total_collected": "Total Cash Collected",
+            "total_commission": "Total Commission",
+            "submitted": "Submitted",
+            "difference": "Difference"
+        },
+        "comparison": {
+            "trip_type": "Trip Type",
+            "total_trips": "Total Trips",
+            "total_revenue": "Total Revenue",
+            "avg_price": "Average Price",
+            "percentage": "Percentage of total revenue"
+        },
+        "cityRevenue": {
+            "city": "City",
+            "total_trips": "Total Trips",
+            "total_revenue": "Total Revenue",
+            "avg_price": "Average Price",
+            "total_commission": "Total Commission"
+        },
+        "drivers_columns": {
+            "driver": "Driver",
+            "trips": "Total Trips",
+            "revenue": "Total Revenue",
+            "commission": "Total Commission",
+            "discount": "Total Discount",
+            "rating": "Rating",
+            "emergencyNumber": "Emergency Number"
+        },
+        "dashboard": {
+            "total_trips": "Total Trips",
+            "gross_revenue": "Gross Revenue",
+            "net_revenue": "Net Revenue",
+            "commission": "Total Commission",
+            "discount": "Total Discount",
+            "avg_trip": "Average Trip",
+            "avg_gross_trip": "Average Gross Trip",
+            "take_rate": "Take Rate"
+        }
+    },
+    "tripMap": {
+        "viewRoute": "View Trip Route",
+        "title": "Trip Route",
+        "loading": "Loading route...",
+        "driver": "Driver Location",
+        "client": "Client Pickup Location",
+        "destination": "Destination",
+        "driverToClient": "Route from driver to client pickup location",
+        "clientToDestination": "Route from client pickup location to destination"
+    },
+    "driverDialog": {
+        "openButton": "Update Driver",
+        "title": "Update Driver Info",
+        "fields": {
+            "firstName": "First Name",
+            "lastName": "Last Name",
+            "email": "Email",
+            "emergencyNumber": "Emergency Number",
+            "city": "City",
+            "gender": "Gender",
+            "male": "Male",
+            "female": "Female"
+        },
+        "actions": {
+            "update": "Update",
+            "updating": "Updating...",
+            "cancel": "Cancel"
+        },
+        "messages": {
+            "success": "Driver updated successfully",
+            "error": "Something went wrong"
+        },
+        "selectCity": "Select a city"
+    },
+    "category_status": {
+        "status": "Status",
+        "active": "Active",
+        "inactive": "Inactive"
+    },
+    "apps": {
+        "client": "Client App",
+        "driver": "Driver App",
+        "edit": "Edit",
+        "open": "Open Link",
+        "save": "Save",
+        "cancel": "Cancel",
+        "link": "Download Link",
+        "date": "Release Date"
+    }
+}
