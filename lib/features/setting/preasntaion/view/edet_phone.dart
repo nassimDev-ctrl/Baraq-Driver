@@ -3,6 +3,7 @@ import 'package:drever_warr/core/asset/image_asset.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/constant/app_spacing.dart';
 import 'package:drever_warr/core/utiles/faledtor.dart';
+import 'package:drever_warr/core/utiles/normlize_number.dart';
 import 'package:drever_warr/core/widgets/coustm_text_fild_all.dart';
 import 'package:drever_warr/core/widgets/customButton.dart';
 import 'package:drever_warr/core/widgets/customText.dart';
@@ -51,7 +52,7 @@ class _EdetPhoneState extends State<EdetPhone> {
                 builder: (_) => BlocProvider.value(
                   value: context.read<VerificationCubit>(),
                   child: VerficationcodeEdetphone(
-                    mobilePhone: "963${phoneController.text}",
+                    mobilePhone: "963${normalizePhone(phoneController.text)}",
                   ),
                 ),
               ),
@@ -126,10 +127,11 @@ class _EdetPhoneState extends State<EdetPhone> {
                             onTap: () {
                               if (_formKey.currentState!.validate()) {
                                 // 🚀 استدعاء الـ Cubit لإرسال الكود
+                                print("phone phone ${normalizePhone(phoneController.text)}");
                                 context
                                     .read<VerificationCubit>()
                                     .sendVerificationCode(
-                                      mobilePhone: "963${phoneController.text}",
+                                      mobilePhone: "963${normalizePhone(phoneController.text) }",
                                       typeOfUse: "change-mobile-phone",
                                     );
                               }

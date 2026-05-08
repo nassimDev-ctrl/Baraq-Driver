@@ -43,129 +43,132 @@ class _VerificationCodeforgetpasswordState
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.secondary1,
-      resizeToAvoidBottomInset: true,
-      body: BlocConsumer<VerificationCubit, VerificationState>(
-        listener: (context, state) {
-          if (state is VerifyMobileNumberSuccess) {
-          
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    NewPassword(mobilePhone1: widget.mobilePhone),
-              ),
-            );
-          } else if (state is VerificationFailure) {
-           
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.errMessage),
-                backgroundColor: Colors.red,
-              ),
-            );
-          }
-        },
-        builder: (context, state) {
-          return CustomScrollView(
-            slivers: [
-              SliverFillRemaining(
-                hasScrollBody: false,
-                child: Column(
-                  children: [
-                    const IconBak(),
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: Scaffold(
+        backgroundColor: AppColors.secondary1,
+        resizeToAvoidBottomInset: true,
+        body: BlocConsumer<VerificationCubit, VerificationState>(
+          listener: (context, state) {
+            if (state is VerifyMobileNumberSuccess) {
 
-                    Image.asset(ImageAssets.phone, height: 250.h, width: 250.w),
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      NewPassword(mobilePhone1: widget.mobilePhone),
+                ),
+              );
+            } else if (state is VerificationFailure) {
 
-                    TextVerificationCode(phone: widget.mobilePhone),
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.errMessage),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+          },
+          builder: (context, state) {
+            return CustomScrollView(
+              slivers: [
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Column(
+                    children: [
+                      const IconBak(),
 
-                    SizedBox(height: 25.h),
+                      Image.asset(ImageAssets.phone, height: 250.h, width: 250.w),
 
-                   
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 40.w),
-                      child: Directionality(
-                        textDirection: TextDirection.ltr,
-                        child: PinCodeTextField(
-                          appContext: context,
-                          length: 4,
-                      
-                          keyboardType: TextInputType.number,
-                          animationType: AnimationType.scale,
-                          autoFocus: true,
-                          cursorColor: AppColors.main1,
+                      TextVerificationCode(phone: widget.mobilePhone),
 
-                          pinTheme: PinTheme(
-                            shape: PinCodeFieldShape.box,
-                            borderRadius: BorderRadius.circular(12.r),
-                            fieldHeight: 60.h,
-                            fieldWidth: 60.w,
-                            activeFillColor: Colors.white,
-                            inactiveFillColor: Colors.white,
-                            selectedFillColor: Colors.white,
-                            activeColor: AppColors.main1,
-                            inactiveColor: const Color(0xFFE0E0E0),
-                            selectedColor: AppColors.main1,
+                      SizedBox(height: 25.h),
+
+
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 40.w),
+                        child: Directionality(
+                          textDirection: TextDirection.ltr,
+                          child: PinCodeTextField(
+                            appContext: context,
+                            length: 4,
+
+                            keyboardType: TextInputType.number,
+                            animationType: AnimationType.scale,
+                            autoFocus: true,
+                            cursorColor: AppColors.main1,
+
+                            pinTheme: PinTheme(
+                              shape: PinCodeFieldShape.box,
+                              borderRadius: BorderRadius.circular(12.r),
+                              fieldHeight: 60.h,
+                              fieldWidth: 60.w,
+                              activeFillColor: Colors.white,
+                              inactiveFillColor: Colors.white,
+                              selectedFillColor: Colors.white,
+                              activeColor: AppColors.main1,
+                              inactiveColor: const Color(0xFFE0E0E0),
+                              selectedColor: AppColors.main1,
+                            ),
+
+                            enableActiveFill: true,
+                            animationDuration: const Duration(milliseconds: 300),
+                            onChanged: (value) {
+                              otpCode = value;
+                            },
+                            onCompleted: (value) {
+                              // _verifyCodeAction(context);
+                            },
                           ),
-
-                          enableActiveFill: true,
-                          animationDuration: const Duration(milliseconds: 300),
-                          onChanged: (value) {
-                            otpCode = value;
-                          },
-                          onCompleted: (value) {
-                            // _verifyCodeAction(context);
-                          },
                         ),
                       ),
-                    ),
 
-                    SizedBox(height: 20.h),
+                      SizedBox(height: 20.h),
 
-                    
-                    RowVerificationCode(
-                     
-                      onResend: () {
-                       
-                        String formattedPhone = widget.mobilePhone;
-                        if (formattedPhone.startsWith('0')) {
-                          formattedPhone = formattedPhone.substring(1);
-                        }
 
-                        context.read<VerificationCubit>().sendVerificationCode(
-                          // الدمج الصحيح ليكون الناتج 963991111111
-                          mobilePhone: "963$formattedPhone",
-                          typeOfUse: "reset-password",
-                        );
-                      },
-                    ),
+                      RowVerificationCode(
 
-                    const Spacer(),  
-                 
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 40.w,
-                        vertical: 30.h,
+                        onResend: () {
+
+                          String formattedPhone = widget.mobilePhone;
+                          if (formattedPhone.startsWith('0')) {
+                            formattedPhone = formattedPhone.substring(1);
+                          }
+
+                          context.read<VerificationCubit>().sendVerificationCode(
+                            // الدمج الصحيح ليكون الناتج 963991111111
+                            mobilePhone: "963$formattedPhone",
+                            typeOfUse: "reset-password",
+                          );
+                        },
                       ),
-                      child: state is VerificationLoading
-                          ? const Center(child: CircularProgressIndicator())
-                          : CustomButton(
-                              title: "verification_title",
-                              onTap: () =>
-                                  context.read<VerificationCubit>().verifyCode(
-                                    mobilePhone: "963${widget.mobilePhone}",
-                                    typeOfUse: "reset-password",
-                                    code: otpCode,
-                                  ),
-                            ),
-                    ),
-                  ],
+
+                      const Spacer(),
+
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 40.w,
+                          vertical: 30.h,
+                        ),
+                        child: state is VerificationLoading
+                            ? const Center(child: CircularProgressIndicator())
+                            : CustomButton(
+                                title: "verification_title",
+                                onTap: () =>
+                                    context.read<VerificationCubit>().verifyCode(
+                                      mobilePhone: "963${widget.mobilePhone}",
+                                      typeOfUse: "reset-password",
+                                      code: otpCode,
+                                    ),
+                              ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          );
-        },
+              ],
+            );
+          },
+        ),
       ),
     );
   }

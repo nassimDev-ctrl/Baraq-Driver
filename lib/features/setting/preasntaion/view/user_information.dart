@@ -6,8 +6,6 @@ import 'package:drever_warr/core/utiles/faledtor.dart';
 import 'package:drever_warr/core/widgets/coustm_text_fild_all.dart';
 import 'package:drever_warr/core/widgets/customButton.dart';
 import 'package:drever_warr/core/widgets/customText.dart';
-import 'package:drever_warr/core/widgets/customTextField.dart';
-import 'package:drever_warr/core/widgets/customTextFieldmohafsa.dart';
 import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_governorates/cubit.dart';
 import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_governorates/cubit_state.dart';
 import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_verificationRepo/cubit.dart';
@@ -33,7 +31,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
- 
+
+import '../../../preasntaion/data/repo/cubit/cubit_category/cubit.dart';
+import '../../../preasntaion/data/repo/cubit/cubit_category/cubit_stat.dart';
+
 
 class UserInformation extends StatefulWidget {
   const UserInformation({super.key});
@@ -44,17 +45,49 @@ class UserInformation extends StatefulWidget {
 
 class _UserInformationState extends State<UserInformation> {
   final TextEditingController nameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController _governorateController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+
+  final TextEditingController _categoryController = TextEditingController();
+  final GlobalKey _categoryKey = GlobalKey();
+  final GlobalKey _governorateKey = GlobalKey();
+
   String? _selectedGovernorateId;
+  String? _selectedCategoryId;
+  String? _pickedImagePath;
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool carCategoryError = false;
 
   @override
   void initState() {
     super.initState();
-   
+
     context.read<ProfileCubit>().getProfileData();
+    context.read<CarCategoryCubit>().getCarCategories();
+  }
+
+  void _syncCategoryControllerFromLoadedCategories() {
+    final state = context.read<CarCategoryCubit>().state;
+
+    if (state is! CarCategorySuccess) return;
+
+    if (_selectedCategoryId == null || _selectedCategoryId!.isEmpty) {
+      _categoryController.clear();
+      return;
+    }
+
+    for (final category in state.categories) {
+      final id = category.id?.toString();
+      if (id == _selectedCategoryId) {
+        _categoryController.text = category.name ?? "";
+        return;
+      }
+    }
+
+    _categoryController.clear();
   }
 
   Future<void> _pickImage() async {
@@ -68,77 +101,81 @@ class _UserInformationState extends State<UserInformation> {
     }
   }
 
-  String? _pickedImagePath;  
   @override
   Widget build(BuildContext context) {
-   
     return MultiBlocListener(
-      listeners: [
-      
-        BlocListener<ProfileCubit, ProfileState>(
-          listener: (context, state) {
-            if (state is ProfileSuccess) {
-              final profile = state.data.data;
-              if (profile != null) {
-                nameController.text = "${profile.firstName ?? ""} ";
-                phoneController.text =
-                    profile.authUser?.mobilePhone?.replaceFirst("963", "") ??
-                    "";
-                _governorateController.text =
-                    profile.city?.name ?? profile.city?.name ?? "";
-                _selectedGovernorateId = profile.city?.id?.toString();
-               
+        listeners: [
+          BlocListener<ProfileCubit, ProfileState>(
+            listener: (context, state) {
+              if (state is ProfileSuccess) {
+                final profile = state.data.data;
+                if (profile != null) {
+                  nameController.text = profile.firstName ?? "";
+                  lastNameController.text = profile.lastName ?? "";
+                  phoneController.text =
+                      profile.authUser?.mobilePhone?.replaceFirst("963", "") ?? "";
+
+                  _governorateController.text = profile.city?.name ?? "";
+                  _selectedGovernorateId = profile.city?.id?.toString();
+
+                  _selectedCategoryId = profile.car?.category?.toString();
+                  _syncCategoryControllerFromLoadedCategories();
+                }
               }
-            }
-          },
-        ),
-      
-        BlocListener<UpdateProfileCubit, UpdateProfileState>(
-          listener: (context, state) {
-            if (state is UpdateProfileSuccess) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.message),
-                  backgroundColor: Colors.green,
-                ),
-              );
-              
-              context.read<ProfileCubit>().getProfileData();
-            } else if (state is UpdateProfileFailure) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.errMessage),
-                  backgroundColor: Colors.red,
-                ),
-              );
-            }
-          },
-        ),
-         
-        BlocListener<VerificationCubit, VerificationState>(
-          listener: (context, state) {
-            if (state is CreateVerificationCodeSuccess) {
-              
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => VerificationCodeforgetpassword2(
-                    mobilePhone: phoneController.text,
+            },
+          ),
+
+          BlocListener<CarCategoryCubit, CarCategoryState>(
+            listener: (context, state) {
+              if (state is CarCategorySuccess) {
+                _syncCategoryControllerFromLoadedCategories();
+              }
+            },
+          ),
+
+          BlocListener<UpdateProfileCubit, UpdateProfileState>(
+            listener: (context, state) {
+              if (state is UpdateProfileSuccess) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(state.message),
+                    backgroundColor: Colors.green,
                   ),
-                ),
-              );
-            } else if (state is VerificationFailure) {
-            
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.errMessage),
-                  backgroundColor: Colors.red,
-                ),
-              );
-            }
-          },
-        ),
-      ],
+                );
+                context.read<ProfileCubit>().getProfileData();
+              } else if (state is UpdateProfileFailure) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(state.errMessage),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+          ),
+
+          BlocListener<VerificationCubit, VerificationState>(
+            listener: (context, state) {
+              if (state is CreateVerificationCodeSuccess) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => VerificationCodeforgetpassword2(
+                      mobilePhone: phoneController.text,
+                    ),
+                  ),
+                );
+              } else if (state is VerificationFailure) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(state.errMessage),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+          ),
+        ],
       child: Scaffold(
         backgroundColor: AppColors.secondary1,
         body: SafeArea(
@@ -158,14 +195,14 @@ class _UserInformationState extends State<UserInformation> {
                       const IconBak(),
                       SizedBox(height: 20.h),
 
-                     
+
                       _buildProfileImage(profileState),
 
                       SizedBox(height: 30.h),
                       _buildSectionTitle("personal_info"),
 
-                     
-                      _buildInputLabel("full_name"),
+
+                      _buildInputLabel("first_name"),
                       AppCustomTextField(
                         iconImage: IconsAssets.editee,
                         controller: nameController,
@@ -173,8 +210,16 @@ class _UserInformationState extends State<UserInformation> {
                         validator: (val) =>
                             Validators.isEmptyValue(val, context),
                       ),
+                      _buildInputLabel("last_name"),
+                      AppCustomTextField(
+                        iconImage: IconsAssets.editee,
+                        controller: lastNameController,
+                        hintText: "",
+                        validator: (val) =>
+                            Validators.isEmptyValue(val, context),
+                      ),
 
-                     
+
                       _buildInputLabel("phone_number"),
                       AppCustomTextField(
                         countryCode: "+963",
@@ -193,22 +238,114 @@ class _UserInformationState extends State<UserInformation> {
                         validator: (String? p1) {},
                       ),
 
-                     
+
                       _buildInputLabel("governorate"),
                       _buildGovernoratePicker(context),
 
-                    
+                      _buildFieldSection(
+                        label: "category",
+                        child: BlocBuilder<CarCategoryCubit, CarCategoryState>(
+                          builder: (context, state) {
+                            return GestureDetector(
+                              onTap: () async {
+                                final cubit = context.read<CarCategoryCubit>();
+
+                                if (state is! CarCategorySuccess) {
+                                  await cubit.getCarCategories();
+                                }
+
+                                if (cubit.state is CarCategorySuccess) {
+                                  final categoryState =
+                                  cubit.state as CarCategorySuccess;
+
+                                  final RenderBox button =
+                                  _categoryKey.currentContext!
+                                      .findRenderObject()
+                                  as RenderBox;
+                                  final RenderBox overlay =
+                                  Overlay.of(context)
+                                      .context
+                                      .findRenderObject()
+                                  as RenderBox;
+
+                                  final Offset position = button
+                                      .localToGlobal(
+                                    Offset.zero,
+                                    ancestor: overlay,
+                                  );
+
+                                  final selected = await showMenu<String>(
+                                    context: context,
+                                    position: RelativeRect.fromLTRB(
+                                      position.dx,
+                                      position.dy + button.size.height,
+                                      position.dx + button.size.width,
+                                      0,
+                                    ),
+                                    constraints: BoxConstraints(
+                                      maxHeight: 180.h,
+                                      minWidth: button.size.width,
+                                      maxWidth: button.size.width,
+                                    ),
+                                    items: categoryState.categories.map((category) {
+                                      return PopupMenuItem<String>(
+                                        value: category.id,
+                                        child: Align(
+                                          alignment: Alignment.centerRight,
+                                          child: Text(category.name ?? ""),
+                                        ),
+                                      );
+                                    }).toList(),
+                                  );
+
+                                  if (selected != null) {
+                                    setState(() {
+                                      _selectedCategoryId = selected;
+                                      _categoryController.text =
+                                          categoryState.categories
+                                              .firstWhere(
+                                                (element) =>
+                                            element.id == selected,
+                                          )
+                                              .name ??
+                                              "";
+                                    });
+                                  }
+                                }
+                              },
+                              child: AbsorbPointer(
+                                child: Container(
+                                  key: _categoryKey,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+
+                                  ),
+                                  child: AppCustomTextField(
+                                    iconImage: IconsAssets.drowpdawn,
+                                    controller: _categoryController,
+                                    hintText: "",
+                                    validator: (val) =>
+                                    val!.isEmpty ? "مطلوب" : null,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+
+
                       _buildInputLabel("password"),
                       AppCustomTextField(
                         onIconTap: () {
-                         
+
                           if (phoneController.text.isNotEmpty) {
-                            
+
                             context.read<VerificationCubit>().sendVerificationCode(
                               mobilePhone:
-                                  "963${phoneController.text}", 
+                              "963${phoneController.text}",
                               typeOfUse:
-                                  "reset-password", 
+                              "reset-password",
                             );
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -228,7 +365,7 @@ class _UserInformationState extends State<UserInformation> {
 
                       SizedBox(height: 40.h),
 
-                     
+
                       BlocBuilder<UpdateProfileCubit, UpdateProfileState>(
                         builder: (context, updateState) {
                           if (updateState is UpdateProfileLoading) {
@@ -242,16 +379,16 @@ class _UserInformationState extends State<UserInformation> {
                               if (_formKey.currentState!.validate()) {
                                 context.read<UpdateProfileCubit>().updateUserData(
                                   firstName: nameController.text,
-                                  lastName:
-                                      "njjjj", 
+                                  lastName: lastNameController.text,
                                   governorate: _selectedGovernorateId ?? "",
+                                  category: _selectedCategoryId ?? "",
                                   imagePath:
-                                      _pickedImagePath, // 👈 تمرير المسار الذي اخترناه
+                                  _pickedImagePath, // 👈 تمرير المسار الذي اخترناه
                                 );
                               }
                             },
                           );
-                          
+
                         },
                       ),
                       SizedBox(height: 40.h),
@@ -264,54 +401,110 @@ class _UserInformationState extends State<UserInformation> {
         ),
       ),
     );
+
   }
 
-  
+  Widget _buildFieldSection({
+    required String label,
+    required Widget child,
+    String? errorMessage,
+  }) {
+    final bool hasError =
+        errorMessage != null && errorMessage.trim().isNotEmpty;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        _buildLabel(label),
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            border: hasError
+                ? Border.all(color: Colors.red, width: 1.5)
+                : Border.all(color: Colors.transparent, width: 0),
+          ),
+          child: child,
+        ),
+        if (hasError) ...[
+          SizedBox(height: 6.h),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 4.w),
+            child: CustomText(
+              errorMessage!,
+              type: AppTextType.bodySmall,
+              color: Colors.red,
+              textAlign: TextAlign.right,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildLabel(String text) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          CustomText(
+            text,
+            textAlign: TextAlign.right,
+            type: AppTextType.bodyMedium,
+          ),
+        ],
+      ),
+    );
+  }
+
+
+
   Widget _buildGovernoratePicker(BuildContext context) {
-    return LayoutBuilder(
-      
-      builder: (context, constraints) {
+    return BlocBuilder<GovernoratesCubit, GovernoratesState>(
+      builder: (context, state) {
         return GestureDetector(
           onTap: () async {
             final cubit = context.read<GovernoratesCubit>();
-            if (cubit.state is! GovernoratesSuccess) {
+
+            if (state is! GovernoratesSuccess) {
               await cubit.getGovernorates();
             }
 
             if (cubit.state is GovernoratesSuccess) {
-              final state = cubit.state as GovernoratesSuccess;
+              final governorateState = cubit.state as GovernoratesSuccess;
 
-               
-              final RenderBox renderBox =
-                  context.findRenderObject() as RenderBox;
-              final Offset offset = renderBox.localToGlobal(Offset.zero);
+              final RenderBox button = _governorateKey.currentContext!
+                  .findRenderObject() as RenderBox;
+              final RenderBox overlay =
+              Overlay.of(context).context.findRenderObject() as RenderBox;
 
-             
-              final Size size = renderBox.size;
+              final Offset position = button.localToGlobal(
+                Offset.zero,
+                ancestor: overlay,
+              );
 
               final selected = await showMenu<GovernorateModel>(
                 context: context,
-               
                 position: RelativeRect.fromLTRB(
-                  offset.dx,
-                  offset.dy, 
-                  offset.dx + size.width,
-                  offset.dy + size.height,
+                  position.dx,
+                  position.dy + button.size.height,
+                  position.dx + button.size.width,
+                  0,
                 ),
-                items: state.governorates.map((gov) {
+                constraints: BoxConstraints(
+                  maxHeight: 180.h,
+                  minWidth: button.size.width,
+                  maxWidth: button.size.width,
+                ),
+                items: governorateState.governorates.map((gov) {
                   return PopupMenuItem<GovernorateModel>(
                     value: gov,
-                    child: Container(
-                      width: 75.w,  
+                    child: Align(
                       alignment: Alignment.centerRight,
                       child: Text(gov.name),
                     ),
                   );
                 }).toList(),
-                elevation: 8,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
               );
 
               if (selected != null) {
@@ -323,18 +516,23 @@ class _UserInformationState extends State<UserInformation> {
             }
           },
           child: AbsorbPointer(
-            child: AppCustomTextField(
-              iconImage: IconsAssets.drowpdawn,
-              controller: _governorateController,
-              hintText: "",
-              validator: (val) => Validators.isEmptyValue(val, context),
+            child: Container(
+              key: _governorateKey,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: AppCustomTextField(
+                iconImage: IconsAssets.drowpdawn,
+                controller: _governorateController,
+                hintText: "",
+                validator: (val) => Validators.isEmptyValue(val, context),
+              ),
             ),
           ),
         );
       },
     );
   }
-
   Widget _buildProfileImage(ProfileState state) {
     String? networkImageUrl;
     if (state is ProfileSuccess) {

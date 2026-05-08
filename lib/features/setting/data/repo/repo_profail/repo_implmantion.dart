@@ -14,7 +14,7 @@ class ImplementRepoProfile extends RepoProfile {
   @override
   Future<Either<Failur, ProfileModel>> getProfile() async {
     print("--------------------------------------------------");
-    print("🚀 [START REQUEST] Endpoint: clients/get-profile");
+    print("🚀 [START REQUEST] Endpoint: /drivers/get-profile");
 
     try {
       Response response = await _apiService.get(

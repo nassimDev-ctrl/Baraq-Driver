@@ -75,96 +75,99 @@ class _VerficationcodeEdetphoneState extends State<VerficationcodeEdetphone> {
           );
         }
       },
-      child: Scaffold(
-        backgroundColor: AppColors.secondary1,
-        resizeToAvoidBottomInset: true,
-        body: CustomScrollView(
-          slivers: [
-            SliverFillRemaining(
-              hasScrollBody: false,
-              child: Column(
-                children: [
-                  const IconBak(),
-                  Image.asset(ImageAssets.phone, height: 250.h, width: 250.w),
-                  TextVerificationCode(phone: widget.mobilePhone),
-                  SizedBox(height: 25.h),
+      child: Directionality(
+        textDirection: TextDirection.ltr,
+        child: Scaffold(
+          backgroundColor: AppColors.secondary1,
+          resizeToAvoidBottomInset: true,
+          body: CustomScrollView(
+            slivers: [
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Column(
+                  children: [
+                    const IconBak(),
+                    Image.asset(ImageAssets.phone, height: 250.h, width: 250.w),
+                    TextVerificationCode(phone: widget.mobilePhone),
+                    SizedBox(height: 25.h),
 
-                
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 40.w),
-                    child: Directionality(
-                      textDirection: TextDirection.ltr,
-                      child: PinCodeTextField(
-                        appContext: context,
-                        length: 4,
-                       
-                        keyboardType: TextInputType.number,
-                        animationType: AnimationType.fade,
-                        autoFocus: true, 
-                        cursorColor: AppColors.main1,
 
-                        pinTheme: PinTheme(
-                          shape: PinCodeFieldShape.box,
-                          borderRadius: BorderRadius.circular(12.r),
-                          fieldHeight: 60.h,
-                          fieldWidth: 60.w,
-                          activeFillColor: Colors.white,
-                          inactiveFillColor: Colors.white,
-                          selectedFillColor: Colors.white,
-                          activeColor: AppColors.main1,
-                          inactiveColor: const Color(0xFFE0E0E0),
-                          selectedColor: AppColors.main1,
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 40.w),
+                      child: Directionality(
+                        textDirection: TextDirection.ltr,
+                        child: PinCodeTextField(
+                          appContext: context,
+                          length: 4,
+
+                          keyboardType: TextInputType.number,
+                          animationType: AnimationType.fade,
+                          autoFocus: true,
+                          cursorColor: AppColors.main1,
+
+                          pinTheme: PinTheme(
+                            shape: PinCodeFieldShape.box,
+                            borderRadius: BorderRadius.circular(12.r),
+                            fieldHeight: 60.h,
+                            fieldWidth: 60.w,
+                            activeFillColor: Colors.white,
+                            inactiveFillColor: Colors.white,
+                            selectedFillColor: Colors.white,
+                            activeColor: AppColors.main1,
+                            inactiveColor: const Color(0xFFE0E0E0),
+                            selectedColor: AppColors.main1,
+                          ),
+
+                          enableActiveFill: true,
+                          onChanged: (value) {
+                            otpCode = value;
+                          },
+                          onCompleted: (value) {
+
+                          },
                         ),
-
-                        enableActiveFill: true,
-                        onChanged: (value) {
-                          otpCode = value;
-                        },
-                        onCompleted: (value) {
-                         
-                        },
                       ),
                     ),
-                  ),
 
-                  SizedBox(height: 20.h),
-                  RowVerificationCode(
-                    onResend: () {
-                    
-                      context.read<VerificationCubit>().sendVerificationCode(
-                        mobilePhone: widget.mobilePhone,
-                        typeOfUse: "change-mobile-phone",
-                      );
-                    },
-                  ),
+                    SizedBox(height: 20.h),
+                    RowVerificationCode(
+                      onResend: () {
 
-                  const Spacer(), 
-              
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 40.w,
-                      vertical: 30.h,
-                    ),
-                    child: BlocBuilder<UpdateMobileCubit, UpdateMobileState>(
-                      builder: (context, state) {
-                        if (state is UpdateMobileLoading) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-                        return CustomButton(
-                          title: "verification_title",  
-                          onTap: () => context
-                              .read<UpdateMobileCubit>()
-                              .changeMobilePhone(widget.mobilePhone, otpCode),
+                        context.read<VerificationCubit>().sendVerificationCode(
+                          mobilePhone: widget.mobilePhone,
+                          typeOfUse: "change-mobile-phone",
                         );
                       },
                     ),
-                  ),
-                ],
+
+                    const Spacer(),
+
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 40.w,
+                        vertical: 30.h,
+                      ),
+                      child: BlocBuilder<UpdateMobileCubit, UpdateMobileState>(
+                        builder: (context, state) {
+                          if (state is UpdateMobileLoading) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                          return CustomButton(
+                            title: "verification_title",
+                            onTap: () => context
+                                .read<UpdateMobileCubit>()
+                                .changeMobilePhone(widget.mobilePhone, otpCode),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

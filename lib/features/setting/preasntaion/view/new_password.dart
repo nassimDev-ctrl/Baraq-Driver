@@ -16,6 +16,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart'; // أضف استيراد الـ bloc
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../core/widgets/password_helper.dart';
+
  
 
 class NewPassword extends StatefulWidget {
@@ -116,14 +118,13 @@ class _NewPasswordState extends State<NewPassword> {
                       color: AppColors.secondary2,
                     ),
                   ),
+
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 18.w),
-                    child: AppCustomTextField(
-                      iconImage: IconsAssets.eyeoff,
-
-                      controller: _password1Controller,
+                    child: PasswordTextField(
                       hintText: "",
-                      isPassword: true,
+                      controller: _password1Controller,
+                      iconImage: IconsAssets.eyeoff,
                       validator: (val) =>
                           Validators.validatePassword(val, context),
                     ),
@@ -142,18 +143,12 @@ class _NewPasswordState extends State<NewPassword> {
                   ),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 18.w),
-                    child: AppCustomTextField(
-                      iconImage: IconsAssets.eyeoff,
-
-                      controller: _password2Controller,
+                    child: PasswordTextField(
                       hintText: "",
-                      isPassword: true,
-                      validator: (val) {
-                        if (val != _password1Controller.text) {
-                          return "كلمتا المرور غير متطابقتين";
-                        }
-                        return Validators.validatePassword(val, context);
-                      },
+                      controller: _password2Controller,
+                      iconImage: IconsAssets.eyeoff,
+                      validator: (val) =>
+                          Validators.validateConfirmPassword(_password1Controller.text, val, context),
                     ),
                   ),
                   SizedBox(height: 250.h),

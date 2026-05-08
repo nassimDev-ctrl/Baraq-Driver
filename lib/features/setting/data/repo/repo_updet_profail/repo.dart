@@ -8,6 +8,7 @@ abstract class UpdateProfileRepo {
     required String firstName,
     required String lastName,
     required String governorate,
-    String? imagePath,  
+    required String category,
+    String? imagePath,
   });
 }

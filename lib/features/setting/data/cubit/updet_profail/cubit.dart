@@ -12,7 +12,8 @@ class UpdateProfileCubit extends Cubit<UpdateProfileState> {
     required String firstName,
     required String lastName,
     required String governorate,
-    String? imagePath, 
+    required String category,
+    String? imagePath,
   }) async {
     emit(UpdateProfileLoading());
 
@@ -20,7 +21,8 @@ class UpdateProfileCubit extends Cubit<UpdateProfileState> {
       firstName: firstName,
       lastName: lastName,
       governorate: governorate,
-      imagePath: imagePath,  
+      imagePath: imagePath,
+      category: category
     );
 
     result.fold(

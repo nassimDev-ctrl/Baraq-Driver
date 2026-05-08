@@ -16,13 +16,14 @@ class UpdateProfileRepoImpl implements UpdateProfileRepo {
     required String firstName,
     required String lastName,
     required String governorate,
-    String? imagePath,  
+    required String category,
+    String? imagePath,
   }) async {
     try {
    
       log("-----------------------------------------");
       log("🚀 [API START]: Update Profile with Image");
-      log("🔗 [Endpoint]: /clients/update");
+      log("🔗 [Endpoint]: /drivers/update-driver");
       log(
         "📦 [Text Data]: { firstName: $firstName, lastName: $lastName, city: $governorate }",
       );
@@ -34,6 +35,7 @@ class UpdateProfileRepoImpl implements UpdateProfileRepo {
         "firstName": firstName,
         "lastName": lastName,
         "city": governorate,
+        "newCategory": category,
       };
 
      
@@ -44,7 +46,7 @@ class UpdateProfileRepoImpl implements UpdateProfileRepo {
        
         formData.files.add(
           MapEntry(
-            "client_profile_image",
+            "profile_image",
             await MultipartFile.fromFile(
               imagePath,
               
