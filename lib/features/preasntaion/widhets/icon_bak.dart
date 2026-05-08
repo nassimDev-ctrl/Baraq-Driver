@@ -3,6 +3,8 @@ import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+
+import '../../../core/widgets/customText.dart';
  
 class IconBak extends StatelessWidget {
   const IconBak({super.key, this.image});

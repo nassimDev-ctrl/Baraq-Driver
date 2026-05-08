@@ -1,10 +1,8 @@
- 
 import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_regster.dart/cubit_rejester.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
- 
 import 'package:drever_warr/core/asset/icon_asset.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/constant/app_spacing.dart';
@@ -14,7 +12,6 @@ import 'package:drever_warr/core/widgets/customButton.dart';
 import 'package:drever_warr/core/widgets/customText.dart';
 import 'package:drever_warr/core/widgets/logo_app.dart';
 
- 
 import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_governorates/cubit.dart';
 import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_governorates/cubit_state.dart';
 import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_verificationRepo/cubit.dart';
@@ -23,6 +20,9 @@ import 'package:drever_warr/features/preasntaion/data/repo/model/model_governora
 import 'package:drever_warr/features/preasntaion/view/verification_code_regster.dart';
 import 'package:drever_warr/features/preasntaion/widhets/login.dart';
 import 'package:drever_warr/features/preasntaion/widhets/row_select_gender.dart';
+
+import '../../../core/utiles/normlize_number.dart';
+import '../../../core/widgets/password_helper.dart';
 
 class Regsterview extends StatefulWidget {
   final String? initialAddress;
@@ -38,51 +38,95 @@ class Regsterview extends StatefulWidget {
 class _RegsterviewState extends State<Regsterview> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  // Controllers
-  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController _governorateController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _emergencyController = TextEditingController();
   final TextEditingController _gmail = TextEditingController();
   final TextEditingController _addres = TextEditingController();
+  bool _isPasswordHidden = true;
 
   final GlobalKey _govKey = GlobalKey();
+
   String? _selectedGovernorateId;
   String _selectedGender = "male";
+  bool _isSubmitting = false;
 
   @override
   void initState() {
     super.initState();
-    
     if (widget.initialAddress != null) {
       _addres.text = widget.initialAddress!;
     }
   }
 
-  @override
-  void dispose() {
-    _nameController.dispose();
-    phoneController.dispose();
-    _governorateController.dispose();
-    _passwordController.dispose();
-    _emergencyController.dispose();
-    _gmail.dispose();
-    _addres.dispose();
-    super.dispose();
+
+
+  Future<void> _handleSubmit() async {
+    if (_isSubmitting) return;
+
+    final formState = _formKey.currentState;
+    if (formState == null) return;
+
+    FocusScope.of(context).unfocus();
+
+    if (!formState.validate()) return;
+
+    if (_selectedGovernorateId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("يرجى اختيار المحافظة")),
+      );
+      return;
+    }
+
+    setState(() {
+      _isSubmitting = true;
+    });
+
+    final formattedPhone = normalizePhone(phoneController.text);
+    final formattedEmergency = normalizePhone(_emergencyController.text);
+
+    context.read<RegisterCubit>().setUserData(
+      addres: _addres.text.trim(),
+      firstName: _firstNameController.text.trim(),
+      lastName: _lastNameController.text.trim(),
+      mobilePhone: formattedPhone,
+      governorateId: _selectedGovernorateId!,
+      password: _passwordController.text,
+      emergencyNumber: formattedEmergency,
+      gender: _selectedGender,
+      lat: widget.lat ?? 0.0,
+      lng: widget.lng ?? 0.0,
+    );
+
+    context.read<VerificationCubit>().sendVerificationCode(
+      mobilePhone: "963$formattedPhone",
+      typeOfUse: "activate-account",
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final urgentCount = 0;
+    final scheduledCount = 0;
+
     return MultiBlocListener(
       listeners: [
         BlocListener<VerificationCubit, VerificationState>(
           listener: (context, state) {
+            if (!mounted) return;
+
             if (state is CreateVerificationCodeSuccess) {
-              String rawPhone = phoneController.text.trim();
-              String formattedPhone = rawPhone.startsWith('0')
-                  ? rawPhone.substring(1)
-                  : rawPhone;
+              final rawPhone = phoneController.text.trim();
+              final formattedPhone =
+              rawPhone.startsWith('0') ? rawPhone.substring(1) : rawPhone;
+
+              setState(() {
+                _isSubmitting = false;
+              });
+
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -90,16 +134,12 @@ class _RegsterviewState extends State<Regsterview> {
                       VerificationCodeRegster(phone: formattedPhone),
                 ),
               );
-              
-              _nameController.clear();
-              phoneController.clear();
-              _governorateController.clear();
-              _passwordController.clear();
-              _emergencyController.clear();
-              _gmail.clear();
-              _addres.clear();
-              _selectedGovernorateId = null;
+
             } else if (state is VerificationFailure) {
+              setState(() {
+                _isSubmitting = false;
+              });
+
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(state.errMessage),
@@ -132,9 +172,17 @@ class _RegsterviewState extends State<Regsterview> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        _buildLabel("full_name"),
+                        _buildLabel("first_name"),
                         AppCustomTextField(
-                          controller: _nameController,
+                          controller: _firstNameController,
+                          hintText: "",
+                          validator: (val) =>
+                              Validators.isEmptyValue(val, context),
+                        ),
+
+                        _buildLabel("last_name"),
+                        AppCustomTextField(
+                          controller: _lastNameController,
                           hintText: "",
                           validator: (val) =>
                               Validators.isEmptyValue(val, context),
@@ -150,18 +198,18 @@ class _RegsterviewState extends State<Regsterview> {
                               Validators.validatePhone(val, context),
                         ),
 
-                        _buildLabel("gmail"),
+                        _buildLabel("enter_email"),
                         AppCustomTextField(
                           controller: _gmail,
                           hintText: "",
                           validator: (val) =>
-                              Validators.isEmptyValue(val, context),
+                              Validators.validateEmail(val, context),
                         ),
 
                         _buildLabel("select_governorate"),
                         _buildGovernoratePicker(context),
 
-                        _buildLabel("addres"),
+                        _buildLabel("enter_address"),
                         AppCustomTextField(
                           controller: _addres,
                           hintText: "",
@@ -170,15 +218,13 @@ class _RegsterviewState extends State<Regsterview> {
                         ),
 
                         _buildLabel("password"),
-                        AppCustomTextField(
-                          iconImage: IconsAssets.eyeoff,
-                          controller: _passwordController,
+                        PasswordTextField(
                           hintText: "",
-                          isPassword: true,
+                          controller: _passwordController,
+                          iconImage: IconsAssets.eyeoff,
                           validator: (val) =>
                               Validators.validatePassword(val, context),
                         ),
-
                         _buildLabel("emergency_number"),
                         AppCustomTextField(
                           iconImage: IconsAssets.emergemcy,
@@ -192,7 +238,9 @@ class _RegsterviewState extends State<Regsterview> {
                         SizedBox(height: AppSpacing.lg.h),
                         Selectgender(
                           onGenderSelected: (gender) {
-                            _selectedGender = gender;
+                            setState(() {
+                              _selectedGender = gender;
+                            });
                           },
                         ),
                         SizedBox(height: AppSpacing.x30.h),
@@ -203,67 +251,22 @@ class _RegsterviewState extends State<Regsterview> {
 
                         BlocBuilder<VerificationCubit, VerificationState>(
                           builder: (context, state) {
-                            if (state is VerificationLoading) {
-                              return const Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            }
-                            return CustomButton(
-                              title: "next",
-                              onTap: () {
-                                if (_formKey.currentState!.validate()) {
-                                  if (_selectedGovernorateId == null) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text("يرجى اختيار المحافظة"),
-                                      ),
-                                    );
-                                    return;
-                                  }
+                            final isLoading =
+                                state is VerificationLoading || _isSubmitting;
 
-                               
-                                  String rawPhone = phoneController.text.trim();
-                                  String formattedPhone =
-                                      rawPhone.startsWith('0')
-                                      ? rawPhone.substring(1)
-                                      : rawPhone;
-
-                                  String emrgecy = _emergencyController.text
-                                      .trim();
-                                  String formattedemergcy =
-                                      emrgecy.startsWith('0')
-                                      ? emrgecy.substring(1)
-                                      : emrgecy;
-
-                                  
-                                  context.read<RegisterCubit>().setUserData(
-                                    addres: _addres.text,
-                                    firstName: _nameController.text,
-                                    lastName: "jjjjj", 
-                                    mobilePhone: formattedPhone,
-                                    governorateId: _selectedGovernorateId!,
-                                    password: _passwordController.text,
-                                    emergencyNumber: formattedemergcy,
-                                    gender: _selectedGender,
-
-                                    lat:
-                                        widget.lat ??
-                                        0.0,  
-                                    lng: widget.lng ?? 0.0,
-                                  );
-
-                                  // إرسال كود التحقق
-                                  context
-                                      .read<VerificationCubit>()
-                                      .sendVerificationCode(
-                                        mobilePhone: "963$formattedPhone",
-                                        typeOfUse: "activate-account",
-                                      );
-                                }
-                              },
+                            return IgnorePointer(
+                              ignoring: isLoading,
+                              child: Opacity(
+                                opacity: isLoading ? 0.75 : 1,
+                                child: CustomButton(
+                                  title: "next",
+                                  onTap: _handleSubmit,
+                                ),
+                              ),
                             );
                           },
                         ),
+
                         SizedBox(height: 30.h),
                       ],
                     ),
@@ -280,52 +283,77 @@ class _RegsterviewState extends State<Regsterview> {
   Widget _buildGovernoratePicker(BuildContext context) {
     return GestureDetector(
       onTap: () async {
+        if (_isSubmitting) return;
+
         final cubit = context.read<GovernoratesCubit>();
 
         if (cubit.state is! GovernoratesSuccess) {
           await cubit.getGovernorates();
         }
 
-        if (cubit.state is GovernoratesSuccess) {
-          final state = cubit.state as GovernoratesSuccess;
+        if (!mounted || cubit.state is! GovernoratesSuccess) return;
 
-          final RenderBox button =
-              _govKey.currentContext!.findRenderObject() as RenderBox;
+        final state = cubit.state as GovernoratesSuccess;
 
-          final RenderBox overlay =
-              Overlay.of(context).context.findRenderObject() as RenderBox;
+        final keyContext = _govKey.currentContext;
+        if (keyContext == null) return;
 
-          final Offset position = button.localToGlobal(
-            Offset.zero,
-            ancestor: overlay,
-          );
+        final renderObject = keyContext.findRenderObject();
+        if (renderObject is! RenderBox) return;
 
-          final selected = await showMenu<GovernorateModel>(
-            context: context,
-            position: RelativeRect.fromLTRB(
-              position.dx,
-              position.dy + button.size.height,
-              position.dx + button.size.width,
-              0,
-            ),
-            constraints: const BoxConstraints(maxHeight: 180),
-            items: state.governorates.map((gov) {
-              return PopupMenuItem<GovernorateModel>(
-                value: gov,
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(gov.name),
+        final overlay = Overlay.of(context).context.findRenderObject();
+        if (overlay is! RenderBox) return;
+
+        final Offset fieldOffset = renderObject.localToGlobal(
+          Offset.zero,
+          ancestor: overlay,
+        );
+
+        final bool isRtl = Directionality.of(context) == TextDirection.rtl;
+        final double anchorWidth = 44.w;
+
+        final double left = isRtl
+            ? fieldOffset.dx + renderObject.size.width - anchorWidth
+            : fieldOffset.dx;
+
+        final double top = fieldOffset.dy + renderObject.size.height + 4.h;
+        final double right = overlay.size.width - (left + anchorWidth);
+
+        final selected = await showMenu<GovernorateModel>(
+          context: context,
+          position: RelativeRect.fromLTRB(left, top, right, 0),
+          color: Colors.white,
+          elevation: 10,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.r),
+          ),
+          menuPadding: EdgeInsets.zero,
+          constraints: BoxConstraints(
+            minWidth: renderObject.size.width,
+            maxHeight: 180.h,
+          ),
+          items: state.governorates.map((gov) {
+            return PopupMenuItem<GovernorateModel>(
+              value: gov,
+              padding: EdgeInsets.zero,
+              child: Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
+                alignment: isRtl ? Alignment.centerRight : Alignment.centerLeft,
+                child: Text(
+                  gov.name,
+                  textAlign: isRtl ? TextAlign.right : TextAlign.left,
                 ),
-              );
-            }).toList(),
-          );
+              ),
+            );
+          }).toList(),
+        );
 
-          if (selected != null) {
-            setState(() {
-              _governorateController.text = selected.name;
-              _selectedGovernorateId = selected.id;
-            });
-          }
+        if (selected != null && mounted) {
+          setState(() {
+            _governorateController.text = selected.name;
+            _selectedGovernorateId = selected.id;
+          });
         }
       },
       child: AbsorbPointer(
@@ -339,7 +367,6 @@ class _RegsterviewState extends State<Regsterview> {
       ),
     );
   }
-
   Widget _buildLabel(String text) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 10.w),
@@ -373,3 +400,4 @@ class _RegsterviewState extends State<Regsterview> {
     );
   }
 }
+

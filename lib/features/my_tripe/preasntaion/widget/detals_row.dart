@@ -14,13 +14,14 @@ class details_row extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+
           CustomText(
-            t2,
+            t1,
             type: AppTextType.titleSmall,
             color: AppColors.secondary2,
           ),
           CustomText(
-            t1,
+            t2,
             type: AppTextType.titleSmall,
             color: AppColors.secondary2,
           ),

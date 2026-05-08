@@ -2,6 +2,7 @@
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/constant/app_spacing.dart';
 import 'package:drever_warr/core/utiles/faledtor.dart';
+import 'package:drever_warr/core/utiles/normlize_number.dart';
 import 'package:drever_warr/core/widgets/coustm_text_fild_all.dart';
 import 'package:drever_warr/core/widgets/customButton.dart';
 import 'package:drever_warr/core/widgets/customText.dart';
@@ -43,7 +44,7 @@ class _ForgetPasswordLoginState extends State<ForgetPasswordLogin> {
             context,
             MaterialPageRoute(
               builder: (context) => VerificationCodeforgetpassword(
-                mobilePhone: "963${_phoneController.text}",
+                mobilePhone: "963${normalizePhone(_phoneController.text) }",
               ),
             ),
           );
@@ -112,7 +113,7 @@ class _ForgetPasswordLoginState extends State<ForgetPasswordLogin> {
                           if (_formKey.currentState!.validate()) {
                            
                             context.read<VerificationCubit>().sendVerificationCode(
-                              mobilePhone: "963${_phoneController.text}",
+                              mobilePhone: "963${normalizePhone(_phoneController.text)}",
                               typeOfUse:
                                   "reset-password", // تأكد من هذا النوع مع الباك إند
                             );

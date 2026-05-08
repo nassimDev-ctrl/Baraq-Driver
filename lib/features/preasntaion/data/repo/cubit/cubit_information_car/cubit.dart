@@ -16,6 +16,7 @@ class CarInfoCubit extends Cubit<CarInfoState> {
     required String carName,
     
     required String category,
+    required String carColor,
     required String carPlateNumber,
     required String carYearMade,
   }) async {
@@ -31,6 +32,7 @@ class CarInfoCubit extends Cubit<CarInfoState> {
       carPlateImage: carPlateImage!,
       carName: carName,
       category: category,
+      carColor: carColor,
       carPlateNumber: carPlateNumber,
       carYearMade: carYearMade,
     );

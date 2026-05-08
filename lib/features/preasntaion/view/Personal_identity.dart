@@ -1,20 +1,37 @@
- 
 import 'dart:io';
+
 import 'package:drever_warr/core/constant/app_colors.dart';
+import 'package:drever_warr/core/transleat/app_translat.dart';
 import 'package:drever_warr/core/widgets/customButton.dart';
 import 'package:drever_warr/core/widgets/customText.dart';
 import 'package:drever_warr/core/widgets/logo_app.dart';
 import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_car_image/cubit.dart';
 import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_car_image/cubit_stat.dart';
 import 'package:drever_warr/features/preasntaion/view/CarRegistrationScreen.dart';
+import 'package:drever_warr/features/preasntaion/view/WaitingReviewScreen.dart';
 import 'package:drever_warr/features/preasntaion/widhets/icon_bak.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 
 class Personalidentity extends StatefulWidget {
-  const Personalidentity({super.key});
+  final bool isUpdate;
+
+  /// External error for the front image.
+  /// Example: "Make sure to display your face in the page"
+  final String? frontImageError;
+
+  /// External error for the back image.
+  final String? backImageError;
+
+  const Personalidentity({
+    super.key,
+    required this.isUpdate,
+    this.frontImageError,
+    this.backImageError,
+  });
 
   @override
   State<Personalidentity> createState() => _PersonalidentityState();
@@ -24,42 +41,106 @@ class _PersonalidentityState extends State<Personalidentity> {
   final ImagePicker _picker = ImagePicker();
 
   Future<void> _pickIdImage(
-    BuildContext context,
-    ImageSource source,
-    bool isFront,
-  ) async {
-    final XFile? pickedFile = await _picker.pickImage(source: source);
+      BuildContext context,
+      ImageSource source,
+      bool isFront,
+      ) async {
+    final XFile? pickedFile = await _picker.pickImage(
+      source: source,
+      imageQuality: 95,
+    );
 
-    if (pickedFile != null) {
-      setState(() {
-        if (isFront) {
-          context.read<UploadIdCubit>().frontImage = File(pickedFile.path);
-        } else {
-          context.read<UploadIdCubit>().backImage = File(pickedFile.path);
-        }
-      });
+    if (pickedFile == null) return;
+
+    final File originalFile = File(pickedFile.path);
+    final File finalFile = await _compressImageToMax5Mb(originalFile);
+
+    if (!mounted) return;
+
+    setState(() {
+      if (isFront) {
+        context.read<UploadIdCubit>().frontImage = finalFile;
+      } else {
+        context.read<UploadIdCubit>().backImage = finalFile;
+      }
+    });
+  }
+  Future<File> _compressImageToMax5Mb(File file) async {
+    const int maxBytes = 5 * 1024 * 1024;
+
+    if (await file.length() <= maxBytes) {
+      return file;
     }
+
+    final Directory tempDir = await Directory.systemTemp.createTemp('id_images');
+    final String outPath =
+        '${tempDir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg';
+
+    int quality = 90;
+    File currentFile = file;
+
+    while (quality >= 10) {
+      final List<int>? compressedBytes =
+      await FlutterImageCompress.compressWithFile(
+        currentFile.path,
+        quality: quality,
+        minWidth: 1920,
+        minHeight: 1920,
+        keepExif: true,
+        format: CompressFormat.jpeg,
+      );
+
+      if (compressedBytes == null) break;
+
+      final File compressedFile = File(outPath);
+      await compressedFile.writeAsBytes(compressedBytes, flush: true);
+
+      if (await compressedFile.length() <= maxBytes) {
+        return compressedFile;
+      }
+
+      currentFile = compressedFile;
+      quality -= 10;
+    }
+
+    return currentFile;
   }
 
   @override
   Widget build(BuildContext context) {
+    final uploadCubit = context.watch<UploadIdCubit>();
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: BlocListener<UploadIdCubit, UploadIdState>(
         listener: (context, state) {
           if (state is UploadIdSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text("تم رفع صور الهوية بنجاح"),
+              SnackBar(
+                content: Text(
+                  AppTranslations.getText(context, "id_upload_success"),
+                ),
                 backgroundColor: Colors.green,
               ),
             );
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const CarRegistrationScreen(),
-              ),
-            );
+
+            if (!widget.isUpdate) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const CarRegistrationScreen(
+                    isUpdate: false,
+                  ),
+                ),
+              );
+            } else {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const WaitingReviewScreen(),
+                ),
+              );
+            }
           } else if (state is UploadIdFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -74,7 +155,7 @@ class _PersonalidentityState extends State<Personalidentity> {
           child: Column(
             children: [
               const IconBak(),
-              Center(child: LogoSection()),
+              const Center(child: LogoSection()),
               Expanded(
                 child: Container(
                   width: double.infinity,
@@ -93,24 +174,36 @@ class _PersonalidentityState extends State<Personalidentity> {
                       children: [
                         SizedBox(height: 25.h),
                         CustomText(
-                          "Register",
+                          "register_title",
                           type: AppTextType.bodyLarge,
                           color: AppColors.main1,
                         ),
                         SizedBox(height: 35.h),
+
                         _buildIdCaptureBox(
                           label: "add_front_id_photo",
-                          imageFile: context.read<UploadIdCubit>().frontImage,
-                          onTap: () =>
-                              _pickIdImage(context, ImageSource.gallery, true),
+                          imageFile: uploadCubit.frontImage,
+                          errorMessage: widget.frontImageError,
+                          onTap: () => _pickIdImage(
+                            context,
+                            ImageSource.gallery,
+                            true,
+                          ),
                         ),
+
                         SizedBox(height: 30.h),
+
                         _buildIdCaptureBox(
                           label: "add_back_id_photo",
-                          imageFile: context.read<UploadIdCubit>().backImage,
-                          onTap: () =>
-                              _pickIdImage(context, ImageSource.gallery, false),
+                          imageFile: uploadCubit.backImage,
+                          errorMessage: widget.backImageError,
+                          onTap: () => _pickIdImage(
+                            context,
+                            ImageSource.gallery,
+                            false,
+                          ),
                         ),
+
                         SizedBox(height: 50.h),
                         BlocBuilder<UploadIdCubit, UploadIdState>(
                           builder: (context, state) {
@@ -120,7 +213,7 @@ class _PersonalidentityState extends State<Personalidentity> {
                               );
                             }
                             return CustomButton(
-                              title: "next",
+                              title: AppTranslations.getText(context, "next"),
                               onTap: () {
                                 context.read<UploadIdCubit>().uploadIdImages();
                               },
@@ -144,7 +237,12 @@ class _PersonalidentityState extends State<Personalidentity> {
     required String label,
     File? imageFile,
     required VoidCallback onTap,
+    String? errorMessage,
   }) {
+    final bool hasError =
+        errorMessage != null && errorMessage.trim().isNotEmpty;
+    final Color borderColor = hasError ? Colors.red : const Color(0xFF1595C7);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
@@ -161,14 +259,14 @@ class _PersonalidentityState extends State<Personalidentity> {
             height: 150.h,
             decoration: BoxDecoration(
               color: const Color(0xFFF9F9F9),
-              border: Border.all(color: const Color(0xFF1595C7), width: 2.5),
+              border: Border.all(color: borderColor, width: 2.5),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Stack(
               children: [
                 if (imageFile != null)
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(8),
                     child: Image.file(
                       imageFile,
                       width: double.infinity,
@@ -181,29 +279,45 @@ class _PersonalidentityState extends State<Personalidentity> {
                   left: 8,
                   isTop: true,
                   isLeft: true,
+                  color: borderColor,
                 ),
                 _buildCornerPositioned(
                   top: 8,
                   right: 8,
                   isTop: true,
                   isLeft: false,
+                  color: borderColor,
                 ),
                 _buildCornerPositioned(
                   bottom: 8,
                   left: 8,
                   isTop: false,
                   isLeft: true,
+                  color: borderColor,
                 ),
                 _buildCornerPositioned(
                   bottom: 8,
                   right: 8,
                   isTop: false,
                   isLeft: false,
+                  color: borderColor,
                 ),
               ],
             ),
           ),
         ),
+        if (hasError) ...[
+          SizedBox(height: 8.h),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 4.w),
+            child: CustomText(
+              errorMessage!,
+              type: AppTextType.bodySmall,
+              color: Colors.red,
+              textAlign: TextAlign.right,
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -215,6 +329,7 @@ class _PersonalidentityState extends State<Personalidentity> {
     double? right,
     required bool isTop,
     required bool isLeft,
+    required Color color,
   }) {
     return Positioned(
       top: top,
@@ -227,16 +342,16 @@ class _PersonalidentityState extends State<Personalidentity> {
         decoration: BoxDecoration(
           border: Border(
             top: isTop
-                ? const BorderSide(color: Color(0xFF1595C7), width: 3)
+                ? BorderSide(color: color, width: 3)
                 : BorderSide.none,
             bottom: !isTop
-                ? const BorderSide(color: Color(0xFF1595C7), width: 3)
+                ? BorderSide(color: color, width: 3)
                 : BorderSide.none,
             left: isLeft
-                ? const BorderSide(color: Color(0xFF1595C7), width: 3)
+                ? BorderSide(color: color, width: 3)
                 : BorderSide.none,
             right: !isLeft
-                ? const BorderSide(color: Color(0xFF1595C7), width: 3)
+                ? BorderSide(color: color, width: 3)
                 : BorderSide.none,
           ),
         ),

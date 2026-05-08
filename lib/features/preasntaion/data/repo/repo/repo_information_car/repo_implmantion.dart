@@ -18,6 +18,7 @@ class ImplementRepoCarInfo extends RepoCarInfo {
     required File carPlateImage,
     required String carName,
     required String category,
+    required String carColor,
     required String carPlateNumber,
     required String carYearMade,
   }) async {
@@ -56,7 +57,7 @@ class ImplementRepoCarInfo extends RepoCarInfo {
         "car_plate_image": plateImageFile,
         "carName": carName,
         "category": category,
-        "carColor": "ؤؤؤؤ",
+        "carColor": carColor,
         "carPlateNumber": carPlateNumber,
         "carYearMade": carYearMade,
       });

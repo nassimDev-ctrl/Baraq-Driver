@@ -1,15 +1,10 @@
- 
 import 'dart:io';
+
 import 'package:drever_warr/core/asset/icon_asset.dart';
+import 'package:drever_warr/core/constant/app_colors.dart';
+import 'package:drever_warr/core/transleat/app_translat.dart';
 import 'package:drever_warr/core/utiles/faledtor.dart';
 import 'package:drever_warr/core/widgets/coustm_text_fild_all.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:image_picker/image_picker.dart';
-
- 
-import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/widgets/customButton.dart';
 import 'package:drever_warr/core/widgets/customText.dart';
 import 'package:drever_warr/core/widgets/customTextFieldname.dart';
@@ -19,9 +14,38 @@ import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_category/
 import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_information_car/cubit.dart';
 import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_information_car/cubit_stat.dart';
 import 'package:drever_warr/features/preasntaion/view/WaitingReviewScreen.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+
 
 class CarRegistrationScreen extends StatefulWidget {
-  const CarRegistrationScreen({super.key});
+  final bool isUpdate;
+
+  /// External errors for each field.
+  final String? carTypeError;
+  final String? carModelError;
+  final String? carColorError;
+  final String? carImageError;
+  final String? carPlateImageError;
+  final String? carPlateNumberError;
+  final String? carCategoryError;
+  final String? termsError;
+
+  const CarRegistrationScreen({
+    super.key,
+    required this.isUpdate,
+    this.carTypeError,
+    this.carModelError,
+    this.carColorError,
+    this.carImageError,
+    this.carPlateImageError,
+    this.carPlateNumberError,
+    this.carCategoryError,
+    this.termsError,
+  });
 
   @override
   State<CarRegistrationScreen> createState() => _CarRegistrationScreenState();
@@ -32,9 +56,8 @@ class _CarRegistrationScreenState extends State<CarRegistrationScreen> {
   final TextEditingController _carModelController = TextEditingController();
   final TextEditingController _plateNumberController = TextEditingController();
   final TextEditingController _color = TextEditingController();
-  final GlobalKey _categoryKey = GlobalKey();  
-  final TextEditingController _categoryController =
-      TextEditingController();  
+  final GlobalKey _categoryKey = GlobalKey();
+  final TextEditingController _categoryController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -42,21 +65,89 @@ class _CarRegistrationScreenState extends State<CarRegistrationScreen> {
   String? _selectedColor;
   String? _selectedCategoryId;
 
-  Future<void> _pickImage(ImageSource source, bool isCar) async {
-    final XFile? pickedFile = await _picker.pickImage(source: source);
-    if (pickedFile != null) {
-      setState(() {
-        if (isCar) {
-          context.read<CarInfoCubit>().carImage = File(pickedFile.path);
-        } else {
-          context.read<CarInfoCubit>().carPlateImage = File(pickedFile.path);
-        }
-      });
-    }
+  @override
+  void dispose() {
+    _carTypeController.dispose();
+    _carModelController.dispose();
+    _plateNumberController.dispose();
+    _color.dispose();
+    _categoryController.dispose();
+    super.dispose();
   }
+
+  Future<void> _pickImage(ImageSource source, bool isCar) async {
+    final XFile? pickedFile = await _picker.pickImage(
+      source: source,
+      imageQuality: 95,
+    );
+
+    if (pickedFile == null) return;
+
+    final File originalFile = File(pickedFile.path);
+    final File finalFile = await _compressImageToMax5Mb(originalFile);
+
+    if (!mounted) return;
+
+    setState(() {
+      if (isCar) {
+        context.read<CarInfoCubit>().carImage = finalFile;
+      } else {
+        context.read<CarInfoCubit>().carPlateImage = finalFile;
+      }
+    });
+  }
+
+  Future<File> _compressImageToMax5Mb(File file) async {
+    const int maxBytes = 5 * 1024 * 1024;
+
+    // Already within limit
+    if (await file.length() <= maxBytes) {
+      return file;
+    }
+
+    final Directory tempDir = await Directory.systemTemp.createTemp('car_images');
+    final String outPath =
+        '${tempDir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg';
+
+    int quality = 90;
+    File currentFile = file;
+
+    while (quality >= 10) {
+      final List<int>? compressedBytes = await FlutterImageCompress.compressWithFile(
+        currentFile.path,
+        quality: quality,
+        minWidth: 1920,
+        minHeight: 1920,
+        keepExif: true,
+        format: CompressFormat.jpeg,
+      );
+
+      if (compressedBytes == null) {
+        break;
+      }
+
+      final File compressedFile = File(outPath);
+      await compressedFile.writeAsBytes(compressedBytes, flush: true);
+
+      if (await compressedFile.length() <= maxBytes) {
+        return compressedFile;
+      }
+
+      currentFile = compressedFile;
+      quality -= 10;
+    }
+
+    return currentFile;
+  }
+
+  bool get _hasTermsError =>
+      widget.termsError != null && widget.termsError!.trim().isNotEmpty;
 
   @override
   Widget build(BuildContext context) {
+    final carCubit = context.watch<CarInfoCubit>();
+    final categoryState = context.watch<CarCategoryCubit>().state;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: BlocListener<CarInfoCubit, CarInfoState>(
@@ -98,162 +189,209 @@ class _CarRegistrationScreenState extends State<CarRegistrationScreen> {
                         children: [
                           Center(
                             child: CustomText(
-                              "Register",
+                              "register_title",
                               type: AppTextType.bodyLarge,
                               color: AppColors.main1,
                             ),
                           ),
                           SizedBox(height: 20.h),
 
-                          _buildLabel("نوع السيارة"),
-                          CustomTextFieldname(
-                            validator: (val) => val!.isEmpty ? "مطلوب" : null,
-                            controller: _carTypeController,
-                            hintText: "مثلاً: Kia Rio",
+                          _buildFieldSection(
+                            label: "car_type",
+                            errorMessage: widget.carTypeError,
+                            child: CustomTextFieldname(
+                              validator: (val) => val!.isEmpty
+                                  ? AppTranslations.getText(
+                                  context, "validate_empty")
+                                  : null,
+                              controller: _carTypeController,
+                              hintText: AppTranslations.getText(
+                                  context, "example_car_type"),
+                            ),
                           ),
 
                           SizedBox(height: 15.h),
 
-                          _buildLabel("سنة الصنع"),
-                          CustomTextFieldname(
-                            validator: (val) => val!.isEmpty ? "مطلوب" : null,
-                            controller: _carModelController,
-                            hintText: "مثلاً: 2020",
-                            keyboardType: TextInputType.number,
+                          _buildFieldSection(
+                            label: "car_model_year",
+                            errorMessage: widget.carModelError,
+                            child: CustomTextFieldname(
+                              validator: (val) => val!.isEmpty
+                                  ? AppTranslations.getText(
+                                  context, "validate_empty")
+                                  : null,
+                              controller: _carModelController,
+                              hintText: AppTranslations.getText(
+                                  context, "example_car_year"),
+                              keyboardType: TextInputType.number,
+                            ),
                           ),
 
                           SizedBox(height: 15.h),
 
-                          _buildLabel("لون السيارة"),
-                          AppCustomTextField(
-                            controller: _color,
-                            hintText: "",
-                            validator: (val) =>
-                                Validators.isEmptyValue(val, context),
+                          _buildFieldSection(
+                            label: "car_color",
+                            errorMessage: widget.carColorError,
+                            child: AppCustomTextField(
+                              controller: _color,
+                              hintText: "",
+                              validator: (val) =>
+                                  Validators.isEmptyValue(val, context),
+                            ),
                           ),
 
-                           
                           SizedBox(height: 20.h),
 
-                          _buildLabel("صورة السيارة"),
-                          _buildImagePickerBox(
-                            image: context.watch<CarInfoCubit>().carImage,
-                            onTap: () => _pickImage(ImageSource.gallery, true),
+                          _buildFieldSection(
+                            label: "add_car_photo",
+                            errorMessage: widget.carImageError,
+                            child: _buildImagePickerBox(
+                              image: carCubit.carImage,
+                              errorMessage: widget.carImageError,
+                              onTap: () => _pickImage(ImageSource.gallery, true),
+                            ),
                           ),
 
                           SizedBox(height: 20.h),
 
-                          _buildLabel("صورة اللوحة"),
-                          _buildImagePickerBox(
-                            image: context.watch<CarInfoCubit>().carPlateImage,
-                            onTap: () => _pickImage(ImageSource.gallery, false),
+                          _buildFieldSection(
+                            label: "add_plate_photo",
+                            errorMessage: widget.carPlateImageError,
+                            child: _buildImagePickerBox(
+                              image: carCubit.carPlateImage,
+                              errorMessage: widget.carPlateImageError,
+                              onTap: () => _pickImage(ImageSource.gallery, false),
+                            ),
                           ),
 
                           SizedBox(height: 15.h),
 
-                          _buildLabel("رقم اللوحة"),
-                          CustomTextFieldname(
-                            validator: (val) => val!.isEmpty ? "مطلوب" : null,
-                            controller: _plateNumberController,
-                            hintText: "رقم اللوحة",
+                          _buildFieldSection(
+                            label: "plate_number",
+                            errorMessage: widget.carPlateNumberError,
+                            child: CustomTextFieldname(
+                              validator: (val) => val!.isEmpty
+                                  ? AppTranslations.getText(
+                                  context, "validate_empty")
+                                  : null,
+                              controller: _plateNumberController,
+                              hintText: AppTranslations.getText(
+                                  context, "plate_number"),
+                            ),
                           ),
 
                           SizedBox(height: 15.h),
 
-                          _buildLabel("فئة السيارة"),
+                          _buildFieldSection(
+                            label: "category",
+                            errorMessage: widget.carCategoryError,
+                            child: BlocBuilder<CarCategoryCubit, CarCategoryState>(
+                              builder: (context, state) {
+                                return GestureDetector(
+                                  onTap: () async {
+                                    final cubit = context.read<CarCategoryCubit>();
 
-                          BlocBuilder<CarCategoryCubit, CarCategoryState>(
-                            builder: (context, state) {
-                              return GestureDetector(
-                                onTap: () async {
-                                  final cubit = context
-                                      .read<CarCategoryCubit>();
-
-                                 
-                                  if (state is! CarCategorySuccess) {
-                                    await cubit.getCarCategories();
-                                  }
-
-                                  if (cubit.state is CarCategorySuccess) {
-                                    final categoryState =
-                                        cubit.state as CarCategorySuccess;
-
-                                    
-                                    final RenderBox button =
-                                        _categoryKey.currentContext!
-                                                .findRenderObject()
-                                            as RenderBox;
-                                    final RenderBox overlay =
-                                        Overlay.of(
-                                              context,
-                                            ).context.findRenderObject()
-                                            as RenderBox;
-
-                                    final Offset position = button
-                                        .localToGlobal(
-                                          Offset.zero,
-                                          ancestor: overlay,
-                                        );
-
-                                    
-                                    final selected = await showMenu<String>(
-                                      context: context,
-                                      position: RelativeRect.fromLTRB(
-                                        position.dx,
-                                        position.dy + button.size.height,
-                                        position.dx + button.size.width,
-                                        0,
-                                      ),
-                                      constraints: BoxConstraints(
-                                        maxHeight: 180.h,
-                                        minWidth: button
-                                            .size
-                                            .width,  
-                                        maxWidth: button.size.width,
-                                      ),
-                                      items: categoryState.categories.map((
-                                        category,
-                                      ) {
-                                        return PopupMenuItem<String>(
-                                          value: category.id,
-                                          child: Align(
-                                            alignment: Alignment.centerRight,
-                                            child: Text(category.name ?? ""),
-                                          ),
-                                        );
-                                      }).toList(),
-                                    );
-
-                                    if (selected != null) {
-                                      setState(() {
-                                        _selectedCategoryId = selected;
-                                      
-                                        _categoryController.text =
-                                            categoryState.categories
-                                                .firstWhere(
-                                                  (element) =>
-                                                      element.id == selected,
-                                                )
-                                                .name ??
-                                            "";
-                                      });
+                                    if (state is! CarCategorySuccess) {
+                                      await cubit.getCarCategories();
                                     }
-                                  }
-                                },
-                                child: AbsorbPointer(
-                                  child: AppCustomTextField(
-                                    key: _categoryKey,  
-                                    iconImage: IconsAssets
-                                        .drowpdawn, 
-                                    controller: _categoryController,
-                                    hintText: "اختر فئة السيارة",
-                                    validator: (val) =>
-                                        val!.isEmpty ? "مطلوب" : null,
+
+                                    if (cubit.state is CarCategorySuccess) {
+                                      final categoryState =
+                                      cubit.state as CarCategorySuccess;
+
+                                      final RenderBox button =
+                                      _categoryKey.currentContext!
+                                          .findRenderObject() as RenderBox;
+                                      final RenderBox overlay = Overlay.of(context)
+                                          .context
+                                          .findRenderObject() as RenderBox;
+
+                                      final Offset position = button.localToGlobal(
+                                        Offset.zero,
+                                        ancestor: overlay,
+                                      );
+
+                                      final selected = await showMenu<String>(
+                                        context: context,
+                                        position: RelativeRect.fromLTRB(
+                                          position.dx,
+                                          position.dy + button.size.height,
+                                          position.dx + button.size.width,
+                                          0,
+                                        ),
+                                        constraints: BoxConstraints(
+                                          maxHeight: 180.h,
+                                          minWidth: button.size.width,
+                                          maxWidth: button.size.width,
+                                        ),
+                                        items: categoryState.categories.map((category) {
+                                          return PopupMenuItem<String>(
+                                            value: category.id,
+                                            child: Align(
+                                              alignment: Alignment.centerRight,
+                                              child: Text(category.name ?? ""),
+                                            ),
+                                          );
+                                        }).toList(),
+                                      );
+
+                                      if (selected != null) {
+                                        setState(() {
+                                          _selectedCategoryId = selected;
+                                          _categoryController.text = categoryState
+                                              .categories
+                                              .firstWhere(
+                                                (element) =>
+                                            element.id == selected,
+                                          )
+                                              .name ??
+                                              "";
+                                        });
+                                      }
+                                    }
+                                  },
+                                  child: AbsorbPointer(
+                                    child: Container(
+                                      key: _categoryKey,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(
+                                          color: widget.carCategoryError != null &&
+                                              widget.carCategoryError!
+                                                  .trim()
+                                                  .isNotEmpty
+                                              ? Colors.red
+                                              : AppColors.main1,
+                                          width: 1.5,
+                                        ),
+                                      ),
+                                      child: AppCustomTextField(
+                                        iconImage: IconsAssets.drowpdawn,
+                                        controller: _categoryController,
+                                        hintText: AppTranslations.getText(
+                                            context, "select_car_category"),
+                                        validator: (val) => val!.isEmpty
+                                            ? AppTranslations.getText(
+                                            context, "validate_empty")
+                                            : null,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
+                                );
+                              },
+                            ),
                           ),
+
+                          if (widget.carCategoryError != null &&
+                              widget.carCategoryError!.trim().isNotEmpty) ...[
+                            SizedBox(height: 6.h),
+                            CustomText(
+                              widget.carCategoryError!,
+                              type: AppTextType.bodySmall,
+                              color: Colors.red,
+                              textAlign: TextAlign.right,
+                            ),
+                          ],
 
                           SizedBox(height: 20.h),
 
@@ -273,11 +411,24 @@ class _CarRegistrationScreenState extends State<CarRegistrationScreen> {
                                     setState(() => _acceptTerms = val!),
                               ),
                               CustomText(
-                                "الموافقة على الشروط",
+                                "accept_terms",
                                 type: AppTextType.bodyMedium,
                               ),
                             ],
                           ),
+
+                          if (_hasTermsError) ...[
+                            SizedBox(height: 4.h),
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 6.w),
+                              child: CustomText(
+                                widget.termsError!,
+                                type: AppTextType.bodySmall,
+                                color: Colors.red,
+                                textAlign: TextAlign.right,
+                              ),
+                            ),
+                          ],
 
                           SizedBox(height: 20.h),
 
@@ -289,16 +440,17 @@ class _CarRegistrationScreenState extends State<CarRegistrationScreen> {
                                 );
                               }
                               return CustomButton(
-                                title: "تأكيد",
+                                title: "confirm",
                                 onTap: () {
                                   if (_formKey.currentState!.validate() &&
                                       _acceptTerms) {
                                     if (_selectedCategoryId == null) {
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        const SnackBar(
-                                          content: Text("يرجى اختيار الفئة"),
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            AppTranslations.getText(
+                                                context, "please_select_category"),
+                                          ),
                                         ),
                                       );
                                       return;
@@ -306,17 +458,17 @@ class _CarRegistrationScreenState extends State<CarRegistrationScreen> {
 
                                     context.read<CarInfoCubit>().submitCarInfo(
                                       carName: _carTypeController.text,
-                                      
                                       category: _selectedCategoryId!,
-                                      carPlateNumber:
-                                          _plateNumberController.text,
+                                      carPlateNumber: _plateNumberController.text,
                                       carYearMade: _carModelController.text,
+                                      carColor: _color.text,
                                     );
                                   }
                                 },
                               );
                             },
                           ),
+
                           SizedBox(height: 20.h),
                         ],
                       ),
@@ -328,6 +480,43 @@ class _CarRegistrationScreenState extends State<CarRegistrationScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildFieldSection({
+    required String label,
+    required Widget child,
+    String? errorMessage,
+  }) {
+    final bool hasError =
+        errorMessage != null && errorMessage.trim().isNotEmpty;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        _buildLabel(label),
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            border: hasError
+                ? Border.all(color: Colors.red, width: 1.5)
+                : Border.all(color: Colors.transparent, width: 0),
+          ),
+          child: child,
+        ),
+        if (hasError) ...[
+          SizedBox(height: 6.h),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 4.w),
+            child: CustomText(
+              errorMessage!,
+              type: AppTextType.bodySmall,
+              color: Colors.red,
+              textAlign: TextAlign.right,
+            ),
+          ),
+        ],
+      ],
     );
   }
 
@@ -347,31 +536,14 @@ class _CarRegistrationScreenState extends State<CarRegistrationScreen> {
     );
   }
 
-  Widget _buildDropdown({
-    String? value,
-    required List<String> items,
-    required Function(String?) onChanged,
+  Widget _buildImagePickerBox({
+    File? image,
+    required VoidCallback onTap,
+    String? errorMessage,
   }) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10.w),
-      decoration: BoxDecoration(
-        border: Border.all(color: AppColors.main1),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: DropdownButton<String>(
-        value: value,
-        isExpanded: true,
-        underline: const SizedBox(),
-        icon: const Icon(Icons.keyboard_arrow_down),
-        items: items
-            .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-            .toList(),
-        onChanged: onChanged,
-      ),
-    );
-  }
+    final bool hasError =
+        errorMessage != null && errorMessage.trim().isNotEmpty;
 
-  Widget _buildImagePickerBox({File? image, required VoidCallback onTap}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -379,7 +551,10 @@ class _CarRegistrationScreenState extends State<CarRegistrationScreen> {
         width: double.infinity,
         decoration: BoxDecoration(
           color: const Color(0xFFF9F9F9),
-          border: Border.all(color: const Color(0xFF1595C7), width: 2.5),
+          border: Border.all(
+            color: hasError ? Colors.red : const Color(0xFF1595C7),
+            width: 2.5,
+          ),
           borderRadius: BorderRadius.circular(5),
         ),
         child: Stack(
@@ -394,10 +569,34 @@ class _CarRegistrationScreenState extends State<CarRegistrationScreen> {
                   fit: BoxFit.cover,
                 ),
               ),
-            _corner(top: 5, left: 5, isTop: true, isLeft: true),
-            _corner(top: 5, right: 5, isTop: true, isLeft: false),
-            _corner(bottom: 5, left: 5, isTop: false, isLeft: true),
-            _corner(bottom: 5, right: 5, isTop: false, isLeft: false),
+            _corner(
+              top: 5,
+              left: 5,
+              isTop: true,
+              isLeft: true,
+              color: hasError ? Colors.red : const Color(0xFF1595C7),
+            ),
+            _corner(
+              top: 5,
+              right: 5,
+              isTop: true,
+              isLeft: false,
+              color: hasError ? Colors.red : const Color(0xFF1595C7),
+            ),
+            _corner(
+              bottom: 5,
+              left: 5,
+              isTop: false,
+              isLeft: true,
+              color: hasError ? Colors.red : const Color(0xFF1595C7),
+            ),
+            _corner(
+              bottom: 5,
+              right: 5,
+              isTop: false,
+              isLeft: false,
+              color: hasError ? Colors.red : const Color(0xFF1595C7),
+            ),
           ],
         ),
       ),
@@ -411,6 +610,7 @@ class _CarRegistrationScreenState extends State<CarRegistrationScreen> {
     double? right,
     required bool isTop,
     required bool isLeft,
+    required Color color,
   }) {
     return Positioned(
       top: top,
@@ -422,18 +622,10 @@ class _CarRegistrationScreenState extends State<CarRegistrationScreen> {
         height: 15.h,
         decoration: BoxDecoration(
           border: Border(
-            top: isTop
-                ? const BorderSide(color: Color(0xFF1595C7), width: 2)
-                : BorderSide.none,
-            bottom: !isTop
-                ? const BorderSide(color: Color(0xFF1595C7), width: 2)
-                : BorderSide.none,
-            left: isLeft
-                ? const BorderSide(color: Color(0xFF1595C7), width: 2)
-                : BorderSide.none,
-            right: !isLeft
-                ? const BorderSide(color: Color(0xFF1595C7), width: 2)
-                : BorderSide.none,
+            top: isTop ? BorderSide(color: color, width: 2) : BorderSide.none,
+            bottom: !isTop ? BorderSide(color: color, width: 2) : BorderSide.none,
+            left: isLeft ? BorderSide(color: color, width: 2) : BorderSide.none,
+            right: !isLeft ? BorderSide(color: color, width: 2) : BorderSide.none,
           ),
         ),
       ),

@@ -5,6 +5,8 @@ import 'package:drever_warr/core/service/api_servise.dart';
 import 'package:drever_warr/core/service/failear.dart';
 import 'package:drever_warr/features/preasntaion/data/repo/repo/repo_login/repo.dart';
 
+import '../../../../../../core/utiles/normlize_number.dart';
+
 class ImplementRepoLogin extends RepoLogin {
   final ApiService _apiService;
 
@@ -16,8 +18,9 @@ class ImplementRepoLogin extends RepoLogin {
     required String mobilePhone,
     required String password,
   }) async {
+    final phone = normalizePhone(mobilePhone);
     final Map<String, dynamic> loginData = {
-      "mobilePhone": mobilePhone.toString(),
+      "mobilePhone": phone,
       "password": password,
     };
 

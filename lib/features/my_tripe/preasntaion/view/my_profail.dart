@@ -85,10 +85,16 @@ class _DriverProfailState extends State<DriverProfail> {
                       vertical: 40.h,
                     ),
                     child: ColumnTypecarePhondrive(
-                      carNumber: profile?.car?.carPlateNumber ?? "---",
-                      carType:
-                          "${profile?.car?.carName ?? 'N/A'} (${profile?.car?.carColor ?? ''})",
-                      driverPhone: profile?.authUser?.mobilePhone ?? "N/A",
+                      carNumber: profile?.car?.carPlateNumber ?? '', // ✅ Empty fallback
+                      carType: () {
+                        final name = profile?.car?.carName ?? '';
+                        final color = profile?.car?.carColor ?? '';
+                        print("name $name");
+                        print("color $color");
+
+                        return '$name (${color})'.trim();
+                      }(),
+                      driverPhone: profile?.authUser?.mobilePhone ?? '',
                       colors: AppColors.secondary2,
                       diplay: false,
                       tybe: AppTextType.bodyLarge,
@@ -111,14 +117,20 @@ class _DriverProfailState extends State<DriverProfail> {
                     ],
                   ),
 
-               
+
+                  // 📍 In the ListView.builder section (replace the hardcoded one):
                   Expanded(
                     child: ListView.builder(
-                      itemCount: 3,
+                      itemCount: profile?.evaluations?.length ?? 0, // ✅ Real count from API
                       padding: EdgeInsets.zero,
-                      itemBuilder: (context, index) => const Padding(
+                      itemBuilder: (context, index) => Padding(
                         padding: EdgeInsets.symmetric(vertical: 8.0),
-                        child: OpinionsAboutDrive(),
+                        child: OpinionsAboutDrive(
+                          note: profile?.evaluations?[index].note ?? '', // ✅ Dynamic note
+                          rating: profile?.evaluations?[index].rating != null
+                              ? double.tryParse(profile!.evaluations![index].rating!) ?? 0
+                              : 0, // ✅ Dynamic rating (parsed from String)
+                        ),
                       ),
                     ),
                   ),

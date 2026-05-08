@@ -36,6 +36,7 @@ class ImplementRepoRegister extends RepoRegister {
         
         if (token != null) {
           await CacheManager.saveData("token", token);
+          print("token : $token");
           print("💾 [TOKEN SAVED]: Token has been stored in CacheManager.");
         } else {
           print("⚠️ [TOKEN WARNING]: Success was true but no token found in response!");

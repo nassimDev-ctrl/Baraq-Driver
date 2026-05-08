@@ -14,6 +14,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../core/widgets/password_helper.dart';
+
 class ConfermPassword extends StatefulWidget {
   const ConfermPassword({super.key, required this.mobilePhone1});
   final String mobilePhone1;
@@ -97,11 +99,10 @@ class _ConfermPasswordState extends State<ConfermPassword> {
                   ),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 18.w),
-                    child: AppCustomTextField(
-                      iconImage: IconsAssets.eyeoff,
-                      controller: _password1Controller,
+                    child: PasswordTextField(
                       hintText: "",
-                      isPassword: true,
+                      controller: _password1Controller,
+                      iconImage: IconsAssets.eyeoff,
                       validator: (val) =>
                           Validators.validatePassword(val, context),
                     ),
@@ -121,11 +122,11 @@ class _ConfermPasswordState extends State<ConfermPassword> {
                   ),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 18.w),
-                    child: AppCustomTextField(
-                      iconImage: IconsAssets.eyeoff,
-                      controller: _password2Controller,
+
+                    child: PasswordTextField(
                       hintText: "",
-                      isPassword: true,
+                      controller: _password2Controller,
+                      iconImage: IconsAssets.eyeoff,
                       validator: (val) {
                         if (val != _password1Controller.text) {
                           return "كلمتا المرور غير متطابقتين";

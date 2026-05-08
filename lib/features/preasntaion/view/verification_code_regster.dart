@@ -38,117 +38,120 @@ class _VerificationCodeRegsterState extends State<VerificationCodeRegster> {
   Widget build(BuildContext context) {
     final registerCubit = context.read<RegisterCubit>();
 
-    return Scaffold(
-      resizeToAvoidBottomInset: true,
-      body: BlocListener<RegisterCubit, RegisterState>(
-        listener: (context, state) {
-          if (state is RegisterSuccess) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const RegisterPhotoScreen(),
-              ),
-            );
-          } else if (state is RegisterFailure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.errMessage),
-                backgroundColor: Colors.red,
-              ),
-            );
-          }
-        },
-        child: CustomScrollView(
-          slivers: [
-            SliverFillRemaining(
-              hasScrollBody: false,
-              child: Column(
-                children: [
-                  const IconBak(),
-                  Image.asset(ImageAssets.phone, height: 250.h, width: 250.w),
-                  TextVerificationCode(phone: widget.phone),
-                  SizedBox(height: 25.h),
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        body: BlocListener<RegisterCubit, RegisterState>(
+          listener: (context, state) {
+            if (state is RegisterSuccess) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const RegisterPhotoScreen(isUpdate: false,),
+                ),
+              );
+            } else if (state is RegisterFailure) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.errMessage),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+          },
+          child: CustomScrollView(
+            slivers: [
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Column(
+                  children: [
+                    const IconBak(),
+                    Image.asset(ImageAssets.phone, height: 250.h, width: 250.w),
+                    TextVerificationCode(phone: widget.phone),
+                    SizedBox(height: 25.h),
 
-                 
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 30.w),
-                    child: PinCodeTextField(
-                      appContext: context,
-                      length: 4,
-                      controller: pinController,
-                      keyboardType: TextInputType.number,
-                      animationType: AnimationType.fade,
-                      pinTheme: PinTheme(
-                        shape: PinCodeFieldShape.box,
-                        borderRadius: BorderRadius.circular(12.r),
-                        fieldHeight: 60.h,
-                        fieldWidth: 60.w,
-                        activeFillColor: Colors.white,
-                        inactiveFillColor: Colors.white,
-                        selectedFillColor: Colors.white,
-                        activeColor: AppColors.main1,
-                        inactiveColor: AppColors.main1.withOpacity(0.5),
-                        selectedColor: AppColors.main1,
+
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 30.w),
+                      child: PinCodeTextField(
+                        appContext: context,
+                        length: 4,
+                        controller: pinController,
+                        keyboardType: TextInputType.number,
+                        animationType: AnimationType.fade,
+                        pinTheme: PinTheme(
+                          shape: PinCodeFieldShape.box,
+                          borderRadius: BorderRadius.circular(12.r),
+                          fieldHeight: 60.h,
+                          fieldWidth: 60.w,
+                          activeFillColor: Colors.white,
+                          inactiveFillColor: Colors.white,
+                          selectedFillColor: Colors.white,
+                          activeColor: AppColors.main1,
+                          inactiveColor: AppColors.main1.withOpacity(0.5),
+                          selectedColor: AppColors.main1,
+                        ),
+                        animationDuration: const Duration(milliseconds: 300),
+                        backgroundColor: Colors.transparent,
+                        enableActiveFill: true,
+                        onCompleted: (v) {
+                          otpCode = v;
+                        },
+                        onChanged: (value) {
+                          setState(() {
+                            otpCode = value;
+                          });
+                        },
+                        beforeTextPaste: (text) => true,
                       ),
-                      animationDuration: const Duration(milliseconds: 300),
-                      backgroundColor: Colors.transparent,
-                      enableActiveFill: true,
-                      onCompleted: (v) {
-                        otpCode = v;
-                      },
-                      onChanged: (value) {
-                        setState(() {
-                          otpCode = value;
-                        });
-                      },
-                      beforeTextPaste: (text) => true,  
                     ),
-                  ),
 
-                  SizedBox(height: 20.h),
+                    SizedBox(height: 20.h),
 
-                  RowVerificationCode(
-                    onResend: () {
-                      context.read<VerificationCubit>().sendVerificationCode(
-                        mobilePhone: "+963${widget.phone}",
-                        typeOfUse:
-                            "activate-account",  
-                      );
-                    },
-                  ),
-
-                  SizedBox(height: AppSpacing.x110.h),
-
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 40.w),
-                    child: BlocBuilder<RegisterCubit, RegisterState>(
-                      builder: (context, state) {
-                        if (state is RegisterLoading) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-                        return CustomButton(
-                          title: "Send",
-                          onTap: () {
-                            if (otpCode.length == 4) {
-                              registerCubit.registerUser(otp: otpCode);
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text("يرجى إدخال كود التحقق كاملاً"),
-                                ),
-                              );
-                            }
-                          },
+                    RowVerificationCode(
+                      onResend: () {
+                        context.read<VerificationCubit>().sendVerificationCode(
+                          mobilePhone: "+963${widget.phone}",
+                          typeOfUse:
+                              "activate-account",
                         );
                       },
                     ),
-                  ),
-                ],
+
+                    SizedBox(height: AppSpacing.x110.h),
+
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 40.w),
+                      child: BlocBuilder<RegisterCubit, RegisterState>(
+                        builder: (context, state) {
+                          if (state is RegisterLoading) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                          return CustomButton(
+                            title: "Send",
+                            onTap: () {
+                              if (otpCode.length == 4) {
+                                registerCubit.registerUser(otp: otpCode);
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text("يرجى إدخال كود التحقق كاملاً"),
+                                  ),
+                                );
+                              }
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -41,13 +41,13 @@ class ColumnImageNamePhoneProfaildriver extends StatelessWidget {
         CustomText(
           fullName,
           type: AppTextType.titleSmall,
-          color: AppColors.secondary1,
+          color: AppColors.secondary2,
         ),
         SizedBox(height: AppSpacing.sm.h),
         CustomText(
           phone,
           type: AppTextType.titleSmall,
-          color: AppColors.secondary1,
+          color: AppColors.secondary2,
         ),
       ],
     );

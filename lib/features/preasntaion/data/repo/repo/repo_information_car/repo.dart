@@ -8,6 +8,7 @@ abstract class RepoCarInfo {
     required File carPlateImage,
     required String carName,
     required String category,
+    required String carColor,
     required String carPlateNumber,
     required String carYearMade,
   });
