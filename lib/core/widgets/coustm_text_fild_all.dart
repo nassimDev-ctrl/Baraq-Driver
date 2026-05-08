@@ -143,23 +143,6 @@ class AppCustomTextField extends StatelessWidget {
                                 ),
                               )
                             : null,
-                        suffixIconConstraints: BoxConstraints(minWidth: 35.w),
-                        suffixIcon: isPassword && toggleImage != null
-                            ? GestureDetector(
-                                onTap: onToggleObscure,
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 8.w,
-                                  ),
-                                  child: SvgPicture.asset(
-                                    toggleImage!,
-                                    width: 18.w,
-                                    height: 18.h,
-                                    fit: BoxFit.scaleDown,
-                                  ),
-                                ),
-                              )
-                            : null,
                         contentPadding:
                             contentPadding ??
                             EdgeInsets.symmetric(

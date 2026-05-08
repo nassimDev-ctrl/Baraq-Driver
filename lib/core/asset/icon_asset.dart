@@ -41,4 +41,5 @@ class IconsAssets {
   static const editee = "asets/icon/editee.svg";
    static const phonee = "asets/icon/phoneeee.svg";
    static const profailicon = "asets/icon/profaill.svg";
+   static const logout = "asets/icon/logout.svg";
 }

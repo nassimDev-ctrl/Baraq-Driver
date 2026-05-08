@@ -1,25 +1,37 @@
 import 'package:drever_warr/core/transleat/app_translat.dart';
 import 'package:flutter/material.dart';
+
+import 'normlize_number.dart';
   
 class Validators {
-  static String? validatePhone(String? value,BuildContext context) {
+  static String? validatePhone(String? value, BuildContext context) {
     if (value == null || value.trim().isEmpty) {
-      return AppTranslations.getStaticText(context,  'Please enter your phone number');
-       
+      return AppTranslations.getStaticText(context, 'validate_phone');
     }
-    final phoneRegExp = RegExp(r'^[0-9]{8,15}$');
-    if (!phoneRegExp.hasMatch(value)) {
-      return AppTranslations.getStaticText(context,    'Invalid phone number');
-     
+
+    String phone = value.trim();
+
+    phone = phone.replaceAll(' ', '').replaceAll('-', '');
+    if (phone.startsWith('+')) {
+      phone = phone.substring(1);
     }
+
+    if (phone.startsWith('963')) {
+      phone = phone.substring(3);
+    }
+    final phoneRegExp = RegExp(r'^[0-9]{9}$');
+
+    if (!phoneRegExp.hasMatch(normalizePhone(phone))) {
+      return AppTranslations.getStaticText(context, 'validate_phone');
+    }
+
     return null;
   }
 
-  
+
   static String? validateEmail(String? value, BuildContext context) {
     if (value == null || value.trim().isEmpty) {
-      return AppTranslations.getStaticText(context,  'This Feild is Empty');
- 
+      return AppTranslations.getStaticText(context, 'empty_filed');
     }
 
     final cleanedValue = value.trim().replaceAll(
@@ -28,12 +40,14 @@ class Validators {
     );
 
     final emailRegExp = RegExp(
-      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+      r"^(?!.*\.\.)[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*@"
+      r"(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.)+[A-Za-z]{2,}$",
     );
+
     if (!emailRegExp.hasMatch(cleanedValue)) {
-      return AppTranslations.getStaticText(context,   'Invaild Email');
-     
+      return AppTranslations.getStaticText(context, 'invalid_email');
     }
+
     return null;
   }
 
@@ -54,7 +68,7 @@ class Validators {
 
   static String? isEmptyValue(String? value, BuildContext context) {
     if (value == null || value.isEmpty) {
-      return AppTranslations.getStaticText(context,  "This Feild is Empty");
+      return AppTranslations.getStaticText(context,  "empty_filed");
  
     }
     return null;
@@ -62,7 +76,7 @@ class Validators {
 
   static String? validatePassword(String? value, BuildContext context) {
     if (value == null || value.isEmpty) {
-      return AppTranslations.getStaticText(context,  'This Feild is Empty');
+      return AppTranslations.getStaticText(context,  'empty_filed');
      
     }
 
@@ -86,7 +100,7 @@ class Validators {
   ) {
     if (confirmPassword == null || confirmPassword.isEmpty) {
       return AppTranslations.getStaticText(context,  
-      "This Feild is Empty");
+      "empty_filed");
       
     } else if (confirmPassword != password) {
       return 

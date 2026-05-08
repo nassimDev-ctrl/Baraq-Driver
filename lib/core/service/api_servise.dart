@@ -12,40 +12,41 @@ class ApiService {
   final Dio dio;
   ApiService(this.dio);
 
-  // Future<Options?> _preparationOptionsRequest(
-  //   bool needToken, {
+  Future<String> _getCurrentLanguageCode() async {
+    final dynamic savedLanguage = await CacheManager.getData('app_language');
 
-  //   bool isFormData = false,
-  // }) async {
-  //   Map<String, dynamic>? header = {};
-  //   if (needToken) {
-  //     String? token = await CacheManager.getData('token');
-  //     header["Authorization"] = "Bearer $token";
-  //   }
-  //   String content = (isFormData) ? 'multipart/form-data' : 'application/json';
-  //   return Options(
-  //     contentType: content,
-  //     headers: header,
-  //     receiveTimeout: Duration(seconds: reciveTimeOut),
-  //     sendTimeout: Duration(
-  //       seconds: isFormData ? sendTimeOutFormData : sendTimeOut,
-  //     ),
-  //   );
-  // }
+    final lang = savedLanguage?.toString().toLowerCase();
+
+    switch (lang) {
+      case 'ar':
+      case 'arabic':
+        return 'ar';
+      case 'ku':
+      case 'kurdish':
+        return 'ku';
+      case 'en':
+      case 'english':
+      default:
+        return 'ar';
+    }
+  }
+
   Future<Options?> _preparationOptionsRequest(
     bool needToken, {
     bool isFormData = false,
   }) async {
     Map<String, dynamic>? header = {};
 
-    // 1. Add the Language Header (The missing piece)
-    // Replace 'ar' or 'en' with your app's current locale logic
-    header["lang"] = "ar"; // Or try header["Accept-Language"] = "ar";
 
-    // 2. Existing Token logic
+    header["Accept-Language"] = await _getCurrentLanguageCode();
+
     if (needToken) {
-      String? token = await CacheManager.getData('token');
-      header["Authorization"] = "Bearer $token";
+      final token = await CacheManager.getData('token');
+      if (token != null && token.toString().trim().isNotEmpty) {
+        header["Authorization"] = token.toString().startsWith("Bearer ")
+            ? token.toString()
+            : "Bearer ${token.toString().trim()}";
+      }
     }
 
     String content = (isFormData) ? 'multipart/form-data' : 'application/json';
