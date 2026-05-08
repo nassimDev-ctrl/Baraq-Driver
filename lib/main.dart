@@ -4,14 +4,19 @@ import 'package:drever_warr/core/service/api_servise.dart';
 import 'package:drever_warr/core/style/text_style.dart';
 import 'package:drever_warr/core/transleat/lunguesh_cubit.dart';
 import 'package:drever_warr/core/utiles/serves_lecture.dart';
+import 'package:drever_warr/features/home/preasntaion/data/cubit/complain_cubit/cubit.dart';
 import 'package:drever_warr/features/home/preasntaion/data/cubit/cubit_finsh_trips/cubit.dart';
 import 'package:drever_warr/features/home/preasntaion/data/cubit/cubit_wallat/cubit.dart';
+import 'package:drever_warr/features/home/preasntaion/data/cubit/logout_cubit/cubit.dart';
+import 'package:drever_warr/features/home/preasntaion/data/cubit/repo/complain_repo/repo_impl.dart';
 import 'package:drever_warr/features/home/preasntaion/data/cubit/repo/finsh_trips_repo/repo_implmntion.dart';
+import 'package:drever_warr/features/home/preasntaion/data/cubit/repo/logout_repo/repo_impl.dart';
 import 'package:drever_warr/features/home/preasntaion/data/cubit/repo/repo_wallat/repo_implmantion.dart';
 import 'package:drever_warr/features/home/preasntaion/view/splash_view.dart';
 import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/ScheduledTrips_cubit/cubit.dart';
 import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/accept_order_cubit/cubit.dart';
 import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/cubet_end_tripe/cubit.dart';
+import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/cubit_current_trip/cubit.dart';
 import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/cubit_order/cubit.dart';
 import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/cubit_start_order/cubit.dart';
 import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/repo/accept_order_repo/repo_implmantion.dart';
@@ -19,8 +24,19 @@ import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/repo/repo_
 import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/repo/repo_order/ScheduledTrips_repo/repo_implmantion.dart';
 import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/repo/repo_order/repo_implmantion.dart';
 import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/repo/repo_start_tripe/repo_implmantion.dart';
+import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/scheduled_accept_order_cubit/cubit_state.dart';
+import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/trip_details_cubit/cubit.dart';
+import 'package:drever_warr/features/my_oreder/preasntaion/data/repo/current_trip_repo/repo_impl.dart';
+import 'package:drever_warr/features/my_oreder/preasntaion/data/repo/trip_details_repo/repo_implementation.dart';
+import 'package:drever_warr/features/my_tripe/data/cubit/cubit_messages/cubit.dart';
 import 'package:drever_warr/features/my_tripe/data/cubit/cubit_ratting/cubit.dart';
+import 'package:drever_warr/features/my_tripe/data/cubit/cubit_trip_note/cubit.dart';
+import 'package:drever_warr/features/my_tripe/data/repo/details_single_trip_repo/repo.dart';
+import 'package:drever_warr/features/my_tripe/data/repo/details_single_trip_repo/repo_impl.dart';
+import 'package:drever_warr/features/my_tripe/data/repo/messages_repo/repo.dart';
+import 'package:drever_warr/features/my_tripe/data/repo/messages_repo/repo_impl.dart';
 import 'package:drever_warr/features/my_tripe/data/repo/repo_rating/repo_implmantion.dart';
+import 'package:drever_warr/features/my_tripe/data/repo/trip_note_repo/repo_impl.dart';
 import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_car_all_filld/cubit.dart';
 import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_car_image/cubit.dart';
 import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_category/cubit.dart';
@@ -49,17 +65,67 @@ import 'package:drever_warr/features/setting/data/repo/repo_edit_passowrd/repo_i
 import 'package:drever_warr/features/setting/data/repo/repo_profail/repo_implmantion.dart';
 import 'package:drever_warr/features/setting/data/repo/repo_updet_phone.dart/repo_implmantion.dart';
 import 'package:drever_warr/features/setting/data/repo/repo_updet_profail/repo_implmantion.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import 'core/cash/preferences_servis.dart';
+import 'core/service/notification_service.dart';
+import 'features/home/preasntaion/data/cubit/cubit_update_location/cubit.dart';
+import 'features/home/preasntaion/data/cubit/driver_available_cubit/cubit.dart';
+import 'features/home/preasntaion/data/cubit/repo/driver_available_repo/repo.dart';
+import 'features/home/preasntaion/data/cubit/repo/update_location/repo_implementation.dart';
+import 'features/my_oreder/preasntaion/data/cubit/repo/scheduled_accept_order_repo/repo_implmantion.dart';
+import 'features/my_oreder/preasntaion/data/cubit/scheduled_accept_order_cubit/cubit.dart';
+import 'features/my_tripe/data/cubit/cubit_details_single_trip/cubit.dart';
+import 'features/setting/data/cubit/cubit_update_language/cubit_state.dart';
+import 'features/setting/data/repo/update_language_repo/repo.dart';
+import 'firebase_options.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+Future<void> requestAppPermissions() async {
+  final permissions = <Permission>[
+    Permission.locationWhenInUse,
+    Permission.notification,
+  ];
+
+  for (final permission in permissions) {
+    final status = await permission.status;
+
+    if (status.isDenied || status.isRestricted || status.isPermanentlyDenied) {
+      final result = await permission.request();
+
+      if (result.isPermanentlyDenied) {
+        await openAppSettings();
+      }
+    }
+  }
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   setupServiceLocator();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  await requestAppPermissions();
+
+  NotificationService.instance.setApiService(getIt.get<ApiService>());
+  FirebaseMessaging.onBackgroundMessage(
+    NotificationService.firebaseBackgroundHandler,
+  );
+
+  await NotificationService.instance.init();
   runApp(const MyApp());
+
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -123,10 +189,24 @@ class MyApp extends StatelessWidget {
           ),
         ),
         BlocProvider(
+          create: (context) => LogoutCubit(
+            LogoutRepositoryImpl(
+              getIt.get<ApiService>(),
+            ),
+          ),
+        ),
+        BlocProvider(
           create: (context) => CarAllFilldCubit(
             CarAllFilldRepoImpl(
               apiService: getIt.get<ApiService>(),
             ),  
+          ),
+        ),
+        BlocProvider(
+          create: (context) => ChatCubit(
+            ChatRepositoryImpl(
+              getIt.get<ApiService>(),
+            ),
           ),
         ),
         BlocProvider(
@@ -144,6 +224,13 @@ class MyApp extends StatelessWidget {
           ),
         ),
         BlocProvider(
+          create: (context) => DriverStatusCubit(
+            DriverStatusRepositoryImpl(
+              getIt.get<ApiService>(),
+            ),
+          ),
+        ),
+        BlocProvider(
           create: (context) => ScheduledTripsCubit(
             RepoScheduledTripsImpl(
               getIt.get<ApiService>(),
@@ -155,6 +242,34 @@ class MyApp extends StatelessWidget {
             AcceptTripRepoImpl(
               getIt.get<ApiService>(),
             ),   
+          ),
+        ),
+        BlocProvider(
+          create: (context) => ScheduledAcceptTripCubit(
+            ScheduledAcceptOrderRepoImpl(
+              getIt.get<ApiService>(),
+            ),
+          ),
+        ),
+        BlocProvider(
+          create: (context) => TripDetailsCubit(
+            TripDetailsRepositoryImpl(
+              getIt.get<ApiService>(),
+            ),
+          ),
+        ),
+        BlocProvider(
+          create: (context) => SingleTripDetailsCubit(
+            SingleTripDetailsRepositoryImpl(
+              getIt.get<ApiService>(),
+            ),
+          ),
+        ),
+        BlocProvider(
+          create: (context) => UpdateLanguageCubit(
+            LanguageRepositoryImpl(
+              getIt.get<ApiService>(),
+            ),
           ),
         ),
         BlocProvider(
@@ -186,6 +301,13 @@ class MyApp extends StatelessWidget {
           ),
         ),
         BlocProvider(
+          create: (context) => DriverLocationCubit(
+            DriverLocationRepositoryImpl(
+              getIt.get<ApiService>(),
+            ),
+          ),
+        ),
+        BlocProvider(
           create: (context) => UpdateProfileCubit(
             UpdateProfileRepoImpl(
               getIt.get<ApiService>(),
@@ -214,6 +336,27 @@ class MyApp extends StatelessWidget {
           ),
         ),
         BlocProvider(
+          create: (context) => TripNoteCubit(
+            TripNoteRepositoryImpl(
+              getIt.get<ApiService>(),
+            ),
+          ),
+        ),
+        BlocProvider(
+          create: (context) => GetStartedTripsCubit(
+            GetStartedTripsRepositoryImpl(
+              getIt.get<ApiService>(),
+            ),
+          ),
+        ),
+        BlocProvider(
+          create: (context) => AddComplainCubit(
+            AddComplainRepositoryImpl(
+              getIt.get<ApiService>(),
+            ),
+          ),
+        ),
+        BlocProvider(
           create: (context) => EndTripCubit(
             EndTripRepositoryImpl(
               getIt.get<ApiService>(),
@@ -227,21 +370,23 @@ class MyApp extends StatelessWidget {
         
           Locale currentLocale;
           TextDirection currentDirection;
+          context.read<LanguageCubit>().setLanguage(language);
+
 
           switch (language) {
-            case Language.arabic:
-              currentLocale = const Locale('ar');
-              currentDirection = TextDirection.ltr; 
+            case Language.english:
+              currentLocale = const Locale('en');
+              currentDirection = TextDirection.rtl;
               break;
             case Language.kurdish:
               currentLocale = const Locale('ku');
               currentDirection =
-                  TextDirection.rtl;  
+                  TextDirection.rtl;
               break;
-            case Language.english:
+            case Language.arabic:
             default:
-              currentLocale = const Locale('en');
-              currentDirection = TextDirection.rtl;  
+              currentLocale = const Locale('ar');
+              currentDirection = TextDirection.ltr;
               break;
           }
 
