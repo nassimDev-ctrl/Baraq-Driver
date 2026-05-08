@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "80733184068",
+    "project_id": "waar-taxi",
+    "storage_bucket": "waar-taxi.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:80733184068:android:049ca8ff9b2b10ca969c11",
+        "android_client_info": {
+          "package_name": "com.example.drever_warr"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBIAqH3YolTryb9_uMYb1SwvDG-OYotafI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:80733184068:android:34fb2c4cffd7dc0b969c11",
+        "android_client_info": {
+          "package_name": "com.example.warr2"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBIAqH3YolTryb9_uMYb1SwvDG-OYotafI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
