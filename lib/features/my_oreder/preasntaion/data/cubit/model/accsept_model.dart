@@ -1,4 +1,3 @@
- 
 class ActiveTripModel {
   final String id;
   final String clientName;
@@ -12,6 +11,7 @@ class ActiveTripModel {
   final double totalPrice;
   final double distance;
   final String status;
+  final double durationMinutes;
 
   ActiveTripModel({
     required this.id,
@@ -26,38 +26,69 @@ class ActiveTripModel {
     required this.totalPrice,
     required this.distance,
     required this.status,
+    required this.durationMinutes,
   });
 
   factory ActiveTripModel.fromJson(Map<String, dynamic> json) {
-    
-    String name = "عميل واري";
-    String phone = "بدون رقم";
-    
-    if (json['client'] is Map) {
-      final client = json['client'];
-      name = "${client['firstName'] ?? 'عميل'} ${client['lastName'] ?? 'واري'}";
-      phone = client['mobilePhone'] ?? 'بدون رقم';
-    }
+    final Map<String, dynamic> trip =
+    _asMap(json['data'])['updatedTrip'] is Map<String, dynamic>
+        ? Map<String, dynamic>.from(json['data']['updatedTrip'])
+        : json;
 
-    final startLoc = json['startLocation'] is Map ? json['startLocation'] : {};
-    final destLoc = json['destinationLocation'] is Map ? json['destinationLocation'] : {};
+    final client = _asMap(trip['client']);
+    final startLoc = _asMap(trip['startLocation']);
+    final destLoc = _asMap(trip['destinationLocation']);
 
-    final List startCoords = startLoc['coordinates'] ?? [0.0, 0.0];
-    final List destCoords = destLoc['coordinates'] ?? [0.0, 0.0];
+    final startCoords = _asList(startLoc['coordinates']);
+    final destCoords = _asList(destLoc['coordinates']);
+
+    final String name = _buildName(
+      client['firstName']?.toString(),
+      client['lastName']?.toString(),
+      fallback: 'عميل واري',
+    );
+
+    final String phone =
+        client['emergencyNumber']?.toString() ?? 'بدون رقم';
+
 
     return ActiveTripModel(
-      id: json['_id'] ?? '',
+      id: trip['_id']?.toString() ?? '',
       clientName: name,
       clientPhone: phone,
-      sourceAddress: startLoc['address'] ?? 'غير محدد',
-      destinationAddress: destLoc['address'] ?? 'غير محدد',
-      startLat: startCoords.length > 1 ? (startCoords[1] as num).toDouble() : 0.0,
-      startLng: startCoords.length > 0 ? (startCoords[0] as num).toDouble() : 0.0,
-      destinationLat: destCoords.length > 1 ? (destCoords[1] as num).toDouble() : 0.0,
-      destinationLng: destCoords.length > 0 ? (destCoords[0] as num).toDouble() : 0.0,
-      totalPrice: (json['totalPrice'] ?? 0).toDouble(),
-      distance: (json['distanceKmMeters'] ?? 0).toDouble(),
-      status: json['status'] ?? '',
+      sourceAddress: startLoc['address']?.toString() ?? 'غير محدد',
+      destinationAddress: destLoc['address']?.toString() ?? 'غير محدد',
+      startLat: startCoords.length > 1
+          ? (startCoords[1] as num).toDouble()
+          : 0.0,
+      startLng: startCoords.isNotEmpty
+          ? (startCoords[0] as num).toDouble()
+          : 0.0,
+      destinationLat: destCoords.length > 1
+          ? (destCoords[1] as num).toDouble()
+          : 0.0,
+      destinationLng: destCoords.isNotEmpty
+          ? (destCoords[0] as num).toDouble()
+          : 0.0,
+      totalPrice: (trip['totalPrice'] as num?)?.toDouble() ?? 0.0,
+      distance: (trip['distanceKmMeters'] as num?)?.toDouble() ?? 0.0,
+      status: trip['status']?.toString() ?? '',
+      durationMinutes: (trip['durationMinutes'] as num?)?.toDouble() ?? 0.0,
     );
+  }
+
+  static Map<String, dynamic> _asMap(dynamic value) {
+    if (value is Map<String, dynamic>) return value;
+    return <String, dynamic>{};
+  }
+
+  static List _asList(dynamic value) {
+    if (value is List) return value;
+    return [];
+  }
+
+  static String _buildName(String? first, String? last, {String fallback = ''}) {
+    final full = '${first ?? ''} ${last ?? ''}'.trim();
+    return full.isEmpty ? fallback : full;
   }
 }

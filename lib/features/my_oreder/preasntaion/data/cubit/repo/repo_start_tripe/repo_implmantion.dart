@@ -1,4 +1,4 @@
-import 'dart:developer';  
+import 'dart:developer';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:drever_warr/core/service/api_servise.dart';
@@ -22,20 +22,25 @@ class TripRepositoryImpl implements TripRepository {
         endpoint: 'trips/start-trip/$tripId',
       );
 
-      print("✅ [SUCCESS] Response Data: $response");
-      
-      String message = response['message'] ?? "Trip started successfully";
+      print("✅ [SUCCESS] Response Data: ${response.data}");
+
+      String message = "Trip started successfully";
+
+      if (response.data is Map<String, dynamic>) {
+        message = response.data['message'] ?? message;
+      }
+
       print("💬 Success Message: $message");
       print("---------------------------------------------------------");
 
       return right(message);
     } catch (e) {
       print("❌ [FAILURE] Error detected during startTrip");
-      
+
       if (e is DioException) {
         final failure = ServierFailur.fromDioError(e);
         print("🚨 Dio Error Type: ${e.type}");
-        print("🚨 Error Message: ${failure. errMassage}");
+        print("🚨 Error Message: ${failure.errMassage}");
         print("🚨 Status Code: ${e.response?.statusCode}");
         print("🚨 Response Data: ${e.response?.data}");
         print("---------------------------------------------------------");

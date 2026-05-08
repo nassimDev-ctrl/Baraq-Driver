@@ -1,4 +1,3 @@
- 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
@@ -13,6 +12,7 @@ class UrgentOrdersCard extends StatelessWidget {
   final String distance;
   final String fromAddress;
   final String toAddress;
+  final String? date;
   final VoidCallback onAccept;
 
   const UrgentOrdersCard({
@@ -24,6 +24,7 @@ class UrgentOrdersCard extends StatelessWidget {
     required this.distance,
     required this.fromAddress,
     required this.toAddress,
+    this.date,
     required this.onAccept,
   });
 
@@ -64,12 +65,20 @@ class UrgentOrdersCard extends StatelessWidget {
                     children: [
                       Column(
                         children: [
-                          Icon(Icons.radio_button_unchecked, color: Colors.grey, size: 16.sp),
+                          Icon(
+                            Icons.radio_button_unchecked,
+                            color: Colors.grey,
+                            size: 16.sp,
+                          ),
                           CustomPaint(
                             size: Size(1, 30.h),
                             painter: DashedLinePainter(),
                           ),
-                          Icon(Icons.location_on, color: AppColors.blue, size: 20.sp),
+                          Icon(
+                            Icons.location_on,
+                            color: AppColors.blue,
+                            size: 20.sp,
+                          ),
                         ],
                       ),
                       SizedBox(width: 8.w),
@@ -77,9 +86,17 @@ class UrgentOrdersCard extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            CustomText(fromAddress, type: AppTextType.bodySmall, maxLines: 1),
+                            CustomText(
+                              fromAddress,
+                              type: AppTextType.bodySmall,
+                              maxLines: 1,
+                            ),
                             SizedBox(height: 25.h),
-                            CustomText(toAddress, type: AppTextType.bodySmall, maxLines: 1),
+                            CustomText(
+                              toAddress,
+                              type: AppTextType.bodySmall,
+                              maxLines: 1,
+                            ),
                           ],
                         ),
                       ),
@@ -95,13 +112,40 @@ class UrgentOrdersCard extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    CustomText(price, color: Colors.cyan, type: AppTextType.titleSmall),
-                    CustomText(distance, type: AppTextType.bodySmall, color: Colors.grey),
+                    CustomText(
+                      price,
+                      color: Colors.cyan,
+                      type: AppTextType.titleSmall,
+                    ),
+                    CustomText(
+                      distance,
+                      type: AppTextType.bodySmall,
+                      color: Colors.grey,
+                    ),
+                    if (date != null)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          SizedBox(height: 10,),
+                          CustomText(
+                            "scheduled_date",
+                            color: Colors.black,
+                            type: AppTextType.bodySmall,
+                          ),
+                          CustomText(
+                            date!,
+                            color: Colors.black,
+                            type: AppTextType.titleSmall,
+                          ),
+                        ],
+                      ),
                   ],
                 ),
                 SizedBox(height: 40.h),
                 InkWell(
-                  onTap: onAccept,
+                  onTap: buttonStatus == OrderButtonStatus.loading
+                      ? null
+                      : onAccept,
                   child: _buildActionButton(),
                 ),
               ],
@@ -113,18 +157,53 @@ class UrgentOrdersCard extends StatelessWidget {
   }
 
   Widget _buildActionButton() {
-    bool isAccepted = buttonStatus == OrderButtonStatus.accepted;
+    final isLoading = buttonStatus == OrderButtonStatus.loading;
+    final isAccepted = buttonStatus == OrderButtonStatus.accepted;
+    final isStart = buttonStatus == OrderButtonStatus.start;
+
+    Color backgroundColor;
+    Color textColor;
+    String textKey;
+
+    if (isStart) {
+      backgroundColor = const Color(0xFF9C4DB9);
+      textColor = Colors.white;
+      textKey = "start";
+    } else if (isAccepted) {
+      backgroundColor = Colors.white;
+      textColor = const Color(0xFF9C4DB9);
+      textKey = "accepted";
+    } else {
+      backgroundColor = const Color(0xFF9C4DB9);
+      textColor = Colors.white;
+      textKey = "accept";
+    }
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 25.w, vertical: 8.h),
       decoration: BoxDecoration(
-        color: isAccepted ? Colors.white : const Color(0xFF9C4DB9),
+        color: backgroundColor,
         border: Border.all(color: const Color(0xFF9C4DB9), width: 1.2),
         borderRadius: BorderRadius.circular(4.r),
       ),
-      child: CustomText(
-        isAccepted ? "مقبول" : "قبول",
-        color: isAccepted ? const Color(0xFF9C4DB9) : Colors.white,
-        type: AppTextType.titleSmall,
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 180),
+        child: isLoading
+            ? SizedBox(
+          key: const ValueKey("loading"),
+          width: 16,
+          height: 16,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            color: textColor,
+          ),
+        )
+            : CustomText(
+          textKey,
+          key: ValueKey(textKey),
+          color: textColor,
+          type: AppTextType.titleSmall,
+        ),
       ),
     );
   }
@@ -140,6 +219,7 @@ class DashedLinePainter extends CustomPainter {
       startY += dashHeight + dashSpace;
     }
   }
+
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => false;
 }

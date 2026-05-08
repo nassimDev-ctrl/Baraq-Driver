@@ -49,7 +49,7 @@ class _WalletScreenState extends State<WalletScreen> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        AppTranslations.getText(context, "wallet_record"),
+                        AppTranslations.getText(context, "current_balance"),
                         style: TextStyle(
                           fontSize: 22.sp,
                           fontWeight: FontWeight.w600,
@@ -72,7 +72,7 @@ class _WalletScreenState extends State<WalletScreen> {
                       ),
                       SizedBox(height: 40.h),
                       Text(
-                        AppTranslations.getText(context, "current_balance"),
+                        AppTranslations.getText(context, "wallet_record"),
                         style: TextStyle(
                           fontSize: 22.sp,
                           fontWeight: FontWeight.w600,

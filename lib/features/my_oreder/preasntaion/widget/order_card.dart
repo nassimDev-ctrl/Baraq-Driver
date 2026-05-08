@@ -1,4 +1,3 @@
- 
 import 'package:drever_warr/core/asset/icon_asset.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/widgets/customText.dart';
@@ -12,12 +11,21 @@ import 'package:google_fonts/google_fonts.dart';
 
 class OrderCard extends StatelessWidget {
   final OrderButtonStatus buttonStatus;
-  final ScheduledTripModel trip;  
+  final ScheduledTripModel trip;
+  final VoidCallback? onAccept;
 
-  const OrderCard({super.key, required this.buttonStatus, required this.trip});
+  const OrderCard({
+    super.key,
+    required this.buttonStatus,
+    required this.trip,
+    this.onAccept
+  });
 
   @override
   Widget build(BuildContext context) {
+    final isLoading = buttonStatus == OrderButtonStatus.loading;
+    final isAccepted = buttonStatus == OrderButtonStatus.accepted;
+
     return Container(
       margin: EdgeInsets.symmetric(vertical: 8.h, horizontal: 16.w),
       padding: EdgeInsets.all(12.w),
@@ -36,7 +44,6 @@ class OrderCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-         
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -44,7 +51,7 @@ class OrderCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CustomText(
-                    trip.scheduledDate ?? "غير محدد",  
+                    trip.scheduledDate ?? "غير محدد",
                     type: AppTextType.titleSmall,
                   ),
                 ],
@@ -64,14 +71,10 @@ class OrderCard extends StatelessWidget {
               ),
             ],
           ),
-
           SizedBox(height: 20.h),
-
-        
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-             
               Expanded(
                 flex: 2,
                 child: Column(
@@ -83,12 +86,10 @@ class OrderCard extends StatelessWidget {
                       type: AppTextType.titleSmall,
                     ),
                     SizedBox(height: 35.h),
-                    _buildActionButton(),
+                    _buildActionButton(isLoading: isLoading, isAccepted: isAccepted),
                   ],
                 ),
               ),
-
-              
               Expanded(
                 flex: 3,
                 child: Row(
@@ -142,8 +143,10 @@ class OrderCard extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButton() {
-    bool isAccepted = buttonStatus == OrderButtonStatus.accepted;
+  Widget _buildActionButton({
+    required bool isLoading,
+    required bool isAccepted,
+  }) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
       decoration: BoxDecoration(
@@ -153,12 +156,26 @@ class OrderCard extends StatelessWidget {
             : null,
         borderRadius: BorderRadius.circular(4.r),
       ),
-      child: Text(
-        isAccepted ? "Accepted" : "Accept",
-        style: GoogleFonts.cairo(
-          fontSize: 13.sp,
-          fontWeight: FontWeight.w700,
-          color: isAccepted ? AppColors.main1 : Colors.white,
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 180),
+        child: isLoading
+            ? SizedBox(
+          key: const ValueKey("loading"),
+          width: 16,
+          height: 16,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            color: isAccepted ? AppColors.main1 : Colors.white,
+          ),
+        )
+            : Text(
+          isAccepted ? "Accepted" : "Accept",
+          key: ValueKey(isAccepted ? "accepted" : "accept"),
+          style: GoogleFonts.cairo(
+            fontSize: 13.sp,
+            fontWeight: FontWeight.w700,
+            color: isAccepted ? AppColors.main1 : Colors.white,
+          ),
         ),
       ),
     );

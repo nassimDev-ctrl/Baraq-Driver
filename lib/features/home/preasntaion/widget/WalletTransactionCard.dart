@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:drever_warr/core/widgets/customText.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
 
+import '../../../../core/transleat/app_translat.dart';
+
 class WalletTransactionCard extends StatelessWidget {
   final String date;
   final String amount;
@@ -32,7 +34,7 @@ class WalletTransactionCard extends StatelessWidget {
             offset: const Offset(
               0,
               3,
-            ), 
+            ),
             blurRadius: 0, 
           ),
          
@@ -53,7 +55,7 @@ class WalletTransactionCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               CustomText(
-                " إلى حسابك .",
+                isCredit ? "transaction_to_account" : "transaction_from_account",
                 type: AppTextType.bodyMedium,
                 color: Colors.black,
               ),
@@ -62,19 +64,21 @@ class WalletTransactionCard extends StatelessWidget {
                 type: AppTextType.bodyMedium,
                 color: isCredit ? Colors.purple : Colors.red,
               ),
-
               CustomText(
-                " ل.س ",
+                " ${AppTranslations.getText(context, "currency_syp")} ",
                 type: AppTextType.bodyMedium,
                 color: isCredit ? Colors.purple : Colors.red,
               ),
               CustomText(
-                isCredit ? "تم تحويل " : "تم خصم ",
+                AppTranslations.getText(
+                  context,
+                  isCredit ? "transaction_sent" : "transaction_deducted",
+                ),
                 type: AppTextType.bodyMedium,
                 color: Colors.black,
               ),
             ],
-          ),
+          )
         ],
       ),
     );

@@ -1,11 +1,10 @@
- 
 import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/ScheduledTrips_cubit/cubit.dart';
 import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/ScheduledTrips_cubit/cubit_stat.dart';
 import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/accept_order_cubit/cubit.dart';
 import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/accept_order_cubit/cubit_stat.dart';
 import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/cubit_order/cubit.dart';
 import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/cubit_order/cubit_stat.dart';
-import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/model/accsept_model.dart'; // تأكد أن هذا يحتوي على ActiveTripModel
+import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/model/accsept_model.dart';
 import 'package:drever_warr/features/my_oreder/preasntaion/widget/order_card.dart';
 import 'package:drever_warr/features/my_tripe/preasntaion/view/start_tripe.dart';
 import 'package:flutter/material.dart';
@@ -14,25 +13,42 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/widgets/customText.dart';
 import 'package:drever_warr/features/my_oreder/preasntaion/widget/UrgentOrdersCard.dart';
-import 'package:drever_warr/features/my_oreder/preasntaion/widget/header_order.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:drever_warr/core/cash/preferences_servis.dart';
+import 'package:drever_warr/core/service/soket_serves.dart';
+import 'package:drever_warr/features/my_tripe/preasntaion/view/end_tripe.dart';
+import 'package:intl/intl.dart' as intl;
+import '../../../../core/asset/icon_asset.dart';
+import '../../../../core/asset/image_asset.dart';
+import '../../../../core/transleat/app_translat.dart';
+import '../../../home/preasntaion/view/menew.dart';
+import '../data/cubit/cubit_start_order/cubit.dart';
+import '../data/cubit/cubit_start_order/cubit_stat.dart';
+import '../data/cubit/model/ScheduledTrips.dart';
+import '../data/cubit/scheduled_accept_order_cubit/cubit.dart';
+import '../data/cubit/scheduled_accept_order_cubit/cubit_state.dart';
+import '../widget/header_order.dart';
 
-enum OrderButtonStatus { accept, accepted, loading }
+enum OrderButtonStatus { accept, start, accepted, loading }
 
 class OrdersScreen extends StatefulWidget {
-  const OrdersScreen({super.key});
+  final String? imagePath;
+  const OrdersScreen({super.key, required this.imagePath});
 
   @override
   State<OrdersScreen> createState() => _OrdersScreenState();
 }
 
-class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _OrdersScreenState extends State<OrdersScreen>
+    with SingleTickerProviderStateMixin {
+  late final TabController _tabController;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this, initialIndex: 0);
-    _tabController.addListener(() => setState(() {}));
+    _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(_onTabChanged);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<SearchingTripsCubit>().getSearchingTrips();
@@ -40,108 +56,221 @@ class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderSt
     });
   }
 
+  void _onTabChanged() {
+    if (!mounted) return;
+    setState(() {});
+  }
+
   @override
   void dispose() {
+    _tabController.removeListener(_onTabChanged);
     _tabController.dispose();
     super.dispose();
   }
 
+  bool _isClientConfirmed(ScheduledTripModel trip) {
+    return (trip.status ?? '').trim().toLowerCase() == 'client_confirmed';
+  }
+
+  void _acceptScheduledTrip(ScheduledTripModel trip) {
+    final activeTrip = _mapScheduledTripToActiveTrip(trip);
+    context.read<ScheduledAcceptTripCubit>().acceptScheduledTrip(
+      trip: activeTrip,
+    );
+  }
+
+  ActiveTripModel _mapToActiveTrip(dynamic trip) {
+    return ActiveTripModel(
+      id: trip.id,
+      clientName: trip.clientName ?? "عميل واري",
+      clientPhone: trip.clientPhone ?? "",
+      sourceAddress: trip.sourceAddress,
+      destinationAddress: trip.destinationAddress,
+      startLat: trip.startLat ?? 0.0,
+      startLng: trip.startLng ?? 0.0,
+      destinationLat: trip.destinationLat ?? 0.0,
+      destinationLng: trip.destinationLng ?? 0.0,
+      totalPrice: trip.totalPrice.toDouble(),
+      distance: trip.distance.toDouble(),
+      status: "accepted",
+      durationMinutes: trip.durationMinutes,
+    );
+  }
+
+  ActiveTripModel _mapScheduledTripToActiveTrip(ScheduledTripModel trip) {
+    return ActiveTripModel(
+      id: trip.id,
+      clientName: trip.clientName ?? "عميل واري",
+      clientPhone: trip.clientPhone ?? "",
+      sourceAddress: trip.sourceAddress,
+      destinationAddress: trip.destinationAddress,
+      startLat: trip.startLat ?? 0.0,
+      startLng: trip.startLng ?? 0.0,
+      destinationLat: trip.destinationLat ?? 0.0,
+      destinationLng: trip.destinationLng ?? 0.0,
+      totalPrice: trip.totalPrice.toDouble(),
+      distance: trip.distance ?? 0.0,
+      status: "accepted",
+      durationMinutes: trip.durationMinutes ?? 0.0,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AcceptTripCubit, AcceptTripState>(
-      listener: (context, state) {
-        if (state is AcceptTripSuccess) {
-      
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => LiveTripScreen(trip: state.trip)),
-          );
-        } else if (state is AcceptTripFailure) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.errMessage),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
-      },
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: SafeArea(
-          child: Column(
-            children: [
-              HeaderOrder(onMenuTap: () {}, con: true),
-              SizedBox(height: 20.h),
-              _buildTabs(),
-              SizedBox(height: 10.h),
-              Expanded(
-                child: TabBarView(
-                  controller: _tabController,
-                  children: [
-                    _buildUrgentOrdersList(),
-                    _buildScheduledOrdersList(),
-                  ],
+    final searchingState = context.watch<SearchingTripsCubit>().state;
+    final scheduledState = context.watch<ScheduledTripsCubit>().state;
+
+    final urgentCount =
+    searchingState is SearchingTripsSuccess ? searchingState.trips.length : 0;
+    final scheduledCount =
+    scheduledState is ScheduledTripsSuccess ? scheduledState.trips.length : 0;
+
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<AcceptTripCubit, AcceptTripState>(
+          listener: (context, state) {
+            if (!mounted) return;
+
+            if (state is AcceptTripSuccess) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LiveTripScreen(
+                    trip: state.trip,
+                    imagePath: widget.imagePath,
+                  ),
                 ),
-              ),
-            ],
+              );
+            } else if (state is AcceptTripFailure) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.errMessage),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+          },
+        ),
+        BlocListener<ScheduledAcceptTripCubit, ScheduledAcceptTripState>(
+          listener: (context, state) {
+            if (!mounted) return;
+
+            if (state is ScheduledAcceptTripSuccess) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Order accepted."),
+                  backgroundColor: Colors.green,
+                ),
+              );
+
+              // Pull fresh data from the server so the card switches to "Start"
+              // only when the backend status becomes "client_confirmed".
+              context.read<ScheduledTripsCubit>().getScheduledTrips();
+            } else if (state is ScheduledAcceptTripFailure) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.errMessage),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+          },
+        ),
+      ],
+      child: Directionality(
+        textDirection: TextDirection.ltr,
+        child: Scaffold(
+          drawer: const MenueView(),
+          backgroundColor: Colors.white,
+          drawerScrimColor: Colors.transparent,
+          key: _scaffoldKey,
+          body: SafeArea(
+            child: Column(
+              children: [
+                HeaderOrder(
+                  onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
+                  con: true,
+                  urgentCount: urgentCount,
+                  scheduledCount: scheduledCount,
+                  imagePath: widget.imagePath,
+                ),
+                SizedBox(height: 20.h),
+                _buildTabs(),
+                SizedBox(height: 10.h),
+                Expanded(
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      _buildUrgentOrdersList(),
+                      _buildScheduledOrdersList(),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  
   Widget _buildUrgentOrdersList() {
     return BlocBuilder<SearchingTripsCubit, SearchingTripsState>(
       builder: (context, state) {
         if (state is SearchingTripsLoading) {
-          return Center(child: CircularProgressIndicator(color: AppColors.main1));
+          return Center(
+            child: CircularProgressIndicator(color: AppColors.main1),
+          );
         }
+
         if (state is SearchingTripsSuccess) {
-          if (state.trips.isEmpty) {
-            return const Center(child: CustomText("لا يوجد طلبات حالياً", type: AppTextType.bodySmall));
-          }
+
           return RefreshIndicator(
             onRefresh: () => context.read<SearchingTripsCubit>().getSearchingTrips(),
-            child: ListView.builder(
+            child: state.trips.isEmpty
+                ? ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              children: [
+                SizedBox(height: 0.35.sh),
+                Center(
+                  child: CustomText(
+                    AppTranslations.getText(context, "no_orders_now"),
+                    type: AppTextType.bodySmall,
+                  ),
+                ),
+              ],
+            )
+                : ListView.builder(
+              physics: const AlwaysScrollableScrollPhysics(),
               padding: EdgeInsets.symmetric(horizontal: 8.w),
               itemCount: state.trips.length,
               itemBuilder: (context, index) {
-                final trip = state.trips[index]; 
+                final trip = state.trips[index];
+                final acceptState = context.watch<AcceptTripCubit>().state;
+                final isLoading =
+                    acceptState is AcceptTripLoading &&
+                        acceptState.tripId == trip.id;
 
-                return BlocBuilder<AcceptTripCubit, AcceptTripState>(
-                  builder: (context, acceptState) {
-                    bool isLoading = acceptState is AcceptTripLoading;
+                return UrgentOrdersCard(
+                  userName: trip.clientName ??
+                      AppTranslations.getText(context, "default_client_name"),
+                  phoneNumber: trip.clientPhone ??
+                      AppTranslations.getText(context, "no_phone"),
+                  price:
+                  "${trip.totalPrice.toStringAsFixed(0)} ${AppTranslations.getText(context, "currency_syp_short")}",
+                  distance:
+                  "${trip.distance.toStringAsFixed(1)} ${AppTranslations.getText(context, "distance_km")}",
+                  fromAddress: trip.sourceAddress,
+                  toAddress: trip.destinationAddress,
+                  buttonStatus: isLoading
+                      ? OrderButtonStatus.loading
+                      : OrderButtonStatus.accept,
+                  onAccept: () {
+                    if (isLoading) return;
 
-                    return UrgentOrdersCard(
-                      userName: trip.clientName ?? "عميل واري",
-                      phoneNumber: trip.clientPhone ?? "بدون رقم",
-                      price: "${trip.totalPrice.toStringAsFixed(0)} SYP",
-                      distance: "${trip.distance.toStringAsFixed(1)} K.m",
-                      fromAddress: trip.sourceAddress,
-                      toAddress: trip.destinationAddress,
-                      buttonStatus: isLoading ? OrderButtonStatus.loading : OrderButtonStatus.accept,
-                      onAccept: () {
-                        if (!isLoading) {
-                      
-                          final activeTrip = ActiveTripModel(
-                            id: trip.id,
-                            clientName: trip.clientName ?? "عميل واري",
-                            clientPhone: trip.clientPhone ?? "",
-                            sourceAddress: trip.sourceAddress,
-                            destinationAddress: trip.destinationAddress,
-                            startLat: trip.startLat ?? 0.0,
-                            startLng: trip.startLng ?? 0.0,
-                            destinationLat: trip.destinationLat ?? 0.0,
-                            destinationLng: trip.destinationLng ?? 0.0,
-                            totalPrice: trip.totalPrice.toDouble(),
-                            distance: trip.distance.toDouble(),
-                            status: "accepted",
-                          );
-
-                          context.read<AcceptTripCubit>().acceptTrip(trip: activeTrip);
-                        }
-                      },
+                    final activeTrip = _mapToActiveTrip(trip);
+                    context.read<AcceptTripCubit>().acceptTrip(
+                      trip: activeTrip,
                     );
                   },
                 );
@@ -149,37 +278,111 @@ class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderSt
             ),
           );
         }
-        return const Center(child: CustomText("حدث خطأ أثناء تحميل البيانات", type: AppTextType.bodySmall));
+
+        return Center(
+          child: CustomText(
+            AppTranslations.getText(context, "error_loading_data"),
+            type: AppTextType.bodySmall,
+          ),
+        );
       },
     );
   }
 
-  
   Widget _buildScheduledOrdersList() {
     return BlocBuilder<ScheduledTripsCubit, ScheduledTripsState>(
       builder: (context, state) {
         if (state is ScheduledTripsLoading) {
-          return Center(child: CircularProgressIndicator(color: AppColors.main1));
+          return Center(
+            child: CircularProgressIndicator(color: AppColors.main1),
+          );
         }
+
         if (state is ScheduledTripsSuccess) {
-          if (state.trips.isEmpty) {
-            return const Center(child: CustomText("لا يوجد طلبات مجدولة حالياً", type: AppTextType.bodySmall));
-          }
           return RefreshIndicator(
             onRefresh: () => context.read<ScheduledTripsCubit>().getScheduledTrips(),
-            child: ListView.builder(
+            child: state.trips.isEmpty
+                ? ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              children: [
+                SizedBox(height: 0.35.sh),
+                Center(
+                  child: CustomText(
+                    AppTranslations.getText(context, "no_scheduled_orders_now"),
+                    type: AppTextType.bodySmall,
+                  ),
+                ),
+              ],
+            )
+                : ListView.builder(
+              physics: const AlwaysScrollableScrollPhysics(),
               padding: EdgeInsets.zero,
               itemCount: state.trips.length,
               itemBuilder: (context, index) {
-                return OrderCard(
-                  trip: state.trips[index],
-                  buttonStatus: OrderButtonStatus.accept,
+                final trip = state.trips[index];
+
+                final scheduledAcceptState =
+                    context.watch<ScheduledAcceptTripCubit>().state;
+
+                final isAcceptLoading =
+                    scheduledAcceptState is ScheduledAcceptTripLoading &&
+                        scheduledAcceptState.tripId == trip.id;
+
+                final isClientConfirmed = _isClientConfirmed(trip);
+                DateTime date = DateTime.parse(trip.scheduledDate!);
+                String formatted = intl.DateFormat('yyyy-MM-dd – kk:mm').format(date);
+
+                final buttonStatus = isAcceptLoading
+                    ? OrderButtonStatus.loading
+                    : isClientConfirmed
+                    ? OrderButtonStatus.start
+                    : OrderButtonStatus.accept;
+
+                return UrgentOrdersCard(
+                  userName: trip.clientName ??
+                      AppTranslations.getText(context, "default_client_name"),
+                  phoneNumber: trip.clientPhone ??
+                      AppTranslations.getText(context, "no_phone"),
+                  price:
+                  "${trip.totalPrice.toStringAsFixed(0)} ${AppTranslations.getText(context, "currency_syp_short")}",
+                  distance:
+                  "${trip.distance.toStringAsFixed(1)} ${AppTranslations.getText(context, "distance_km")}",
+                  fromAddress: trip.sourceAddress,
+                  toAddress: trip.destinationAddress,
+                  date: formatted,
+                  buttonStatus: buttonStatus,
+                  onAccept: () {
+                    if (isAcceptLoading) return;
+
+                    if (isClientConfirmed) {
+                      final activeTrip =
+                      _mapScheduledTripToActiveTrip(trip);
+
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LiveTripScreen(
+                            trip: activeTrip,
+                            imagePath: widget.imagePath,
+                          ),
+                        ),
+                      );
+                    } else {
+                      _acceptScheduledTrip(trip);
+                    }
+                  },
                 );
               },
             ),
           );
         }
-        return const Center(child: CustomText("لا يوجد طلبات مجدولة حالياً", type: AppTextType.bodySmall));
+
+        return Center(
+          child: CustomText(
+            AppTranslations.getText(context, "no_scheduled_orders_now"),
+            type: AppTextType.bodySmall,
+          ),
+        );
       },
     );
   }
@@ -190,8 +393,14 @@ class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderSt
       indicatorColor: Colors.transparent,
       dividerColor: Colors.transparent,
       tabs: [
-        _buildTab(title: "الطلبات الفورية", index: 0),
-        _buildTab(title: "الطلبات المجدولة", index: 1),
+        _buildTab(
+          title: AppTranslations.getText(context, "urgent_orders"),
+          index: 0,
+        ),
+        _buildTab(
+          title: AppTranslations.getText(context, "scheduled_orders"),
+          index: 1,
+        ),
       ],
     );
   }

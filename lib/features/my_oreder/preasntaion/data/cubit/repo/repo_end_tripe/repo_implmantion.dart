@@ -19,14 +19,19 @@ class EndTripRepositoryImpl implements EndTripRepository {
 
     try {
       final response = await apiService.get(
-        endpoint: 'trips/complete-trip/$tripId',
+        endpoint: '/trips/complete-trip/$tripId',
         needToken: true,
       );
 
       print("✅ [SUCCESS] Server Responded Successfully");
-      print("📦 Response Body: $response");
+      print("📦 Response Body: ${response.data}");
 
-      String message = response['message'] ?? "Trip completed successfully";
+      String message = "Trip completed successfully";
+
+      if (response.data is Map<String, dynamic>) {
+        message = response.data['message'] ?? message;
+      }
+
       print("💬 Final Message: $message");
       print("------------------------------------------------------------");
 

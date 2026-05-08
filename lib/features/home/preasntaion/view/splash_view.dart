@@ -1,8 +1,12 @@
 import 'package:drever_warr/core/asset/image_asset.dart';
+import 'package:drever_warr/features/home/preasntaion/view/home_view.dart';
+import 'package:drever_warr/features/preasntaion/view/WaitingReviewScreen.dart';
 import 'package:drever_warr/features/preasntaion/view/location_drever.dart';
 import 'package:drever_warr/features/preasntaion/widhets/regster.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../../../../core/cash/preferences_servis.dart';
  
 
 class SplashView extends StatefulWidget {
@@ -16,15 +20,34 @@ class _SplashViewState extends State<SplashView> {
   @override
   void initState() {
     super.initState();
-    
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const AddLocation()),
-        );
-      }
-    });
+    _checkLogin();
+  }
+
+
+  Future<void> _checkLogin() async {
+    await Future.delayed(const Duration(seconds: 2));
+
+    final token = await CacheManager.getData('token');
+    final status = await CacheManager.getData('status');
+
+    if (!mounted) return;
+
+    if (token != null && token.isNotEmpty && status == "active") {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeView()),
+      );
+    }else if(token != null && token.isNotEmpty && (status == "waiting" || status == "rejected")){
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const WaitingReviewScreen()),
+      );
+    }else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const AddLocation()),
+      );
+    }
   }
 
   
