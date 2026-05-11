@@ -86,7 +86,7 @@ class Validators {
 
     if (!regex.hasMatch(value)) {
       return 1 == 1
-          ? AppTranslations.getStaticText(context,  'Must be 8+ characters with uppercase, lowercase, number, and special character.')
+          ? AppTranslations.getStaticText(context,  'validate_password')
           : "يجب أن تتكوّن كلمة المرور من 8 أحرف على الأقل، وتحتوي على حرف كبير وصغير ورقم ورمز خاص.";
     }
 
