@@ -112,7 +112,7 @@ class _VerificationCodeRegsterState extends State<VerificationCodeRegster> {
                     RowVerificationCode(
                       onResend: () {
                         context.read<VerificationCubit>().sendVerificationCode(
-                          mobilePhone: "+963${widget.phone}",
+                          mobilePhone: "963${widget.phone}",
                           typeOfUse:
                               "activate-account",
                         );
