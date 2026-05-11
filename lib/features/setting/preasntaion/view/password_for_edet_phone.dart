@@ -125,7 +125,7 @@ class _PasswordForgetPhoneState extends State<PasswordForgetPhone> {
                     child: AppCustomTextField(
                       controller: passwordController,
                       hintText: "",
-                      validator: (val) => Validators.isEmptyValue(val, context),
+                      validator: (val) => Validators.validatePassword(val, context),
                     ),
                   ),
                   SizedBox(height: 250.h),
