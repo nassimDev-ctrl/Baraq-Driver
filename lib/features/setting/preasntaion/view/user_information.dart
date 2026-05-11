@@ -360,7 +360,7 @@ class _UserInformationState extends State<UserInformation> {
                         hintText: "*****",
                         isPassword: true,
                         readOnly: true,
-                        validator: (val) => null,
+                        validator: (val) => Validators.validatePassword(val, context),
                       ),
 
                       SizedBox(height: 40.h),
