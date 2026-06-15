@@ -29,7 +29,7 @@ class CountainerJournyOngoing extends StatelessWidget {
     required this.startAddress,
     required this.latitude,
     required this.longitude,
-    this.googleMapsApiKey = "AIzaSyA-ACPNj6bCMyZjFLj-wSCWBOFH4ueB1FI",
+    this.googleMapsApiKey = "AIzaSyC7HVNoQEjaMe07kLwpKAO7k_ZbDpZTpI4",
     this.mapHeight = 140,
     this.zoom = 15,
   });

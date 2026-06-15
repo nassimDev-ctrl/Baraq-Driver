@@ -56,7 +56,7 @@ class _LiveTripScreenState extends State<LiveTripScreen> {
   TripResponseModel? _tripDetails;
 
   final PolylinePoints polylinePoints = PolylinePoints(
-    apiKey: "AIzaSyA-ACPNj6bCMyZjFLj-wSCWBOFH4ueB1FI",
+    apiKey: "AIzaSyC7HVNoQEjaMe07kLwpKAO7k_ZbDpZTpI4",
   );
 
   List<LatLng> polylineCoordinates = [];

@@ -5,7 +5,9 @@
       "Bash(flutterfire --version)",
       "Bash(dart pub:*)",
       "Bash(firebase projects:list)",
-      "Bash(flutterfire configure:*)"
+      "Bash(flutterfire configure:*)",
+      "Bash(keytool -genkeypair -v -keystore \"e:/WAAR-TAXI-driver/android/app/waar-release-key.jks\" -keyalg RSA -keysize 2048 -validity 10000 -alias waar-driver-key -storepass \"Waar@2026\" -keypass \"Waar@2026\" -dname \"CN=WAAR Taxi, OU=Mobile, O=WAAR Taxi, L=Latakia, ST=Latakia, C=SY\")",
+      "Bash(keytool -list -v -keystore \"e:/WAAR-TAXI-driver/android/app/waar-release-key.jks\" -alias waar-driver-key -storepass \"Waar@2026\")"
     ]
   }
 }

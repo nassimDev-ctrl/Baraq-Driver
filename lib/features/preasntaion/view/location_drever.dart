@@ -36,7 +36,7 @@ class _AddLocationState extends State<AddLocation> {
   LatLng? _lastReverseGeocodedPosition;
 
   List<dynamic> _predictions = [];
-  final String apiKey = "AIzaSyA-ACPNj6bCMyZjFLj-wSCWBOFH4ueB1FI";
+  final String apiKey = "AIzaSyC7HVNoQEjaMe07kLwpKAO7k_ZbDpZTpI4";
 
   String _currentFullAddress = "";
   bool _isDefaultAddress = true;
