@@ -42,7 +42,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyA5ZE9ICOa1ER2RW5_TMKfG0i6GZAC2DYY',
-    appId: '1:80733184068:web:19da98e7c5a01c40969c11',
+    appId: '1:80733184068:web:02d3a2746466407f969c11',
     messagingSenderId: '80733184068',
     projectId: 'waar-taxi',
     authDomain: 'waar-taxi.firebaseapp.com',
@@ -51,21 +51,19 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyBIAqH3YolTryb9_uMYb1SwvDG-OYotafI',
-    appId: '1:80733184068:android:049ca8ff9b2b10ca969c11',
+    appId: '1:80733184068:android:b9ef9ef11d97ac03969c11',
     messagingSenderId: '80733184068',
     projectId: 'waar-taxi',
     storageBucket: 'waar-taxi.firebasestorage.app',
   );
-
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDfx9w7JV5hvlFS8F2v65Ygq0wsnREXVuk',
-    appId: '1:80733184068:ios:62ed109fc804ba3d969c11',
+    appId: '1:80733184068:ios:8541a498ad97046e969c11',
     messagingSenderId: '80733184068',
     projectId: 'waar-taxi',
     storageBucket: 'waar-taxi.firebasestorage.app',
-    iosBundleId: 'com.example.dreverWarr',
+    iosBundleId: 'com.taxiwaar.driver',
   );
-
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyDfx9w7JV5hvlFS8F2v65Ygq0wsnREXVuk',
     appId: '1:80733184068:ios:62ed109fc804ba3d969c11',
