@@ -11,7 +11,7 @@ class ImplementRepoLogin extends RepoLogin {
   final ApiService _apiService;
 
   ImplementRepoLogin({required ApiService apiService})
-    : _apiService = apiService;
+      : _apiService = apiService;
 
   @override
   Future<Either<Failur, dynamic>> login({
@@ -38,10 +38,10 @@ class ImplementRepoLogin extends RepoLogin {
       print("✅ [Response Received] Status Code: ${response.statusCode}");
       print("📄 [Response Data]: ${response.data}");
 
-      
       if (response.data["success"] == true || response.data["error"] == false) {
-        
         final String? token = response.data["data"]?["token"];
+        final String? status =
+            response.data['data']?['user']['profile']['status'];
 
         if (token != null && token.isNotEmpty) {
           await CacheManager.saveData('token', token);
@@ -53,7 +53,15 @@ class ImplementRepoLogin extends RepoLogin {
             "⚠️ [Token Warning]: لم يتم العثور على التوكن في المسار response.data['data']['token']",
           );
         }
-        
+
+        if (status != null) {
+          await CacheManager.saveData('status', status);
+          print("status : $status");
+          print("💾 [STATUS SAVED]: STATUS has been stored in CacheManager.");
+        } else {
+          print(
+              "⚠️ [STATUS WARNING]: Success was true but no status found in response!");
+        }
 
         return right(response.data);
       } else {
