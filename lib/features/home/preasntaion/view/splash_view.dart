@@ -2,7 +2,6 @@ import 'package:drever_warr/core/asset/image_asset.dart';
 import 'package:drever_warr/features/home/preasntaion/view/home_view.dart';
 import 'package:drever_warr/features/preasntaion/view/WaitingReviewScreen.dart';
 import 'package:drever_warr/features/preasntaion/view/location_drever.dart';
-import 'package:drever_warr/features/preasntaion/widhets/regster.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -26,28 +25,35 @@ class _SplashViewState extends State<SplashView> {
 
   Future<void> _checkLogin() async {
     await Future.delayed(const Duration(seconds: 2));
+    await CacheManager.reload();
 
-    final token = await CacheManager.getData('token');
-    final status = await CacheManager.getData('status');
+    final token = await CacheManager.getData(CacheManager.tokenKey);
+    final status = await CacheManager.getData(CacheManager.statusKey);
 
     if (!mounted) return;
 
-    if (token != null && token.isNotEmpty && status == "active") {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeView()),
-      );
-    }else if(token != null && token.isNotEmpty && (status == "waiting" || status == "rejected")){
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const WaitingReviewScreen()),
-      );
-    }else {
+    final hasToken = token != null && token.trim().isNotEmpty;
+    if (!hasToken) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const AddLocation()),
       );
+      return;
     }
+
+    final normalizedStatus = status?.trim().toLowerCase();
+    if (normalizedStatus == 'waiting' || normalizedStatus == 'rejected') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const WaitingReviewScreen()),
+      );
+      return;
+    }
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const HomeView()),
+    );
   }
 
   

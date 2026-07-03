@@ -1,4 +1,3 @@
- 
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/service/api_servise.dart';
 import 'package:drever_warr/core/style/text_style.dart';
@@ -123,9 +122,7 @@ void main() async {
 
   await NotificationService.instance.init();
   runApp(const MyApp());
-
 }
-
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -135,57 +132,55 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          
           create: (context) => getIt<GovernoratesCubit>(),
         ),
         BlocProvider(
           create: (context) => VerificationCubit(
             VerificationRepoImpl(
               apiService: getIt.get<ApiService>(),
-            ),  
+            ),
           ),
         ),
         BlocProvider(
           create: (context) => RegisterCubit(
             ImplementRepoRegister(
               apiService: getIt.get<ApiService>(),
-            ), 
+            ),
           ),
         ),
         BlocProvider(
           create: (context) => LoginCubit(
             ImplementRepoLogin(
               apiService: getIt.get<ApiService>(),
-            ), 
+            ),
           ),
         ),
         BlocProvider(
           create: (context) => ConfirmPasswordCubit(
             ConfirmPasswordRepoImpl(
               getIt.get<ApiService>(),
-            ), 
+            ),
           ),
         ),
         BlocProvider(
           create: (context) => UploadImageCubit(
             ImplementRepoUploadImage(
               apiService: getIt.get<ApiService>(),
-            ),  
+            ),
           ),
         ),
         BlocProvider(
           create: (context) => UploadIdCubit(
             ImplementRepoUploadId(
               apiService: getIt.get<ApiService>(),
-            ),  
+            ),
           ),
         ),
-
         BlocProvider(
           create: (context) => CarInfoCubit(
             ImplementRepoCarInfo(
               apiService: getIt.get<ApiService>(),
-            ),  
+            ),
           ),
         ),
         BlocProvider(
@@ -199,7 +194,7 @@ class MyApp extends StatelessWidget {
           create: (context) => CarAllFilldCubit(
             CarAllFilldRepoImpl(
               apiService: getIt.get<ApiService>(),
-            ),  
+            ),
           ),
         ),
         BlocProvider(
@@ -213,14 +208,14 @@ class MyApp extends StatelessWidget {
           create: (context) => CarCategoryCubit(
             RepoCarCategoryImpl(
               getIt.get<ApiService>(),
-            ),  
+            ),
           ),
         ),
         BlocProvider(
           create: (context) => SearchingTripsCubit(
             RepoSearchingTripsImpl(
               getIt.get<ApiService>(),
-            ), 
+            ),
           ),
         ),
         BlocProvider(
@@ -234,14 +229,14 @@ class MyApp extends StatelessWidget {
           create: (context) => ScheduledTripsCubit(
             RepoScheduledTripsImpl(
               getIt.get<ApiService>(),
-            ), 
+            ),
           ),
         ),
         BlocProvider(
           create: (context) => AcceptTripCubit(
             AcceptTripRepoImpl(
               getIt.get<ApiService>(),
-            ),   
+            ),
           ),
         ),
         BlocProvider(
@@ -276,28 +271,28 @@ class MyApp extends StatelessWidget {
           create: (context) => WalletCubit(
             WalletRepositoryImpl(
               getIt.get<ApiService>(),
-            ),  
+            ),
           ),
         ),
         BlocProvider(
           create: (context) => AddRatingCubit(
             AddRatingRepoImpl(
               getIt.get<ApiService>(),
-            ), 
+            ),
           ),
         ),
         BlocProvider(
           create: (context) => GetFinishedTripsCubit(
             GetFinishedTripsRepoImpl(
               getIt.get<ApiService>(),
-            ),  
+            ),
           ),
         ),
         BlocProvider(
           create: (context) => ProfileCubit(
             ImplementRepoProfile(
               apiService: getIt.get<ApiService>(),
-            ), 
+            ),
           ),
         ),
         BlocProvider(
@@ -311,28 +306,28 @@ class MyApp extends StatelessWidget {
           create: (context) => UpdateProfileCubit(
             UpdateProfileRepoImpl(
               getIt.get<ApiService>(),
-            ),  
+            ),
           ),
         ),
         BlocProvider(
           create: (context) => ChangePasswordCubit(
             ChangePasswordRepoImpl(
               getIt.get<ApiService>(),
-            ),  
+            ),
           ),
         ),
         BlocProvider(
           create: (context) => UpdateMobileCubit(
             RepoUpdateMobileImpl(
               getIt.get<ApiService>(),
-            ),  
+            ),
           ),
         ),
         BlocProvider(
           create: (context) => StartTripCubit(
             TripRepositoryImpl(
               getIt.get<ApiService>(),
-            ),  
+            ),
           ),
         ),
         BlocProvider(
@@ -360,18 +355,16 @@ class MyApp extends StatelessWidget {
           create: (context) => EndTripCubit(
             EndTripRepositoryImpl(
               getIt.get<ApiService>(),
-            ),  
+            ),
           ),
         ),
         BlocProvider<LanguageCubit>(create: (_) => LanguageCubit()),
       ],
       child: BlocBuilder<LanguageCubit, Language>(
         builder: (context, language) {
-        
           Locale currentLocale;
           TextDirection currentDirection;
           context.read<LanguageCubit>().setLanguage(language);
-
 
           switch (language) {
             case Language.english:
@@ -380,8 +373,7 @@ class MyApp extends StatelessWidget {
               break;
             case Language.kurdish:
               currentLocale = const Locale('ku');
-              currentDirection =
-                  TextDirection.rtl;
+              currentDirection = TextDirection.rtl;
               break;
             case Language.arabic:
             default:
@@ -398,33 +390,27 @@ class MyApp extends StatelessWidget {
               debugShowCheckedModeBanner: false,
               title: 'Warr App',
               locale: currentLocale,
-
               builder: (context, widget) {
                 return Directionality(
                   textDirection: currentDirection,
                   child: widget!,
                 );
               },
-
-              
               localizationsDelegates: const [
                 GlobalMaterialLocalizations.delegate,
                 GlobalWidgetsLocalizations.delegate,
                 GlobalCupertinoLocalizations.delegate,
-                KurdishMaterialLocalizationsDelegate(),  
-                KurdishCupertinoLocalizationsDelegate(),  
+                KurdishMaterialLocalizationsDelegate(),
+                KurdishCupertinoLocalizationsDelegate(),
               ],
-
               supportedLocales: const [
                 Locale('ar'),
                 Locale('en'),
                 Locale('ku'),
               ],
-
               localeResolutionCallback: (deviceLocale, supportedLocales) {
                 return currentLocale;
               },
-
               theme: ThemeData(
                 fontFamily: AppTextStyles.fontFamily,
                 textTheme: const TextTheme(
@@ -456,8 +442,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
- 
-
 class KurdishMaterialLocalizationsDelegate
     extends LocalizationsDelegate<MaterialLocalizations> {
   const KurdishMaterialLocalizationsDelegate();
@@ -467,7 +451,6 @@ class KurdishMaterialLocalizationsDelegate
 
   @override
   Future<MaterialLocalizations> load(Locale locale) async {
-    
     return await GlobalMaterialLocalizations.delegate.load(const Locale('en'));
   }
 

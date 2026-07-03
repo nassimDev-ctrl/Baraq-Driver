@@ -54,10 +54,19 @@ class _LoginViewState extends State<LoginView> {
           dynamic dataUser = state.data['data']['user'];
           cubit.mobilePhoneController.clear();
           cubit.passwordController.clear();
-          String authUser = dataUser['profile']['authUser'] ?? '';
-          await CacheManager.saveData('authUser', authUser);
 
-          if(dataUser['profile']['status'] == 'active'){
+          final profile = dataUser['profile'];
+          final status = profile?['status']?.toString() ?? dataUser['status']?.toString();
+          if (status != null && status.isNotEmpty) {
+            await CacheManager.saveData(CacheManager.statusKey, status);
+          }
+
+          final authUser = profile?['authUser']?.toString() ?? '';
+          if (authUser.isNotEmpty) {
+            await CacheManager.saveData(CacheManager.authUserKey, authUser);
+          }
+
+          if (status == 'active' || status == 'change-category') {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => HomeView()),

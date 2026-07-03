@@ -5,24 +5,23 @@ import 'package:drever_warr/features/setting/data/cubit/cubit_profail/cubit.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'package:drever_warr/core/asset/icon_asset.dart';
 import 'package:drever_warr/core/asset/image_asset.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
-import 'package:drever_warr/core/widgets/customText.dart';
 import 'package:drever_warr/features/home/preasntaion/view/wallt_screen.dart';
 import 'package:drever_warr/features/home/preasntaion/widget/buildMenuItem.dart';
 import 'package:drever_warr/features/my_oreder/preasntaion/view/order_view.dart';
 import 'package:drever_warr/features/my_tripe/preasntaion/view/my_profail.dart';
-import 'package:drever_warr/features/my_tripe/preasntaion/view/start_tripe.dart';
 import 'package:drever_warr/features/setting/preasntaion/view/settings.dart';
 import 'package:drever_warr/features/setting/data/cubit/cubit_profail/cubit_stat.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../../../../core/cash/preferences_servis.dart';
+import '../../../../core/service/notification_service.dart';
 import '../../../../core/transleat/app_translat.dart';
-import '../../../my_oreder/preasntaion/data/cubit/model/accsept_model.dart';
 import '../data/cubit/logout_cubit/cubit.dart';
 import '../data/cubit/logout_cubit/cubit_state.dart';
 
@@ -31,17 +30,15 @@ class MenueView extends StatelessWidget {
 
   static const String _appShareLink = 'https://taxiwaar.com/';
   static const String _websiteUrl = 'https://taxiwaar.com/';
+  static Future<PackageInfo>? _packageInfoFuture;
 
-  Future<void> logout(BuildContext context) async {
-    await CacheManager.removeData('token');
-    await CacheManager.removeData('status');
+  static Future<PackageInfo> _getPackageInfo() {
+    return _packageInfoFuture ??= PackageInfo.fromPlatform();
+  }
 
-
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => const LoginView()),
-          (route) => false,
-    );
+  Future<void> _clearSessionData() async {
+    await NotificationService.instance.clearToken();
+    await CacheManager.clearSession();
   }
 
   Future<void> _showShareAppPopup(BuildContext context) async {
@@ -59,7 +56,7 @@ class MenueView extends StatelessWidget {
               borderRadius: BorderRadius.circular(22.r),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.12),
+                  color: Colors.black.withValues(alpha: 0.12),
                   blurRadius: 18,
                   offset: const Offset(0, 6),
                 ),
@@ -72,7 +69,7 @@ class MenueView extends StatelessWidget {
                   width: 64.r,
                   height: 64.r,
                   decoration: BoxDecoration(
-                    color: AppColors.main1.withOpacity(0.12),
+                    color: AppColors.main1.withValues(alpha: 0.12),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
@@ -194,33 +191,38 @@ class MenueView extends StatelessWidget {
       },
     );
   }
+
   @override
   Widget build(BuildContext context) {
+    final isRtl = BuildMenuItem.isRtlLocale(context);
+
     return BlocConsumer<LogoutCubit, LogoutState>(
       listener: (context, state) async {
         if (state is LogoutSuccess) {
-          await CacheManager.removeData('token');
-          await CacheManager.removeData('status');
+          await _clearSessionData();
 
           if (context.mounted) {
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => const LoginView()),
-                  (route) => false,
+              (route) => false,
             );
           }
-        } else if (state is LogoutFailure) {
         }
       },
       builder: (context, state) {
         final isLoggingOut = state is LogoutLoading;
 
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 70.0),
-          child: Drawer(
-            width: 250.w,
-            backgroundColor: AppColors.main1,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        return Drawer(
+          width: 285.w,
+          backgroundColor: AppColors.main1,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.horizontal(
+              right: Radius.circular(24.r),
+            ),
+          ),
+          child: Directionality(
+            textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
             child: BlocBuilder<ProfileCubit, ProfileState>(
               builder: (context, profileState) {
                 String name = "جاري التحميل...";
@@ -229,7 +231,8 @@ class MenueView extends StatelessWidget {
 
                 if (profileState is ProfileSuccess) {
                   final data = profileState.data.data;
-                  name = "${data?.firstName ?? ''} ${data?.lastName ?? ''}".trim();
+                  name =
+                      "${data?.firstName ?? ''} ${data?.lastName ?? ''}".trim();
                   if (name.isEmpty) name = "سائق واصلني";
                   phone = data?.authUser?.mobilePhone ?? "لا يوجد رقم";
                   imagePath = data?.profileImage;
@@ -238,35 +241,16 @@ class MenueView extends StatelessWidget {
                   phone = profileState.errMessage;
                 }
 
-                return Column(
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.fromLTRB(15.w, 50.h, 15.w, 25.h),
-                      decoration: const BoxDecoration(color: Colors.white),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              CustomText(name, type: AppTextType.titleSmall),
-                              SizedBox(height: 5.h),
-                              CustomText(phone, type: AppTextType.titleSmall),
-                            ],
-                          ),
-                          SizedBox(width: 15.w),
-                          _profileAvatar(imagePath),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 20.h),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: Column(
+                return SafeArea(
+                  child: Column(
+                    children: [
+                      _buildHeader(name: name, phone: phone, imagePath: imagePath),
+                      SizedBox(height: 12.h),
+                      Expanded(
+                        child: ListView(
+                          padding: EdgeInsets.zero,
                           children: [
-                            _buildGestureItem(
+                            BuildMenuItem(
                               icon: IconsAssets.mytrip,
                               title: "my_trips",
                               onTap: () => Navigator.push(
@@ -276,7 +260,7 @@ class MenueView extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            _buildGestureItem(
+                            BuildMenuItem(
                               icon: IconsAssets.savelocation11,
                               title: "orders",
                               onTap: () => Navigator.push(
@@ -288,7 +272,7 @@ class MenueView extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            _buildGestureItem(
+                            BuildMenuItem(
                               icon: IconsAssets.discountcodes,
                               title: "wallet",
                               onTap: () => Navigator.push(
@@ -298,7 +282,7 @@ class MenueView extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            _buildGestureItem(
+                            BuildMenuItem(
                               icon: IconsAssets.setting,
                               title: "settings",
                               onTap: () => Navigator.push(
@@ -308,23 +292,24 @@ class MenueView extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            GestureDetector(
+                            BuildMenuItem(
+                              icon: IconsAssets.technicalsupport,
+                              title: "technical_support",
                               onTap: () async {
-                                final uri = Uri.parse('https://wa.me/+41779877052');
+                                final uri =
+                                    Uri.parse('https://wa.me/+41779877052');
                                 final ok = await launchUrl(
                                   uri,
                                   mode: LaunchMode.externalApplication,
                                 );
                                 if (!ok) {
-                                  throw Exception('Could not open Instagram link');
+                                  throw Exception(
+                                    'Could not open WhatsApp link',
+                                  );
                                 }
                               },
-                              child: BuildMenuItem(
-                                icon: IconsAssets.technicalsupport,
-                                title: "technical_support",
-                              ),
                             ),
-                            _buildGestureItem(
+                            BuildMenuItem(
                               icon: IconsAssets.profailicon,
                               title: "my_profile",
                               onTap: () => Navigator.push(
@@ -334,7 +319,7 @@ class MenueView extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            _buildGestureItem(
+                            BuildMenuItem(
                               icon: IconsAssets.masseage,
                               title: "feedback_complaints",
                               onTap: () => Navigator.push(
@@ -344,72 +329,27 @@ class MenueView extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            GestureDetector(
-                              onTap: () {
-                                WidgetsBinding.instance.addPostFrameCallback((_) {
-                                  if (context.mounted) {
-                                    _showShareAppPopup(context);
-                                  }
-                                });
-                              },
-                              child: BuildMenuItem(
-                                icon: IconsAssets.shareapplaction,
-                                title: "share_app",
-                              ),
+                            BuildMenuItem(
+                              icon: IconsAssets.shareapplaction,
+                              title: "share_app",
+                              onTap: () => _showShareAppPopup(context),
                             ),
-                            _buildGestureItem(
+                            BuildMenuItem(
                               icon: IconsAssets.logout,
                               title: isLoggingOut ? "logging_out" : "logout",
+                              isDestructive: true,
                               onTap: isLoggingOut
-                                  ? () {}
+                                  ? null
                                   : () {
-                                context.read<LogoutCubit>().logout();
-                              },
+                                      context.read<LogoutCubit>().logout();
+                                    },
                             ),
                           ],
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(bottom: 30.h),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          GestureDetector(
-                            onTap: () async {
-                              final uri = Uri.parse(
-                                'https://www.facebook.com/share/1BAa9GrmrH/',
-                              );
-                              final ok = await launchUrl(
-                                uri,
-                                mode: LaunchMode.externalApplication,
-                              );
-                              if (!ok) {
-                                throw Exception('Could not open Instagram link');
-                              }
-                            },
-                            child: _socialIcon(Icons.facebook),
-                          ),
-                          SizedBox(width: 20.w),
-                          GestureDetector(
-                            onTap: () async {
-                              final uri = Uri.parse(
-                                'https://www.instagram.com/waar.taxi/',
-                              );
-                              final ok = await launchUrl(
-                                uri,
-                                mode: LaunchMode.externalApplication,
-                              );
-                              if (!ok) {
-                                throw Exception('Could not open Instagram link');
-                              }
-                            },
-                            child: _socialIcon(Icons.camera_alt),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                      _buildFooter(context),
+                    ],
+                  ),
                 );
               },
             ),
@@ -419,46 +359,183 @@ class MenueView extends StatelessWidget {
     );
   }
 
+  Widget _buildHeader({
+    required String name,
+    required String phone,
+    required String? imagePath,
+  }) {
+    return Container(
+      width: double.infinity,
+      margin: EdgeInsets.fromLTRB(14.w, 10.h, 14.w, 0),
+      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          _profileAvatar(imagePath),
+          SizedBox(width: 12.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF1F1F1F),
+                  ),
+                ),
+                SizedBox(height: 4.h),
+                Text(
+                  phone,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 12.5.sp,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _profileAvatar(String? imagePath) {
     const String baseUrl = 'https://api.taxiwaar.com/';
 
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         shape: BoxShape.circle,
+        border: Border.all(
+          color: AppColors.main1.withValues(alpha: 0.35),
+          width: 2,
+        ),
       ),
       child: CircleAvatar(
-        radius: 35.r,
+        radius: 30.r,
         backgroundColor: Colors.grey[200],
         child: ClipOval(
           child: (imagePath != null && imagePath.isNotEmpty)
               ? Image.network(
-            imagePath.startsWith('http')
-                ? imagePath
-                : "$baseUrl$imagePath",
-            width: 70.r,
-            height: 70.r,
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) =>
-                Image.asset(ImageAssets.imageprofail, fit: BoxFit.cover),
-          )
+                  imagePath.startsWith('http')
+                      ? imagePath
+                      : "$baseUrl$imagePath",
+                  width: 60.r,
+                  height: 60.r,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Image.asset(
+                    ImageAssets.imageprofail,
+                    fit: BoxFit.cover,
+                  ),
+                )
               : Image.asset(ImageAssets.imageprofail, fit: BoxFit.cover),
         ),
       ),
     );
   }
 
-  Widget _buildGestureItem({
-    required String icon,
-    required String title,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: BuildMenuItem(icon: icon, title: title),
+  Widget _buildFooter(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(14.w, 8.h, 14.w, 16.h),
+      child: Column(
+        children: [
+          Divider(
+            color: Colors.white.withValues(alpha: 0.25),
+            height: 1,
+          ),
+          SizedBox(height: 12.h),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _socialButton(
+                icon: Icons.facebook,
+                onTap: () async {
+                  final uri = Uri.parse(
+                    'https://www.facebook.com/share/1BAa9GrmrH/',
+                  );
+                  final ok = await launchUrl(
+                    uri,
+                    mode: LaunchMode.externalApplication,
+                  );
+                  if (!ok) {
+                    throw Exception('Could not open Facebook link');
+                  }
+                },
+              ),
+              SizedBox(width: 16.w),
+              _socialButton(
+                icon: Icons.camera_alt,
+                onTap: () async {
+                  final uri = Uri.parse(
+                    'https://www.instagram.com/waar.taxi/',
+                  );
+                  final ok = await launchUrl(
+                    uri,
+                    mode: LaunchMode.externalApplication,
+                  );
+                  if (!ok) {
+                    throw Exception('Could not open Instagram link');
+                  }
+                },
+              ),
+            ],
+          ),
+          SizedBox(height: 12.h),
+          FutureBuilder<PackageInfo>(
+            future: _getPackageInfo(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return const SizedBox.shrink();
+              }
+
+              final info = snapshot.data!;
+              return Text(
+                '${AppTranslations.getText(context, "app_version")} ${info.version} (${info.buildNumber})',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.65),
+                  fontSize: 11.5.sp,
+                  fontWeight: FontWeight.w500,
+                ),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _socialIcon(IconData icon) {
-    return Icon(icon, color: Colors.white, size: 22.sp);
+  Widget _socialButton({
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.white.withValues(alpha: 0.14),
+      shape: const CircleBorder(),
+      child: InkWell(
+        onTap: onTap,
+        customBorder: const CircleBorder(),
+        child: Padding(
+          padding: EdgeInsets.all(10.r),
+          child: Icon(icon, color: Colors.white, size: 20.sp),
+        ),
+      ),
+    );
   }
 }

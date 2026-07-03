@@ -3,6 +3,8 @@ import 'dart:math' as math;
 
 import 'package:drever_warr/features/home/preasntaion/view/menew.dart';
 import 'package:drever_warr/features/home/preasntaion/widget/header_home_view.dart';
+import 'package:drever_warr/core/cash/preferences_servis.dart';
+import 'package:drever_warr/core/service/notification_service.dart';
 import 'package:drever_warr/features/preasntaion/widhets/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -570,7 +572,12 @@ class _HomeViewState extends State<HomeView> {
     });
   }
 
-  void _goToLogin() {
+  Future<void> _goToLogin() async {
+    if (!mounted) return;
+
+    await NotificationService.instance.clearToken();
+    await CacheManager.clearSession();
+
     if (!mounted) return;
 
     Navigator.pushReplacement(

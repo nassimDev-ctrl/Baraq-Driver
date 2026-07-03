@@ -39,12 +39,12 @@ class ImplementRepoLogin extends RepoLogin {
       print("📄 [Response Data]: ${response.data}");
 
       if (response.data["success"] == true || response.data["error"] == false) {
-        final String? token = response.data["data"]?["token"];
-        final String? status =
-            response.data['data']?['user']['profile']['status'];
+        final data = response.data["data"];
+        final String? token = data is Map ? data["token"]?.toString() : null;
+        final String? status = _extractDriverStatus(response.data);
 
         if (token != null && token.isNotEmpty) {
-          await CacheManager.saveData('token', token);
+          await CacheManager.saveData(CacheManager.tokenKey, token);
           print(
             "🔑 [Token Saved]: تم استخراج التوكن من data['token'] وحفظه بنجاح",
           );
@@ -54,8 +54,8 @@ class ImplementRepoLogin extends RepoLogin {
           );
         }
 
-        if (status != null) {
-          await CacheManager.saveData('status', status);
+        if (status != null && status.isNotEmpty) {
+          await CacheManager.saveData(CacheManager.statusKey, status);
           print("status : $status");
           print("💾 [STATUS SAVED]: STATUS has been stored in CacheManager.");
         } else {
@@ -78,5 +78,29 @@ class ImplementRepoLogin extends RepoLogin {
       }
       return left(ServierFailur('حدث خطأ أثناء تسجيل الدخول', 500));
     }
+  }
+
+  String? _extractDriverStatus(dynamic responseData) {
+    if (responseData is! Map) return null;
+
+    final data = responseData['data'];
+    if (data is! Map) return null;
+
+    final user = data['user'];
+    if (user is Map) {
+      final profile = user['profile'];
+      if (profile is Map && profile['status'] != null) {
+        return profile['status'].toString();
+      }
+      if (user['status'] != null) {
+        return user['status'].toString();
+      }
+    }
+
+    if (data['status'] != null) {
+      return data['status'].toString();
+    }
+
+    return null;
   }
 }
