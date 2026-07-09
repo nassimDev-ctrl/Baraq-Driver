@@ -71,7 +71,6 @@ class _EndTripeState extends State<EndTripe> {
     await _loadInitialPosition();
     _startTracking();
     _setupSocketListener();
-    await _getRoutePolyline();
     _updateUI();
   }
 
@@ -144,7 +143,7 @@ class _EndTripeState extends State<EndTripe> {
         final payload = _extractPayload(data);
 
         final price = _extractPriceNow(payload);
-        final socketLocation = _extractLocation(payload);
+        final encodedPolyline = _extractEncodedPolyline(payload);
 
         if (!mounted) return;
 
@@ -154,14 +153,75 @@ class _EndTripeState extends State<EndTripe> {
             _lastPriceUpdate = DateTime.now();
           }
 
-          if (socketLocation != null) {
-            // Kept intentionally for future use.
+          if (encodedPolyline != null) {
+            _polylineCoordinates = _decodePolyline(encodedPolyline);
+            _updateUI();
           }
         });
       } catch (e) {
-        debugPrint('Socket price parse error: $e');
+        debugPrint('Socket parse error: $e');
       }
     });
+  }
+
+  String? _extractEncodedPolyline(Map<String, dynamic> payload) {
+    final candidates = [
+      payload['polyline'],
+      payload['encodedPolyline'],
+      payload['encoded_polyline'],
+      payload['overview_polyline'],
+    ];
+
+    for (final value in candidates) {
+      if (value is String && value.isNotEmpty) return value;
+    }
+
+    final trip = payload['trip'];
+    if (trip is Map) {
+      final tripMap = Map<String, dynamic>.from(trip);
+      final tripCandidates = [
+        tripMap['polyline'],
+        tripMap['encodedPolyline'],
+        tripMap['encoded_polyline'],
+      ];
+      for (final value in tripCandidates) {
+        if (value is String && value.isNotEmpty) return value;
+      }
+    }
+
+    return null;
+  }
+
+  List<LatLng> _decodePolyline(String encoded) {
+    final List<LatLng> points = [];
+    int index = 0;
+    int lat = 0;
+    int lng = 0;
+
+    while (index < encoded.length) {
+      int shift = 0;
+      int result = 0;
+      int byte;
+      do {
+        byte = encoded.codeUnitAt(index++) - 63;
+        result |= (byte & 0x1F) << shift;
+        shift += 5;
+      } while (byte >= 0x20);
+      lat += (result & 1) != 0 ? ~(result >> 1) : (result >> 1);
+
+      shift = 0;
+      result = 0;
+      do {
+        byte = encoded.codeUnitAt(index++) - 63;
+        result |= (byte & 0x1F) << shift;
+        shift += 5;
+      } while (byte >= 0x20);
+      lng += (result & 1) != 0 ? ~(result >> 1) : (result >> 1);
+
+      points.add(LatLng(lat / 1E5, lng / 1E5));
+    }
+
+    return points;
   }
 
   void _startTracking() {
@@ -185,34 +245,6 @@ class _EndTripeState extends State<EndTripe> {
 
       _updateUI();
     });
-  }
-
-  Future<void> _getRoutePolyline() async {
-    if (_currentPosition == null) return;
-
-    final destination = LatLng(
-      widget.trip.destinationLat ?? 35.5111,
-      widget.trip.destinationLng ?? 35.7922,
-    );
-
-    final result = await polylinePoints.getRouteBetweenCoordinates(
-      request: PolylineRequest(
-        origin: PointLatLng(
-          _currentPosition!.latitude,
-          _currentPosition!.longitude,
-        ),
-        destination: PointLatLng(destination.latitude, destination.longitude),
-        mode: TravelMode.driving,
-      ),
-    );
-
-    if (result.points.isNotEmpty) {
-      _polylineCoordinates = result.points
-          .map((p) => LatLng(p.latitude, p.longitude))
-          .toList();
-    } else {
-      _polylineCoordinates = [_currentPosition!, destination];
-    }
   }
 
   Future<void> _sendDriverLocation(Position position, String tripId) async {
@@ -298,22 +330,19 @@ class _EndTripeState extends State<EndTripe> {
         ),
       };
 
-      _polylines = {
-        Polyline(
-          polylineId: const PolylineId("route_line"),
-          points: _polylineCoordinates.isNotEmpty
-              ? _polylineCoordinates
-              : [
-            _currentPosition!,
-            LatLng(
-              widget.trip.destinationLat ?? 35.5111,
-              widget.trip.destinationLng ?? 35.7922,
-            ),
-          ],
-          color: AppColors.main1,
-          width: 6,
-        ),
-      };
+      if (_polylineCoordinates.isNotEmpty) {
+        _polylines = {
+          Polyline(
+            polylineId: const PolylineId("route_line"),
+            points: _polylineCoordinates,
+            color: AppColors.main1,
+            width: 6,
+            jointType: JointType.round,
+            startCap: Cap.roundCap,
+            endCap: Cap.roundCap,
+          ),
+        };
+      }
     });
   }
 
