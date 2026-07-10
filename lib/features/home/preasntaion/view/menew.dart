@@ -21,6 +21,7 @@ import 'package:drever_warr/features/setting/data/cubit/cubit_profail/cubit_stat
 
 import '../../../../core/cash/preferences_servis.dart';
 import '../../../../core/service/notification_service.dart';
+import 'notification_screen.dart';
 import '../../../../core/transleat/app_translat.dart';
 import '../data/cubit/logout_cubit/cubit.dart';
 import '../data/cubit/logout_cubit/cubit_state.dart';
@@ -279,6 +280,16 @@ class MenueView extends StatelessWidget {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => WalletScreen(),
+                                ),
+                              ),
+                            ),
+                            BuildMenuItem(
+                              icon: IconsAssets.masseage,
+                              title: "notifications",
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const NotificationScreen(),
                                 ),
                               ),
                             ),

@@ -14,7 +14,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import 'package:drever_warr/core/asset/image_asset.dart';
+import 'package:drever_warr/core/widgets/car_marker_painter.dart';
+import 'package:drever_warr/core/widgets/animated_marker_controller.dart';
 import 'package:drever_warr/features/setting/data/cubit/cubit_profail/cubit.dart';
 import 'package:drever_warr/features/setting/data/cubit/cubit_profail/cubit_stat.dart';
 import 'package:drever_warr/features/home/preasntaion/data/cubit/cubit_wallat/cubit.dart';
@@ -32,7 +33,7 @@ class HomeView extends StatefulWidget {
   State<HomeView> createState() => _HomeViewState();
 }
 
-class _HomeViewState extends State<HomeView> {
+class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   GoogleMapController? _mapController;
@@ -60,9 +61,12 @@ class _HomeViewState extends State<HomeView> {
   DateTime? _lastSentAt;
 
   LatLng? _previousPosition;
-  double _markerRotation = 100.0;
+  double _markerRotation = 0.0;
 
   BitmapDescriptor? _carMarkerIcon;
+
+  AnimatedMarkerController? _markerAnimController;
+  bool _followDriver = true;
 
   static const CameraPosition _kDefaultLocation = CameraPosition(
     target: LatLng(35.5112, 35.7908),
@@ -81,6 +85,7 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   void dispose() {
+    _markerAnimController?.dispose();
     _redirectTimer?.cancel();
     _positionSubscription?.cancel();
     _mapController?.dispose();
@@ -113,10 +118,7 @@ class _HomeViewState extends State<HomeView> {
 
   Future<void> _loadCarMarkerIcon() async {
     try {
-      _carMarkerIcon = await BitmapDescriptor.fromAssetImage(
-        const ImageConfiguration(size: Size(96, 96)),
-        ImageAssets.care,
-      );
+      _carMarkerIcon = await DriverMarkerHelper.loadIcon();
     } catch (e) {
       debugPrint('Failed to load car marker icon: $e');
       _carMarkerIcon = null;
@@ -152,9 +154,9 @@ class _HomeViewState extends State<HomeView> {
 
       // The car image points LEFT by default, so add 90 degrees
       // to align the front of the image with the travel direction.
-      rotation = _normalizeAngle(bearing + 90.0);
+      rotation = _normalizeAngle(bearing);
     } else if (hasGoodHeading) {
-      rotation = _normalizeAngle(position.heading + 90.0);
+      rotation = _normalizeAngle(position.heading);
     } else {
       rotation = _markerRotation;
     }
@@ -209,10 +211,24 @@ class _HomeViewState extends State<HomeView> {
 
       final current = LatLng(position.latitude, position.longitude);
 
+      _markerRotation = _normalizeAngle(position.heading);
+      _markerAnimController = AnimatedMarkerController(
+        vsync: this,
+        onUpdate: () {
+          if (!mounted) return;
+          setState(() {
+            _currentPosition = _markerAnimController!.position;
+            _markerRotation = _markerAnimController!.rotation;
+          });
+          if (_followDriver) _smoothCameraFollow();
+        },
+        initialPosition: current,
+        initialRotation: _markerRotation,
+      );
+
       setState(() {
         _currentPosition = current;
         _previousPosition = current;
-        _markerRotation = _normalizeAngle(position.heading + 90.0);
         _locationAttemptFinished = true;
       });
 
@@ -249,18 +265,29 @@ class _HomeViewState extends State<HomeView> {
 
       _updateMarkerRotation(position, newPosition);
 
-      setState(() {
-        _currentPosition = newPosition;
-      });
+      if (_markerAnimController != null) {
+        _markerAnimController!.animateTo(newPosition, _markerRotation);
+      } else {
+        setState(() {
+          _currentPosition = newPosition;
+        });
+      }
 
-      await _moveCameraToCurrentPosition();
       await _sendDriverLocation(position);
     });
+  }
+
+  void _smoothCameraFollow() {
+    if (_mapController == null || _currentPosition == null) return;
+    _mapController!.animateCamera(
+      CameraUpdate.newLatLng(_currentPosition!),
+    );
   }
 
   Future<void> _moveCameraToCurrentPosition({bool force = false}) async {
     if (_mapController == null || _currentPosition == null) return;
     if (!_mapReady && !force) return;
+    if (!_followDriver && !force) return;
 
     try {
       await _mapController!.animateCamera(
@@ -728,12 +755,9 @@ class _HomeViewState extends State<HomeView> {
   Widget _buildDriverMarker() {
     return Transform.rotate(
       angle: _markerRotation * math.pi / 180.0,
-      child: Image.asset(
-        ImageAssets.care,
-        width: 56.w,
-        height: 56.w,
-        fit: BoxFit.contain,
-      ),
+      child: _carMarkerIcon != null
+          ? const SizedBox.shrink()
+          : Icon(Icons.local_taxi, size: 40.w, color: Colors.amber),
     );
   }
 
@@ -863,8 +887,8 @@ class _HomeViewState extends State<HomeView> {
                             myLocationButtonEnabled: false,
                             myLocationEnabled: false,
                             onMapCreated: _onMapCreated,
-                            onCameraMove: (position) {
-                              _currentPosition = position.target;
+                            onCameraMoveStarted: () {
+                              _followDriver = false;
                             },
                             markers: {
                               Marker(
@@ -883,14 +907,41 @@ class _HomeViewState extends State<HomeView> {
                           Positioned(
                             bottom: 20.h,
                             right: 20.w,
-                            child: FloatingActionButton(
-                              mini: true,
-                              backgroundColor: Colors.white,
-                              onPressed: _determinePosition,
-                              child: const Icon(
-                                Icons.my_location,
-                                color: Colors.blue,
-                              ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                FloatingActionButton(
+                                  mini: true,
+                                  heroTag: 'follow',
+                                  backgroundColor: _followDriver ? AppColors.main1 : Colors.white,
+                                  onPressed: () {
+                                    setState(() {
+                                      _followDriver = !_followDriver;
+                                    });
+                                    if (_followDriver && _currentPosition != null) {
+                                      _smoothCameraFollow();
+                                    }
+                                  },
+                                  child: Icon(
+                                    _followDriver ? Icons.gps_fixed : Icons.gps_not_fixed,
+                                    color: _followDriver ? Colors.white : Colors.grey,
+                                  ),
+                                ),
+                                SizedBox(height: 8.h),
+                                FloatingActionButton(
+                                  mini: true,
+                                  heroTag: 'locate',
+                                  backgroundColor: Colors.white,
+                                  onPressed: () {
+                                    setState(() => _followDriver = true);
+                                    _moveCameraToCurrentPosition(force: true);
+                                  },
+                                  child: const Icon(
+                                    Icons.my_location,
+                                    color: Colors.blue,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],

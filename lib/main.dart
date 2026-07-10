@@ -5,11 +5,13 @@ import 'package:drever_warr/core/transleat/lunguesh_cubit.dart';
 import 'package:drever_warr/core/utiles/serves_lecture.dart';
 import 'package:drever_warr/features/home/preasntaion/data/cubit/complain_cubit/cubit.dart';
 import 'package:drever_warr/features/home/preasntaion/data/cubit/cubit_finsh_trips/cubit.dart';
+import 'package:drever_warr/features/home/preasntaion/data/cubit/cubit_notification/cubit.dart';
 import 'package:drever_warr/features/home/preasntaion/data/cubit/cubit_wallat/cubit.dart';
 import 'package:drever_warr/features/home/preasntaion/data/cubit/logout_cubit/cubit.dart';
 import 'package:drever_warr/features/home/preasntaion/data/cubit/repo/complain_repo/repo_impl.dart';
 import 'package:drever_warr/features/home/preasntaion/data/cubit/repo/finsh_trips_repo/repo_implmntion.dart';
 import 'package:drever_warr/features/home/preasntaion/data/cubit/repo/logout_repo/repo_impl.dart';
+import 'package:drever_warr/features/home/preasntaion/data/cubit/repo/repo_notification/repo_implmantion.dart';
 import 'package:drever_warr/features/home/preasntaion/data/cubit/repo/repo_wallat/repo_implmantion.dart';
 import 'package:drever_warr/features/home/preasntaion/view/splash_view.dart';
 import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/ScheduledTrips_cubit/cubit.dart';
@@ -263,6 +265,13 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => UpdateLanguageCubit(
             LanguageRepositoryImpl(
+              getIt.get<ApiService>(),
+            ),
+          ),
+        ),
+        BlocProvider(
+          create: (context) => NotificationCubit(
+            NotificationRepositoryImpl(
               getIt.get<ApiService>(),
             ),
           ),

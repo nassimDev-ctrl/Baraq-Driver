@@ -230,8 +230,16 @@ class AppTranslations {
       "website": "Website",
       "share": "Share",
       "could_not_open_website": "Could not open website",
-      "scheduled_date" : ": Trip Date"
-
+      "scheduled_date" : ": Trip Date",
+      "notifications": "Notifications",
+      "no_notifications": "No notifications",
+      "retry": "Retry",
+      "notification_details": "Notification Details",
+      "delete_notification": "Delete Notification",
+      "delete_notification_confirm": "Are you sure you want to delete this notification?",
+      "notification_deleted": "Notification deleted successfully",
+      "cancel": "Cancel",
+      "delete": "Delete"
 
 
     },
@@ -460,8 +468,16 @@ class AppTranslations {
       "website": "الموقع",
       "share": "مشاركة",
       "could_not_open_website": "تعذر فتح الموقع الإلكتروني",
-      "scheduled_date" : "موعد الرحلة : "
-
+      "scheduled_date" : "موعد الرحلة : ",
+      "notifications": "الإشعارات",
+      "no_notifications": "لا توجد إشعارات",
+      "retry": "إعادة المحاولة",
+      "notification_details": "تفاصيل الإشعار",
+      "delete_notification": "حذف الإشعار",
+      "delete_notification_confirm": "هل أنت متأكد من حذف هذا الإشعار؟",
+      "notification_deleted": "تم حذف الإشعار بنجاح",
+      "cancel": "إلغاء",
+      "delete": "حذف"
 
 
     },
@@ -682,8 +698,16 @@ class AppTranslations {
       "website": "Malper",
       "share": "Parve bike",
       "could_not_open_website": "Malper nehat vekirin",
-      "scheduled_date" : ": Dîroka rêwîtiyê"
-
+      "scheduled_date" : ": Dîroka rêwîtiyê",
+      "notifications": "Agahdarî",
+      "no_notifications": "Agahdarî tune",
+      "retry": "Dîsa biceribîne",
+      "notification_details": "Hûrguliyên agahdariyê",
+      "delete_notification": "Jêbirina agahdariyê",
+      "delete_notification_confirm": "Ma tu piştrast î ku dixwazî vê agahdariyê jê bibî?",
+      "notification_deleted": "Agahdarî bi serkeftî hat jêbirin",
+      "cancel": "Betal bike",
+      "delete": "Jê bibe"
 
     },
   };

@@ -11,6 +11,7 @@ import 'package:flutter_svg/svg.dart';
 
 import '../data/cubit/driver_available_cubit/cubit.dart';
 import '../data/cubit/driver_available_cubit/cubit_state.dart';
+import '../view/notification_screen.dart';
 
 class HeaderHomeView extends StatefulWidget {
   final VoidCallback onMenuTap;
@@ -95,6 +96,22 @@ class _HeaderHomeViewState extends State<HeaderHomeView> {
                 child: _profileAvatar(imageUrl),
               ),
               const Spacer(),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const NotificationScreen(),
+                    ),
+                  );
+                },
+                child: Icon(
+                  Icons.notifications_outlined,
+                  color: Colors.white,
+                  size: 26.sp,
+                ),
+              ),
+              SizedBox(width: 12.w),
               _buildAvailabilitySwitch(),
               SizedBox(width: 20.w),
             ],

@@ -16,7 +16,8 @@ import 'package:drever_warr/core/service/soket_serves.dart';
 import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/model/accsept_model.dart';
 import 'package:drever_warr/features/my_oreder/preasntaion/widget/header_order.dart';
 import 'package:drever_warr/core/asset/icon_asset.dart';
-import 'package:drever_warr/core/asset/image_asset.dart';
+import 'package:drever_warr/core/widgets/car_marker_painter.dart';
+import 'package:drever_warr/core/widgets/animated_marker_controller.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/widgets/customText.dart';
 import 'package:drever_warr/features/my_tripe/preasntaion/widget/TripLocationPath.dart';
@@ -48,7 +49,8 @@ class LiveTripScreen extends StatefulWidget {
   State<LiveTripScreen> createState() => _LiveTripScreenState();
 }
 
-class _LiveTripScreenState extends State<LiveTripScreen> {
+class _LiveTripScreenState extends State<LiveTripScreen>
+    with TickerProviderStateMixin {
   final Completer<GoogleMapController> _mapController = Completer();
   final TripSocketService _socketService = TripSocketService();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -71,7 +73,8 @@ class _LiveTripScreenState extends State<LiveTripScreen> {
 
   BitmapDescriptor? _driverMarkerIcon;
   LatLng? _previousPosition;
-  double _markerRotation = 90.0; // image front is facing left, so default offset
+  double _markerRotation = 0.0;
+  AnimatedMarkerController? _markerAnimController;
 
   @override
   void initState() {
@@ -91,10 +94,7 @@ class _LiveTripScreenState extends State<LiveTripScreen> {
 
   Future<void> _loadDriverMarkerIcon() async {
     try {
-      _driverMarkerIcon = await BitmapDescriptor.fromAssetImage(
-        const ImageConfiguration(size: Size(64, 64)),
-        ImageAssets.care,
-      );
+      _driverMarkerIcon = await DriverMarkerHelper.loadIcon();
     } catch (e) {
       debugPrint('Failed to load driver marker icon: $e');
       _driverMarkerIcon = null;
@@ -129,9 +129,9 @@ class _LiveTripScreenState extends State<LiveTripScreen> {
       final bearing = _bearingBetween(_previousPosition!, newPosition);
 
       // Image front faces left, so add 90 degrees to align it with travel direction.
-      rotation = _normalizeAngle(bearing + 90.0);
+      rotation = _normalizeAngle(bearing);
     } else if (hasHeading) {
-      rotation = _normalizeAngle(pos.heading + 90.0);
+      rotation = _normalizeAngle(pos.heading);
     } else {
       rotation = _markerRotation;
     }
@@ -156,8 +156,20 @@ class _LiveTripScreenState extends State<LiveTripScreen> {
     _previousPosition = _currentPosition;
 
     if (position.heading >= 0) {
-      _markerRotation = _normalizeAngle(position.heading + 90.0);
+      _markerRotation = _normalizeAngle(position.heading);
     }
+
+    _markerAnimController = AnimatedMarkerController(
+      vsync: this,
+      onUpdate: () {
+        if (!mounted) return;
+        _currentPosition = _markerAnimController!.position;
+        _markerRotation = _markerAnimController!.rotation;
+        _updateUI();
+      },
+      initialPosition: _currentPosition!,
+      initialRotation: _markerRotation,
+    );
 
     _socketService.sendLocation(
       tripId: widget.trip.id.toString(),
@@ -298,18 +310,17 @@ class _LiveTripScreenState extends State<LiveTripScreen> {
         distanceFilter: 10,
       ),
     ).listen((pos) async {
-      _currentPosition = LatLng(pos.latitude, pos.longitude);
+      final newPos = LatLng(pos.latitude, pos.longitude);
 
-      _updateMarkerRotation(pos, _currentPosition!);
-
+      _updateMarkerRotation(pos, newPos);
       _sendDriverLocation(pos, widget.trip.id.toString());
 
-      try {
-        final GoogleMapController controller = await _mapController.future;
-        controller.animateCamera(CameraUpdate.newLatLng(_currentPosition!));
-      } catch (_) {}
-
-      _updateUI();
+      if (_markerAnimController != null) {
+        _markerAnimController!.animateTo(newPos, _markerRotation);
+      } else {
+        _currentPosition = newPos;
+        _updateUI();
+      }
     });
   }
 
@@ -409,6 +420,7 @@ class _LiveTripScreenState extends State<LiveTripScreen> {
 
   @override
   void dispose() {
+    _markerAnimController?.dispose();
     _positionStream?.cancel();
     _confirmationTimer?.cancel();
     super.dispose();

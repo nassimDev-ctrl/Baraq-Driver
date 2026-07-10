@@ -12,6 +12,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 
 import 'package:drever_warr/core/asset/image_asset.dart';
+import 'package:drever_warr/core/widgets/car_marker_painter.dart';
+import 'package:drever_warr/core/widgets/animated_marker_controller.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/service/soket_serves.dart';
 
@@ -39,7 +41,7 @@ class EndTripe extends StatefulWidget {
   State<EndTripe> createState() => _EndTripeState();
 }
 
-class _EndTripeState extends State<EndTripe> {
+class _EndTripeState extends State<EndTripe> with TickerProviderStateMixin {
   final Completer<GoogleMapController> _mapController = Completer();
 
   final PolylinePoints polylinePoints = PolylinePoints(
@@ -58,7 +60,8 @@ class _EndTripeState extends State<EndTripe> {
   DateTime? _lastPriceUpdate;
 
   BitmapDescriptor? _driverMarkerIcon;
-  double _markerRotation = 90.0; // image front is facing left
+  double _markerRotation = 0.0;
+  AnimatedMarkerController? _markerAnimController;
 
   @override
   void initState() {
@@ -76,10 +79,7 @@ class _EndTripeState extends State<EndTripe> {
 
   Future<void> _loadDriverMarkerIcon() async {
     try {
-      _driverMarkerIcon = await BitmapDescriptor.fromAssetImage(
-        const ImageConfiguration(size: Size(64, 64)),
-        ImageAssets.care,
-      );
+      _driverMarkerIcon = await DriverMarkerHelper.loadIcon();
     } catch (e) {
       debugPrint('Failed to load driver marker icon: $e');
       _driverMarkerIcon = null;
@@ -114,9 +114,9 @@ class _EndTripeState extends State<EndTripe> {
       final bearing = _bearingBetween(_previousPosition!, newPosition);
 
       // The car image faces left, so add 90 degrees to align it with travel direction.
-      rotation = _normalizeAngle(bearing + 90.0);
+      rotation = _normalizeAngle(bearing);
     } else if (hasGoodHeading) {
-      rotation = _normalizeAngle(position.heading + 90.0);
+      rotation = _normalizeAngle(position.heading);
     } else {
       rotation = _markerRotation;
     }
@@ -131,8 +131,20 @@ class _EndTripeState extends State<EndTripe> {
     _previousPosition = _currentPosition;
 
     if (position.heading >= 0) {
-      _markerRotation = _normalizeAngle(position.heading + 90.0);
+      _markerRotation = _normalizeAngle(position.heading);
     }
+
+    _markerAnimController = AnimatedMarkerController(
+      vsync: this,
+      onUpdate: () {
+        if (!mounted) return;
+        _currentPosition = _markerAnimController!.position;
+        _markerRotation = _markerAnimController!.rotation;
+        _updateUI();
+      },
+      initialPosition: _currentPosition!,
+      initialRotation: _markerRotation,
+    );
   }
 
   void _setupSocketListener() {
@@ -234,16 +246,14 @@ class _EndTripeState extends State<EndTripe> {
       final newPosition = LatLng(pos.latitude, pos.longitude);
 
       _updateMarkerRotation(pos, newPosition);
-      _currentPosition = newPosition;
-
       _sendDriverLocation(pos, widget.trip.id.toString());
 
-      try {
-        final GoogleMapController controller = await _mapController.future;
-        controller.animateCamera(CameraUpdate.newLatLng(_currentPosition!));
-      } catch (_) {}
-
-      _updateUI();
+      if (_markerAnimController != null) {
+        _markerAnimController!.animateTo(newPosition, _markerRotation);
+      } else {
+        _currentPosition = newPosition;
+        _updateUI();
+      }
     });
   }
 
@@ -538,6 +548,7 @@ class _EndTripeState extends State<EndTripe> {
 
   @override
   void dispose() {
+    _markerAnimController?.dispose();
     _positionStream?.cancel();
 
     try {
