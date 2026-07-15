@@ -13,7 +13,7 @@ class UpdateMobileCubit extends Cubit<UpdateMobileState> {
     var result = await repo.confirmPassword(password);
 
     result.fold(
-      (failure) => emit(UpdateMobileFailure(failure.errMassage)),
+      (failure) => emit(UpdateMobileFailure(failure.errMessage)),
       (success) => emit(ConfirmPasswordSuccess()),
     );
   }
@@ -24,7 +24,7 @@ class UpdateMobileCubit extends Cubit<UpdateMobileState> {
     var result = await repo.updateMobilePhone(newMobile,code);
 
     result.fold(
-      (failure) => emit(UpdateMobileFailure(failure.errMassage)),
+      (failure) => emit(UpdateMobileFailure(failure.errMessage)),
       (message) => emit(UpdateMobilePhoneSuccess(message)),
     );
   }

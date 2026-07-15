@@ -1,8 +1,8 @@
 import 'dart:developer';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import 'package:drever_warr/core/service/api_servise.dart';
-import 'package:drever_warr/core/service/failear.dart';
+import 'package:drever_warr/core/service/api_service.dart';
+import 'package:drever_warr/core/service/failure.dart';
  
 
 import 'repo.dart';
@@ -13,7 +13,7 @@ class ChangePasswordRepoImpl extends ChangePasswordRepo {
   ChangePasswordRepoImpl(this._apiService);
 
   @override
-  Future<Either<Failur, String>> changePassword({
+  Future<Either<Failure, String>> changePassword({
     required String newPassword,
   }) async {
     try {
@@ -43,7 +43,7 @@ class ChangePasswordRepoImpl extends ChangePasswordRepo {
         log("⚠️ [SERVER LOGIC ERROR]");
         log("📄 [Message from Server]: ${response.data["message"]}");
         return left(
-          ServierFailur(response.data["message"] ?? "فشل التغيير", 400),
+          ServerFailure(response.data["message"] ?? "فشل التغيير", 400),
         );
       }
     } catch (e) {
@@ -61,12 +61,12 @@ class ChangePasswordRepoImpl extends ChangePasswordRepo {
           log("🚨 [CRITICAL]: Token is Invalid or Expired!");
         }
 
-        return left(ServierFailur.fromDioError(e));
+        return left(ServerFailure.fromDioError(e));
       }
 
      
       log("🚨 [UNKNOWN ERROR]: ${e.toString()}");
-      return left(ServierFailur("حدث خطأ غير متوقع", 500));
+      return left(ServerFailure("حدث خطأ غير متوقع", 500));
     } finally {
       log("-----------------------------------------");
       log("🏁 [API END]: Change Password Process Finished");

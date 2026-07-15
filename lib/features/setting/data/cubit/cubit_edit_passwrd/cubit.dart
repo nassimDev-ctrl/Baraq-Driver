@@ -13,7 +13,7 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
     var result = await _changePasswordRepo.changePassword(newPassword: newPassword);
 
     result.fold(
-      (failure) => emit(ChangePasswordFailure(failure.errMassage)),
+      (failure) => emit(ChangePasswordFailure(failure.errMessage)),
       (success) => emit(ChangePasswordSuccess(success)),
     );
   }

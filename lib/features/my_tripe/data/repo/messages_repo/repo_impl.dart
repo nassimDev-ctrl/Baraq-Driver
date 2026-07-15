@@ -1,8 +1,8 @@
 import 'dart:developer' as dev;
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import 'package:drever_warr/core/service/api_servise.dart';
-import 'package:drever_warr/core/service/failear.dart';
+import 'package:drever_warr/core/service/api_service.dart';
+import 'package:drever_warr/core/service/failure.dart';
 import '../../model/messages_model.dart';
 import 'repo.dart';
 
@@ -12,7 +12,7 @@ class ChatRepositoryImpl implements ChatRepository {
   ChatRepositoryImpl(this.apiService);
 
   @override
-  Future<Either<Failur, List<ChatMessageModel>>> getMessages(String authUser) async {
+  Future<Either<Failure, List<ChatMessageModel>>> getMessages(String authUser) async {
     try {
       dev.log('🚀 [GET] Fetching messages for $authUser', name: 'ChatRepo');
 
@@ -40,14 +40,14 @@ class ChatRepositoryImpl implements ChatRepository {
     } catch (e) {
       dev.log('❌ [GET Error]: $e', name: 'ChatRepo', error: e);
       if (e is DioException) {
-        return left(ServierFailur.fromDioError(e));
+        return left(ServerFailure.fromDioError(e));
       }
-      return left(ServierFailur(e.toString(), 500));
+      return left(ServerFailure(e.toString(), 500));
     }
   }
 
   @override
-  Future<Either<Failur, ChatMessageModel>> sendMessage({
+  Future<Either<Failure, ChatMessageModel>> sendMessage({
     required String authUser,
     required String message,
     required String tripId,
@@ -76,9 +76,9 @@ class ChatRepositoryImpl implements ChatRepository {
     } catch (e) {
       dev.log('❌ [SEND Error]: $e', name: 'ChatRepo', error: e);
       if (e is DioException) {
-        return left(ServierFailur.fromDioError(e));
+        return left(ServerFailure.fromDioError(e));
       }
-      return left(ServierFailur(e.toString(), 500));
+      return left(ServerFailure(e.toString(), 500));
     }
   }
 }

@@ -16,7 +16,7 @@ class ChatCubit extends Cubit<ChatState> {
     final result = await chatRepository.getMessages(authUser);
 
     result.fold(
-          (failure) => emit(ChatFailure(failure.errMassage)),
+          (failure) => emit(ChatFailure(failure.errMessage)),
           (messages) => emit(ChatLoaded(messages)),
     );
   }
@@ -38,7 +38,7 @@ class ChatCubit extends Cubit<ChatState> {
     );
 
     result.fold(
-          (failure) => emit(ChatFailure(failure.errMassage)),
+          (failure) => emit(ChatFailure(failure.errMessage)),
           (sentMessage) => emit(ChatSendSuccess(sentMessage)),
     );
   }

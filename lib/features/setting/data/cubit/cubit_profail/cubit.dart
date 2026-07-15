@@ -1,4 +1,4 @@
-import 'package:drever_warr/core/cash/preferences_servis.dart';
+import 'package:drever_warr/core/cash/preferences_service.dart';
 import 'package:drever_warr/features/setting/data/cubit/cubit_profail/cubit_stat.dart';
 import 'package:drever_warr/features/setting/data/repo/repo_profail/repo.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,7 +16,7 @@ class ProfileCubit extends Cubit<ProfileState> {
 
     await result.fold(
       (failure) async {
-        emit(ProfileFailure(failure.errMassage));
+        emit(ProfileFailure(failure.errMessage));
       },
       (success) async {
         final status = success.data?.status;

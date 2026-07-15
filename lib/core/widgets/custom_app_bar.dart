@@ -56,7 +56,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             padding: const EdgeInsets.all(16),
             child: SvgPicture.asset(
               "",
-            //  IconsAssets.leftArrow,
+            //  IconAssets.leftArrow,
               width: 24.w,
               height: 24.h,
               matchTextDirection: true,
@@ -79,7 +79,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               },
               child: SvgPicture.asset(
                 "",
-            //    IconsAssets.bell,
+            //    IconAssets.bell,
                 width: 24.w,
                 height: 24.h,
                 colorFilter: coloricon != null

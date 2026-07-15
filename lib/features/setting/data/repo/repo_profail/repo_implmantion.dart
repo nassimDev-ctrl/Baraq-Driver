@@ -3,9 +3,9 @@ import 'package:drever_warr/core/logging/app_logger.dart';
 
 import 'package:dio/dio.dart';
 
-import 'package:drever_warr/core/service/api_servise.dart';
+import 'package:drever_warr/core/service/api_service.dart';
 
-import 'package:drever_warr/core/service/failear.dart';
+import 'package:drever_warr/core/service/failure.dart';
 
 import 'package:drever_warr/features/setting/data/model/model_profail.dart';
 
@@ -18,7 +18,7 @@ class ImplementRepoProfile extends RepoProfile {
     : _apiService = apiService;
 
   @override
-  Future<Either<Failur, ProfileModel>> getProfile() async {
+  Future<Either<Failure, ProfileModel>> getProfile() async {
     AppLogger.error("--------------------------------------------------");
     AppLogger.debug("🚀 [START REQUEST] Endpoint: /drivers/get-profile");
 
@@ -49,7 +49,7 @@ class ImplementRepoProfile extends RepoProfile {
         AppLogger.debug("⚠️ [SERVER ERROR] Success is false");
         AppLogger.error("📝 Error Message: ${response.data['message']}");
         return left(
-          ServierFailur.fromResponse(response.statusCode ?? 400, response.data),
+          ServerFailure.fromResponse(response.statusCode ?? 400, response.data),
         );
       }
     } catch (e) {
@@ -58,13 +58,13 @@ class ImplementRepoProfile extends RepoProfile {
         AppLogger.debug("🔌 Dio Error Type: ${e.type}");
         AppLogger.error("📥 Dio Error Response: ${e.response?.data}");
         AppLogger.error("🔢 Dio Status Code: ${e.response?.statusCode}");
-        return left(ServierFailur.fromDioError(e));
+        return left(ServerFailure.fromDioError(e));
       }
 
       AppLogger.error("🆘 Generic Error: ${e.toString()}");
       AppLogger.error("--------------------------------------------------");
       return left(
-        ServierFailur('حدث خطأ أثناء جلب البيانات: ${e.toString()}', 500),
+        ServerFailure('حدث خطأ أثناء جلب البيانات: ${e.toString()}', 500),
       );
     }
   }

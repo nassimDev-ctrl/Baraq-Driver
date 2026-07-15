@@ -5,7 +5,7 @@ import 'package:drever_warr/core/logging/app_logger.dart';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-import 'package:drever_warr/core/service/api_servise.dart';
+import 'package:drever_warr/core/service/api_service.dart';
 
 class NotificationService {
   NotificationService._();

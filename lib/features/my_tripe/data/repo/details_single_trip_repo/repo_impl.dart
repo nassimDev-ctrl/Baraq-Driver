@@ -3,9 +3,9 @@ import 'package:drever_warr/core/logging/app_logger.dart';
 
 import 'package:dio/dio.dart';
 
-import 'package:drever_warr/core/service/api_servise.dart';
+import 'package:drever_warr/core/service/api_service.dart';
 
-import 'package:drever_warr/core/service/failear.dart';
+import 'package:drever_warr/core/service/failure.dart';
 
 
 import 'package:drever_warr/features/my_tripe/data/model/single_finished_trip.dart';
@@ -18,7 +18,7 @@ class SingleTripDetailsRepositoryImpl implements SingleTripDetailsRepository {
   SingleTripDetailsRepositoryImpl(this.apiService);
 
   @override
-  Future<Either<Failur, SingleFinishedTripModel>> getTripById({
+  Future<Either<Failure, SingleFinishedTripModel>> getTripById({
     required String tripId,
   }) async {
     AppLogger.debug("---------------- [🚕 GET TRIP DETAILS REQUEST] ----------------");
@@ -58,18 +58,18 @@ class SingleTripDetailsRepositoryImpl implements SingleTripDetailsRepository {
       AppLogger.debug("❌ [FAILURE] Error in getTripById");
 
       if (e is DioException) {
-        final failure = ServierFailur.fromDioError(e);
+        final failure = ServerFailure.fromDioError(e);
         AppLogger.error("🚨 Dio Error Type: ${e.type}");
         AppLogger.error("🚨 Status Code: ${e.response?.statusCode}");
         AppLogger.debug("🚨 Error Data from Server: ${e.response?.data}");
-        AppLogger.error("🚨 Failure Message: ${failure.errMassage}");
+        AppLogger.error("🚨 Failure Message: ${failure.errMessage}");
         AppLogger.error("------------------------------------------------------------");
         return left(failure);
       }
 
       AppLogger.error("🚨 Unexpected Error: ${e.toString()}");
       AppLogger.error("------------------------------------------------------------");
-      return left(ServierFailur(e.toString(), 500));
+      return left(ServerFailure(e.toString(), 500));
     }
   }
 }

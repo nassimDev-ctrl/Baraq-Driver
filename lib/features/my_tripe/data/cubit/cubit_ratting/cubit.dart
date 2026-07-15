@@ -20,7 +20,7 @@ class AddRatingCubit extends Cubit<AddRatingState> {
     );
 
     result.fold(
-      (failure) => emit(AddRatingFailure(failure.errMassage)),
+      (failure) => emit(AddRatingFailure(failure.errMessage)),
       (data) => emit(AddRatingSuccess("تم إضافة التقييم بنجاح")),
     );
   }

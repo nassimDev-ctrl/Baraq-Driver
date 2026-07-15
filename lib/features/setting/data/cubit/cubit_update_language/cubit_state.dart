@@ -14,7 +14,7 @@ class UpdateLanguageCubit extends Cubit<UpdateLanguageState> {
     final result = await languageRepository.changeLanguage(languageCode);
 
     result.fold(
-          (failure) => emit(UpdateLanguageFailure(failure.errMassage)),
+          (failure) => emit(UpdateLanguageFailure(failure.errMessage)),
           (message) => emit(UpdateLanguageSuccess(message)),
     );
   }

@@ -15,7 +15,7 @@ class SingleTripDetailsCubit extends Cubit<SingleTripDetailsState> {
     final result = await tripDetailsRepository.getTripById(tripId: tripId);
 
     result.fold(
-          (failure) => emit(SingleTripDetailsFailure(failure.errMassage)),
+          (failure) => emit(SingleTripDetailsFailure(failure.errMessage)),
           (trip) => emit(SingleTripDetailsSuccess(trip)),
     );
   }

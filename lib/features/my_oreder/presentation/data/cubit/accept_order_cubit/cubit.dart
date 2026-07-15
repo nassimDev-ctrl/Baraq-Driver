@@ -1,0 +1,32 @@
+import 'package:drever_warr/features/my_oreder/presentation/data/cubit/accept_order_cubit/cubit_stat.dart';
+import 'package:drever_warr/features/my_oreder/presentation/data/cubit/model/accsept_model.dart';
+import 'package:drever_warr/features/my_oreder/presentation/data/cubit/repo/accept_order_repo/repo.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+class AcceptTripCubit extends Cubit<AcceptTripState> {
+  final AcceptTripRepo _acceptTripRepo;
+
+  AcceptTripCubit(this._acceptTripRepo) : super(AcceptTripInitial());
+
+  Future<void> acceptTrip({required ActiveTripModel trip}) async {
+    if (state is AcceptTripLoading) return;
+
+    emit(AcceptTripLoading(trip.id));
+
+    try {
+      final result = await _acceptTripRepo.acceptTrip(tripId: trip.id);
+
+      if (isClosed) return;
+
+      result.fold(
+            (failure) => emit(AcceptTripFailure(failure.errMessage)),
+            (_) => emit(AcceptTripSuccess(trip)),
+      );
+    } catch (e) {
+      if (!isClosed) {
+        emit(AcceptTripFailure(e.toString()));
+      }
+    }
+  }
+}
+

@@ -14,7 +14,7 @@ class TripNoteCubit extends Cubit<TripNoteState> {
     final result = await tripNoteRepository.fetchTripNote(tripId: tripId);
 
     result.fold(
-          (failure) => emit(TripNoteFailure(failure.errMassage)),
+          (failure) => emit(TripNoteFailure(failure.errMessage)),
           (note) => emit(TripNoteSuccess(note)),
     );
   }

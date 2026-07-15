@@ -3,9 +3,9 @@ import 'package:drever_warr/core/logging/app_logger.dart';
 
 import 'package:dio/dio.dart';
 
-import 'package:drever_warr/core/service/api_servise.dart';
+import 'package:drever_warr/core/service/api_service.dart';
 
-import 'package:drever_warr/core/service/failear.dart';
+import 'package:drever_warr/core/service/failure.dart';
  
 import 'repo.dart';
 
@@ -14,7 +14,7 @@ class AddRatingRepoImpl implements AddRatingRepo {
   AddRatingRepoImpl(this.apiService);
 
   @override
-  Future<Either<Failur, Map<String, dynamic>>> addRating({
+  Future<Either<Failure, Map<String, dynamic>>> addRating({
     required String tripId,
     required String note,
     required int rating,
@@ -42,10 +42,10 @@ class AddRatingRepoImpl implements AddRatingRepo {
       if (e is DioException) {
         AppLogger.error("⚠️ [DIO ERROR TYPE]: ${e.type}");
         AppLogger.error("⚠️ [DIO ERROR RESPONSE]: ${e.response?.data}");
-        return left(ServierFailur.fromDioError(e));
+        return left(ServerFailure.fromDioError(e));
       }
 
-      return left(ServierFailur(e.toString(), 500));
+      return left(ServerFailure(e.toString(), 500));
     }
   }
 }

@@ -1,4 +1,4 @@
-class IconsAssets {
+class IconAssets {
   static const drowpdawn = 'asets/icon/dropdown.svg';
   static const eyeoff = 'asets/icon/eye-off-fill1.svg';
   static const emergemcy = 'asets/icon/emergemcy.svg';

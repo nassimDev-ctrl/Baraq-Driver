@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
-import 'package:drever_warr/core/service/failear.dart';
+import 'package:drever_warr/core/service/failure.dart';
 
 abstract class TripNoteRepository {
-  Future<Either<Failur, String>> fetchTripNote({
+  Future<Either<Failure, String>> fetchTripNote({
     required String tripId,
   });
 }

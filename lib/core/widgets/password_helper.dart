@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../cash/preferences_servis.dart';
-import 'coustm_text_fild_all.dart';
+import '../cash/preferences_service.dart';
+import 'custom_text_field_all.dart';
 
 class PasswordTextField extends StatefulWidget {
   final String hintText;

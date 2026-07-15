@@ -1,7 +1,7 @@
  
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/style/text_style.dart';
-import 'package:drever_warr/core/transleat/app_translat.dart';
+import 'package:drever_warr/core/translate/app_translate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 

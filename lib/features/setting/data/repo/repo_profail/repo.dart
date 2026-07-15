@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
-import 'package:drever_warr/core/service/failear.dart';
+import 'package:drever_warr/core/service/failure.dart';
  
 abstract class RepoProfile {
-  Future<Either<Failur, dynamic>> getProfile();
+  Future<Either<Failure, dynamic>> getProfile();
 }
