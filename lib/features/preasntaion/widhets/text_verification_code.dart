@@ -1,6 +1,6 @@
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/constant/app_spacing.dart';
-import 'package:drever_warr/core/widgets/customText.dart';
+import 'package:drever_warr/core/widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 
 class TextVerificationCode extends StatelessWidget {

@@ -3,8 +3,7 @@ import 'dart:async';
 import 'package:drever_warr/core/asset/icon_asset.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/constant/app_spacing.dart';
-import 'package:drever_warr/core/widgets/customTextFieldsearch.dart';
-import 'package:drever_warr/features/preasntaion/widhets/icon_bak.dart';
+import 'package:drever_warr/core/widgets/custom_text_field_search.dart';
 import 'package:drever_warr/features/preasntaion/widhets/login.dart';
 import 'package:drever_warr/features/preasntaion/widhets/regster.dart';
 import 'package:drever_warr/features/preasntaion/widhets/row_search.dart';
@@ -86,7 +85,9 @@ class _AddLocationState extends State<AddLocation> {
       }
 
       final position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+        ),
       );
 
       final current = LatLng(position.latitude, position.longitude);
@@ -327,8 +328,11 @@ class _AddLocationState extends State<AddLocation> {
                                 );
                                 },
                               child: SvgPicture.asset(
-                                IconsAssets.close ?? IconsAssets.back,
-                                color: AppColors.secondary2,
+                                IconsAssets.close,
+                                colorFilter: ColorFilter.mode(
+                                  AppColors.secondary2,
+                                  BlendMode.srcIn,
+                                ),
                                 matchTextDirection: true, //
                               ),
                             ),
@@ -347,7 +351,7 @@ class _AddLocationState extends State<AddLocation> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12.r),
                   border: Border.all(
-                    color: AppColors.main1.withOpacity(0.5),
+                    color: AppColors.main1.withValues(alpha: 0.5),
                     width: 1.2,
                   ),
                   boxShadow: const [
@@ -374,7 +378,10 @@ class _AddLocationState extends State<AddLocation> {
                       onTap: () => _searchAndNavigate(),
                       child: SvgPicture.asset(
                         IconsAssets.locationsearch,
-                        color: AppColors.main1,
+                        colorFilter: ColorFilter.mode(
+                          AppColors.main1,
+                          BlendMode.srcIn,
+                        ),
                         height: 24.h,
                       ),
                     ),

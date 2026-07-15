@@ -1,6 +1,6 @@
 import 'package:drever_warr/core/asset/image_asset.dart';
 import 'package:drever_warr/features/home/preasntaion/view/home_view.dart';
-import 'package:drever_warr/features/preasntaion/view/WaitingReviewScreen.dart';
+import 'package:drever_warr/features/preasntaion/view/waiting_review_screen.dart';
 import 'package:drever_warr/features/preasntaion/view/location_drever.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -70,7 +70,7 @@ class _SplashViewState extends State<SplashView> {
 
             
             Image.asset(
-              ImageAssets.logo_warr,
+              ImageAssets.logoWarr,
               width: 250.w,
               height: 250.h,
               fit: BoxFit.contain,

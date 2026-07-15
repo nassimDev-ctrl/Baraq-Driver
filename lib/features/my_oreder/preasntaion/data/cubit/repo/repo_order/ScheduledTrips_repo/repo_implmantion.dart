@@ -1,8 +1,14 @@
 import 'package:dartz/dartz.dart';
+import 'package:drever_warr/core/logging/app_logger.dart';
+
 import 'package:dio/dio.dart';
+
 import 'package:drever_warr/core/service/api_servise.dart';
+
 import 'package:drever_warr/core/service/failear.dart';
-import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/model/ScheduledTrips.dart';
+
+import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/model/scheduled_trips.dart';
+
 import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/repo/repo_order/ScheduledTrips_repo/repo.dart';
 
 class RepoScheduledTripsImpl extends RepoScheduledTrips {
@@ -13,58 +19,58 @@ class RepoScheduledTripsImpl extends RepoScheduledTrips {
   @override
   Future<Either<Failur, List<ScheduledTripModel>>> fetchScheduledTrips() async {
     try {
-      print("---------------- [START SCHEDULED REQUEST] ----------------");
-      print("🚀 Endpoint: /trips/get-scheduled-trips");
+      AppLogger.debug("---------------- [START SCHEDULED REQUEST] ----------------");
+      AppLogger.debug("🚀 Endpoint: /trips/get-scheduled-trips");
 
       var response = await _apiService.get(
         endpoint: "/trips/get-scheduled-trips",
         needToken: true,
       );
 
-      print("📡 Status Code: ${response.statusCode}");
-      print("📥 Raw Scheduled Data: ${response.data}");
+      AppLogger.debug("📡 Status Code: ${response.statusCode}");
+      AppLogger.debug("📥 Raw Scheduled Data: ${response.data}");
 
       if (response.data["success"] == true) {
         List<dynamic> items = response.data["data"];
-        print("🔢 Number of scheduled trips found: ${items.length}");
+        AppLogger.debug("🔢 Number of scheduled trips found: ${items.length}");
 
        
         List<ScheduledTripModel> trips = items.map((e) {
           try {
             return ScheduledTripModel.fromJson(e);
           } catch (modelError) {
-            print("⚠️ Error parsing individual scheduled trip: $modelError");
-            print("📄 Problematic JSON Item: $e");
+            AppLogger.error("⚠️ Error parsing individual scheduled trip: $modelError");
+            AppLogger.error("📄 Problematic JSON Item: $e");
             rethrow; 
           }
         }).toList();
 
-        print("✅ Parsing Completed. List size: ${trips.length}");
+        AppLogger.debug("✅ Parsing Completed. List size: ${trips.length}");
         if (trips.isNotEmpty) {
-          print(
+          AppLogger.debug(
             "🔍 Sample Scheduled Trip (First): ID: ${trips.first.id}, Date: ${trips.first.scheduledDate}",
           );
         }
 
         return right(trips);
       } else {
-        print("❌ Server Logic Error (Success is False): ${response.data}");
+        AppLogger.debug("❌ Server Logic Error (Success is False): ${response.data}");
         return left(
           ServierFailur.fromResponse(response.statusCode ?? 400, response.data),
         );
       }
     } catch (e) {
-      print("---------------- [SCHEDULED REQUEST FAILED] ----------------");
+      AppLogger.debug("---------------- [SCHEDULED REQUEST FAILED] ----------------");
       if (e is DioException) {
-        print("🚩 DioError Type: ${e.type}");
-        print("🚩 DioError Response: ${e.response?.data}");
-        print("🚩 Request URL: ${e.requestOptions.uri}");
+        AppLogger.error("🚩 DioError Type: ${e.type}");
+        AppLogger.error("🚩 DioError Response: ${e.response?.data}");
+        AppLogger.error("🚩 Request URL: ${e.requestOptions.uri}");
         return left(ServierFailur.fromDioError(e));
       }
-      print("🚩 General Error: ${e.toString()}");
+      AppLogger.error("🚩 General Error: ${e.toString()}");
       return left(ServierFailur(e.toString(), 500));
     } finally {
-      print("----------------- [END SCHEDULED REQUEST] -----------------");
+      AppLogger.error("----------------- [END SCHEDULED REQUEST] -----------------");
     }
   }
 }

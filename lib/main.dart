@@ -25,16 +25,13 @@ import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/repo/repo_
 import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/repo/repo_order/ScheduledTrips_repo/repo_implmantion.dart';
 import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/repo/repo_order/repo_implmantion.dart';
 import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/repo/repo_start_tripe/repo_implmantion.dart';
-import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/scheduled_accept_order_cubit/cubit_state.dart';
 import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/trip_details_cubit/cubit.dart';
 import 'package:drever_warr/features/my_oreder/preasntaion/data/repo/current_trip_repo/repo_impl.dart';
 import 'package:drever_warr/features/my_oreder/preasntaion/data/repo/trip_details_repo/repo_implementation.dart';
 import 'package:drever_warr/features/my_tripe/data/cubit/cubit_messages/cubit.dart';
 import 'package:drever_warr/features/my_tripe/data/cubit/cubit_ratting/cubit.dart';
 import 'package:drever_warr/features/my_tripe/data/cubit/cubit_trip_note/cubit.dart';
-import 'package:drever_warr/features/my_tripe/data/repo/details_single_trip_repo/repo.dart';
 import 'package:drever_warr/features/my_tripe/data/repo/details_single_trip_repo/repo_impl.dart';
-import 'package:drever_warr/features/my_tripe/data/repo/messages_repo/repo.dart';
 import 'package:drever_warr/features/my_tripe/data/repo/messages_repo/repo_impl.dart';
 import 'package:drever_warr/features/my_tripe/data/repo/repo_rating/repo_implmantion.dart';
 import 'package:drever_warr/features/my_tripe/data/repo/trip_note_repo/repo_impl.dart';
@@ -52,7 +49,6 @@ import 'package:drever_warr/features/preasntaion/data/repo/repo/repo_car_all_fil
 import 'package:drever_warr/features/preasntaion/data/repo/repo/repo_car_image/repo_implmantion.dart';
 import 'package:drever_warr/features/preasntaion/data/repo/repo/repo_category/repo_implmantion.dart';
 import 'package:drever_warr/features/preasntaion/data/repo/repo/repo_forget_passwrd/repo_implmantion.dart';
-import 'package:drever_warr/features/preasntaion/data/repo/repo/repo_governorates/repo_implmantion.dart';
 import 'package:drever_warr/features/preasntaion/data/repo/repo/repo_information_car/repo_implmantion.dart';
 import 'package:drever_warr/features/preasntaion/data/repo/repo/repo_login/repo_implmantion.dart';
 import 'package:drever_warr/features/preasntaion/data/repo/repo/repo_personal_image/repo_implmantion.dart';
@@ -74,7 +70,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import 'core/cash/preferences_servis.dart';
 import 'core/service/notification_service.dart';
 import 'features/home/preasntaion/data/cubit/cubit_update_location/cubit.dart';
 import 'features/home/preasntaion/data/cubit/driver_available_cubit/cubit.dart';
@@ -392,7 +387,6 @@ class MyApp extends StatelessWidget {
               currentDirection = TextDirection.rtl;
               break;
             case Language.arabic:
-            default:
               currentLocale = const Locale('ar');
               currentDirection = TextDirection.ltr;
               break;
@@ -442,7 +436,7 @@ class MyApp extends StatelessWidget {
                 ),
                 textSelectionTheme: TextSelectionThemeData(
                   cursorColor: AppColors.main1,
-                  selectionColor: AppColors.main1.withOpacity(0.5),
+                  selectionColor: AppColors.main1.withValues(alpha: 0.5),
                   selectionHandleColor: AppColors.main1,
                 ),
                 appBarTheme: const AppBarTheme(

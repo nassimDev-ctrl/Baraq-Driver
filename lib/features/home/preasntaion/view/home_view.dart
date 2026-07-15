@@ -42,7 +42,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   bool _isInitialLoading = true;
   bool _isSendingLocation = false;
   bool _mapReady = false;
-  bool _locationPermissionGranted = false;
 
   bool _profileLoaded = false;
   bool _walletLoaded = false;
@@ -67,11 +66,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
 
   AnimatedMarkerController? _markerAnimController;
   bool _followDriver = true;
-
-  static const CameraPosition _kDefaultLocation = CameraPosition(
-    target: LatLng(35.5112, 35.7908),
-    zoom: 14.5,
-  );
 
   @override
   void initState() {
@@ -174,7 +168,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         if (mounted) {
           setState(() {
             _isInitialLoading = false;
-            _locationPermissionGranted = false;
             _locationAttemptFinished = true;
           });
         }
@@ -193,7 +186,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         if (mounted) {
           setState(() {
             _isInitialLoading = false;
-            _locationPermissionGranted = false;
             _locationAttemptFinished = true;
           });
         }
@@ -201,10 +193,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         return;
       }
 
-      _locationPermissionGranted = true;
-
       final position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+        ),
       );
 
       if (!mounted) return;
@@ -241,7 +233,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       if (mounted) {
         setState(() {
           _isInitialLoading = false;
-          _locationPermissionGranted = false;
           _locationAttemptFinished = true;
         });
       }
@@ -359,7 +350,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           place.subLocality,
           place.locality,
           place.country,
-        ].where((e) => e != null && e!.isNotEmpty).map((e) => e!).join(', ');
+        ].whereType<String>().where((e) => e.isNotEmpty).join(', ');
       }
     } catch (e) {
       debugPrint('Reverse geocoding error: $e');
@@ -411,7 +402,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               color: Colors.white,
               borderRadius: BorderRadius.circular(22.r),
               border: Border.all(
-                color: AppColors.main1.withOpacity(0.45),
+                color: AppColors.main1.withValues(alpha: 0.45),
                 width: 1,
               ),
               boxShadow: [
@@ -421,7 +412,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                   blurRadius: 0,
                 ),
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
+                  color: Colors.black.withValues(alpha: 0.08),
                   offset: const Offset(0, 10),
                   blurRadius: 18,
                 ),
@@ -435,7 +426,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                   height: 60.w,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.red.withOpacity(0.08),
+                    color: Colors.red.withValues(alpha: 0.08),
                   ),
                   child: Icon(
                     Icons.close_rounded,
@@ -620,19 +611,19 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       child: IgnorePointer(
         ignoring: false,
         child: Container(
-          color: Colors.black.withOpacity(0.08),
+          color: Colors.black.withValues(alpha: 0.08),
           child: Center(
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 28.w, vertical: 24.h),
               margin: EdgeInsets.symmetric(horizontal: 24.w),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.88),
+                color: Colors.white.withValues(alpha: 0.88),
                 borderRadius: BorderRadius.circular(22.r),
                 boxShadow: [
                   BoxShadow(
                     blurRadius: 18,
                     offset: const Offset(0, 8),
-                    color: Colors.black.withOpacity(0.08),
+                    color: Colors.black.withValues(alpha: 0.08),
                   ),
                 ],
               ),
@@ -667,20 +658,20 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       child: IgnorePointer(
         ignoring: false,
         child: Container(
-          color: Colors.black.withOpacity(0.12),
+          color: Colors.black.withValues(alpha: 0.12),
           child: Center(
             child: Container(
               width: 300.w,
               padding: EdgeInsets.symmetric(horizontal: 22.w, vertical: 24.h),
               margin: EdgeInsets.symmetric(horizontal: 24.w),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.92),
+                color: Colors.white.withValues(alpha: 0.92),
                 borderRadius: BorderRadius.circular(22.r),
                 boxShadow: [
                   BoxShadow(
                     blurRadius: 20,
                     offset: const Offset(0, 10),
-                    color: Colors.black.withOpacity(0.10),
+                    color: Colors.black.withValues(alpha: 0.10),
                   ),
                 ],
               ),
@@ -692,7 +683,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                     height: 58.w,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.red.withOpacity(0.08),
+                      color: Colors.red.withValues(alpha: 0.08),
                     ),
                     child: Icon(
                       Icons.close_rounded,
@@ -749,15 +740,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildDriverMarker() {
-    return Transform.rotate(
-      angle: _markerRotation * math.pi / 180.0,
-      child: _carMarkerIcon != null
-          ? const SizedBox.shrink()
-          : Icon(Icons.local_taxi, size: 40.w, color: Colors.amber),
     );
   }
 

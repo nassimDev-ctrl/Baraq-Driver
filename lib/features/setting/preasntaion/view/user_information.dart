@@ -1,11 +1,14 @@
- 
+import 'dart:io';
+
 import 'package:drever_warr/core/asset/icon_asset.dart';
 import 'package:drever_warr/core/asset/image_asset.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/utiles/faledtor.dart';
 import 'package:drever_warr/core/widgets/coustm_text_fild_all.dart';
-import 'package:drever_warr/core/widgets/customButton.dart';
-import 'package:drever_warr/core/widgets/customText.dart';
+import 'package:drever_warr/core/widgets/custom_button.dart';
+import 'package:drever_warr/core/widgets/custom_text.dart';
+import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_category/cubit.dart';
+import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_category/cubit_stat.dart';
 import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_governorates/cubit.dart';
 import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_governorates/cubit_state.dart';
 import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_verificationRepo/cubit.dart';
@@ -16,25 +19,13 @@ import 'package:drever_warr/features/setting/data/cubit/cubit_profail/cubit.dart
 import 'package:drever_warr/features/setting/data/cubit/cubit_profail/cubit_stat.dart';
 import 'package:drever_warr/features/setting/data/cubit/updet_profail/cubit.dart';
 import 'package:drever_warr/features/setting/data/cubit/updet_profail/cubit_stat.dart';
-import 'package:drever_warr/features/setting/preasntaion/view/Verficationcode_change_password.dart';
+import 'package:drever_warr/features/setting/preasntaion/view/verfication_code_change_password.dart';
 import 'package:drever_warr/features/setting/preasntaion/view/password_for_edet_phone.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-
-
-import 'dart:io';
-
-import 'package:drever_warr/core/asset/image_asset.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
-
-import '../../../preasntaion/data/repo/cubit/cubit_category/cubit.dart';
-import '../../../preasntaion/data/repo/cubit/cubit_category/cubit_stat.dart';
-
 
 class UserInformation extends StatefulWidget {
   const UserInformation({super.key});
@@ -235,7 +226,7 @@ class _UserInformationState extends State<UserInformation> {
                         controller: phoneController,
                         iconImage: IconsAssets.editee,
                         hintText: "",
-                        validator: (String? p1) {},
+                        validator: (_) => null,
                       ),
 
 
@@ -254,28 +245,31 @@ class _UserInformationState extends State<UserInformation> {
                                   await cubit.getCarCategories();
                                 }
 
-                                if (cubit.state is CarCategorySuccess) {
-                                  final categoryState =
-                                  cubit.state as CarCategorySuccess;
+                                if (!mounted) return;
+                                if (cubit.state is! CarCategorySuccess) return;
 
-                                  final RenderBox button =
-                                  _categoryKey.currentContext!
-                                      .findRenderObject()
-                                  as RenderBox;
-                                  final RenderBox overlay =
-                                  Overlay.of(context)
-                                      .context
-                                      .findRenderObject()
-                                  as RenderBox;
+                                final categoryState =
+                                cubit.state as CarCategorySuccess;
 
-                                  final Offset position = button
-                                      .localToGlobal(
-                                    Offset.zero,
-                                    ancestor: overlay,
-                                  );
+                                final RenderBox button =
+                                _categoryKey.currentContext!
+                                    .findRenderObject()
+                                as RenderBox;
+                                if (!context.mounted) return;
+                                final RenderBox overlay =
+                                Overlay.of(context)
+                                    .context
+                                    .findRenderObject()
+                                as RenderBox;
 
-                                  final selected = await showMenu<String>(
-                                    context: context,
+                                final Offset position = button
+                                    .localToGlobal(
+                                  Offset.zero,
+                                  ancestor: overlay,
+                                );
+
+                                final selected = await showMenu<String>(
+                                  context: context,
                                     position: RelativeRect.fromLTRB(
                                       position.dx,
                                       position.dy + button.size.height,
@@ -298,6 +292,7 @@ class _UserInformationState extends State<UserInformation> {
                                     }).toList(),
                                   );
 
+                                  if (!context.mounted) return;
                                   if (selected != null) {
                                     setState(() {
                                       _selectedCategoryId = selected;
@@ -311,7 +306,6 @@ class _UserInformationState extends State<UserInformation> {
                                               "";
                                     });
                                   }
-                                }
                               },
                               child: AbsorbPointer(
                                 child: Container(
@@ -430,7 +424,7 @@ class _UserInformationState extends State<UserInformation> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 4.w),
             child: CustomText(
-              errorMessage!,
+              errorMessage,
               type: AppTextType.bodySmall,
               color: Colors.red,
               textAlign: TextAlign.right,
@@ -470,21 +464,24 @@ class _UserInformationState extends State<UserInformation> {
               await cubit.getGovernorates();
             }
 
-            if (cubit.state is GovernoratesSuccess) {
-              final governorateState = cubit.state as GovernoratesSuccess;
+            if (!mounted) return;
+            if (cubit.state is! GovernoratesSuccess) return;
 
-              final RenderBox button = _governorateKey.currentContext!
-                  .findRenderObject() as RenderBox;
-              final RenderBox overlay =
-              Overlay.of(context).context.findRenderObject() as RenderBox;
+            final governorateState = cubit.state as GovernoratesSuccess;
 
-              final Offset position = button.localToGlobal(
-                Offset.zero,
-                ancestor: overlay,
-              );
+            final RenderBox button = _governorateKey.currentContext!
+                .findRenderObject() as RenderBox;
+            if (!context.mounted) return;
+            final RenderBox overlay =
+            Overlay.of(context).context.findRenderObject() as RenderBox;
 
-              final selected = await showMenu<GovernorateModel>(
-                context: context,
+            final Offset position = button.localToGlobal(
+              Offset.zero,
+              ancestor: overlay,
+            );
+
+            final selected = await showMenu<GovernorateModel>(
+              context: context,
                 position: RelativeRect.fromLTRB(
                   position.dx,
                   position.dy + button.size.height,
@@ -507,12 +504,12 @@ class _UserInformationState extends State<UserInformation> {
                 }).toList(),
               );
 
-              if (selected != null) {
-                setState(() {
-                  _governorateController.text = selected.name;
-                  _selectedGovernorateId = selected.id;
-                });
-              }
+            if (!context.mounted) return;
+            if (selected != null) {
+              setState(() {
+                _governorateController.text = selected.name;
+                _selectedGovernorateId = selected.id;
+              });
             }
           },
           child: AbsorbPointer(
@@ -553,7 +550,7 @@ class _UserInformationState extends State<UserInformation> {
               color: Colors.white,
               shape: BoxShape.circle,
               border: Border.all(
-                color: AppColors.blue.withOpacity(0.5),
+                color: AppColors.blue.withValues(alpha: 0.5),
                 width: 1,
               ),
             ),
@@ -607,7 +604,7 @@ class _UserInformationState extends State<UserInformation> {
                 child: SvgPicture.asset(
                   IconsAssets.editee,
                   height: 15.h,
-                  colorFilter: const ColorFilter.mode(
+                  colorFilter: ColorFilter.mode(
                     Colors.white,
                     BlendMode.srcIn,
                   ),

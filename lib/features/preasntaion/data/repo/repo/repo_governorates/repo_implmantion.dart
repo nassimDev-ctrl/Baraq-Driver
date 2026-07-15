@@ -1,8 +1,14 @@
 import 'package:dartz/dartz.dart';
+import 'package:drever_warr/core/logging/app_logger.dart';
+
 import 'package:dio/dio.dart';
+
 import 'package:drever_warr/core/service/api_servise.dart';
+
 import 'package:drever_warr/core/service/failear.dart';
+
 import 'package:drever_warr/features/preasntaion/data/repo/model/model_governorates.dart';
+
 import 'package:drever_warr/features/preasntaion/data/repo/repo/repo_governorates/repo.dart';
 
 class RepoGovernoratesImpl extends RepoGovernorates {
@@ -13,7 +19,7 @@ class RepoGovernoratesImpl extends RepoGovernorates {
   @override
   Future<Either<Failur, List<GovernorateModel>>> fetchGovernorates() async {
     try {
-      print("🚀 [GET Request] Endpoint: governorates");
+      AppLogger.error("🚀 [GET Request] Endpoint: governorates");
 
      
       var response = await _apiService.get(
@@ -21,7 +27,7 @@ class RepoGovernoratesImpl extends RepoGovernorates {
         needToken: false,
       );
 
-      print("✅ [Governorates Response]: ${response.data}");
+      AppLogger.debug("✅ [Governorates Response]: ${response.data}");
 
       if (response.data["success"] == true) {
         List<GovernorateModel> governorates = [];
@@ -39,7 +45,7 @@ class RepoGovernoratesImpl extends RepoGovernorates {
         );
       }
     } catch (e) {
-      print("❌ [Exception in Governorates Repo]: $e");
+      AppLogger.debug("❌ [Exception in Governorates Repo]: $e");
       if (e is DioException) {
         return left(ServierFailur.fromDioError(e));
       }

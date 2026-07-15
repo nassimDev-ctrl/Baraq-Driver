@@ -31,7 +31,7 @@ class SettingItemContainer extends StatelessWidget {
           border: const Border(bottom: BorderSide(color: Colors.white)),
           boxShadow: [
             BoxShadow(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               spreadRadius: 1,
               blurRadius: 12,
               offset: const Offset(0, 8),

@@ -2,13 +2,13 @@ import 'dart:io';
 
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/transleat/app_translat.dart';
-import 'package:drever_warr/core/widgets/customButton.dart';
-import 'package:drever_warr/core/widgets/customText.dart';
+import 'package:drever_warr/core/widgets/custom_button.dart';
+import 'package:drever_warr/core/widgets/custom_text.dart';
 import 'package:drever_warr/core/widgets/logo_app.dart';
 import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_car_image/cubit.dart';
 import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_car_image/cubit_stat.dart';
-import 'package:drever_warr/features/preasntaion/view/CarRegistrationScreen.dart';
-import 'package:drever_warr/features/preasntaion/view/WaitingReviewScreen.dart';
+import 'package:drever_warr/features/preasntaion/view/car_registration_screen.dart';
+import 'package:drever_warr/features/preasntaion/view/waiting_review_screen.dart';
 import 'package:drever_warr/features/preasntaion/widhets/icon_bak.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -311,7 +311,7 @@ class _PersonalidentityState extends State<Personalidentity> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 4.w),
             child: CustomText(
-              errorMessage!,
+              errorMessage,
               type: AppTextType.bodySmall,
               color: Colors.red,
               textAlign: TextAlign.right,

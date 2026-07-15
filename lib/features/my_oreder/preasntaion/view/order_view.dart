@@ -5,26 +5,17 @@ import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/accept_ord
 import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/cubit_order/cubit.dart';
 import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/cubit_order/cubit_stat.dart';
 import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/model/accsept_model.dart';
-import 'package:drever_warr/features/my_oreder/preasntaion/widget/order_card.dart';
 import 'package:drever_warr/features/my_tripe/preasntaion/view/start_tripe.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
-import 'package:drever_warr/core/widgets/customText.dart';
-import 'package:drever_warr/features/my_oreder/preasntaion/widget/UrgentOrdersCard.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:drever_warr/core/cash/preferences_servis.dart';
-import 'package:drever_warr/core/service/soket_serves.dart';
-import 'package:drever_warr/features/my_tripe/preasntaion/view/end_tripe.dart';
+import 'package:drever_warr/core/widgets/custom_text.dart';
+import 'package:drever_warr/features/my_oreder/preasntaion/widget/urgent_orders_card.dart';
 import 'package:intl/intl.dart' as intl;
-import '../../../../core/asset/icon_asset.dart';
-import '../../../../core/asset/image_asset.dart';
 import '../../../../core/transleat/app_translat.dart';
 import '../../../home/preasntaion/view/menew.dart';
-import '../data/cubit/cubit_start_order/cubit.dart';
-import '../data/cubit/cubit_start_order/cubit_stat.dart';
-import '../data/cubit/model/ScheduledTrips.dart';
+import '../data/cubit/model/scheduled_trips.dart';
 import '../data/cubit/scheduled_accept_order_cubit/cubit.dart';
 import '../data/cubit/scheduled_accept_order_cubit/cubit_state.dart';
 import '../widget/header_order.dart';
@@ -69,7 +60,7 @@ class _OrdersScreenState extends State<OrdersScreen>
   }
 
   bool _isClientConfirmed(ScheduledTripModel trip) {
-    return (trip.status ?? '').trim().toLowerCase() == 'client_confirmed';
+    return trip.status.trim().toLowerCase() == 'client_confirmed';
   }
 
   void _acceptScheduledTrip(ScheduledTripModel trip) {
@@ -104,12 +95,12 @@ class _OrdersScreenState extends State<OrdersScreen>
       clientPhone: trip.clientPhone ?? "",
       sourceAddress: trip.sourceAddress,
       destinationAddress: trip.destinationAddress,
-      startLat: trip.startLat ?? 0.0,
-      startLng: trip.startLng ?? 0.0,
-      destinationLat: trip.destinationLat ?? 0.0,
-      destinationLng: trip.destinationLng ?? 0.0,
+      startLat: trip.startLat,
+      startLng: trip.startLng,
+      destinationLat: trip.destinationLat,
+      destinationLng: trip.destinationLng,
       totalPrice: trip.totalPrice.toDouble(),
-      distance: trip.distance ?? 0.0,
+      distance: trip.distance,
       status: "accepted",
       durationMinutes: trip.durationMinutes ?? 0.0,
     );

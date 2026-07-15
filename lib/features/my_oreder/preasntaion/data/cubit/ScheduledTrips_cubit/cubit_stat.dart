@@ -1,4 +1,4 @@
-import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/model/ScheduledTrips.dart';
+import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/model/scheduled_trips.dart';
 
 abstract class ScheduledTripsState {}
 

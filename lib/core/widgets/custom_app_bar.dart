@@ -1,5 +1,5 @@
 import 'package:drever_warr/core/constant/app_spacing.dart';
-import 'package:drever_warr/core/widgets/customText.dart';
+import 'package:drever_warr/core/widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -10,10 +10,16 @@ import 'package:flutter_svg/svg.dart';
  
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  CustomAppBar({super.key, required this.title, this.color, this.coloricon});
+  const CustomAppBar({
+    super.key,
+    required this.title,
+    Color? color,
+    this.coloricon,
+  }) : color = color ?? Colors.white;
+
   final String title;
   final Color? coloricon;
-  Color? color = Colors.white;
+  final Color? color;
 
   static final double _topPadding = AppSpacing.spaceAboveAppBar.h;
 
@@ -49,12 +55,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: SvgPicture.asset(
-              color: coloricon,
               "",
             //  IconsAssets.leftArrow,
               width: 24.w,
               height: 24.h,
               matchTextDirection: true,
+              colorFilter: coloricon != null
+                  ? ColorFilter.mode(coloricon!, BlendMode.srcIn)
+                  : null,
             ),
           ),
         ),
@@ -70,11 +78,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 );
               },
               child: SvgPicture.asset(
-                color: coloricon,
                 "",
             //    IconsAssets.bell,
                 width: 24.w,
                 height: 24.h,
+                colorFilter: coloricon != null
+                    ? ColorFilter.mode(coloricon!, BlendMode.srcIn)
+                    : null,
               ),
             ),
           ),

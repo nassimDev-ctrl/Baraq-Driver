@@ -14,7 +14,7 @@ class LogoSection extends StatelessWidget {
       children: [
         SizedBox(height: AppSpacing.lg.h),
         Image.asset(
-          ImageAssets.logo_warr,
+          ImageAssets.logoWarr,
           height: 110.h,
           // width: 130.w,
           fit: BoxFit.contain,

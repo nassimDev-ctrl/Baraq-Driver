@@ -14,7 +14,7 @@ import 'package:drever_warr/core/asset/image_asset.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/features/home/preasntaion/widget/contact_us_dialog.dart';
 import 'package:drever_warr/features/home/preasntaion/view/wallt_screen.dart';
-import 'package:drever_warr/features/home/preasntaion/widget/buildMenuItem.dart';
+import 'package:drever_warr/features/home/preasntaion/widget/build_menu_item.dart';
 import 'package:drever_warr/features/my_oreder/preasntaion/view/order_view.dart';
 import 'package:drever_warr/features/my_tripe/preasntaion/view/my_profail.dart';
 import 'package:drever_warr/features/setting/preasntaion/view/settings.dart';

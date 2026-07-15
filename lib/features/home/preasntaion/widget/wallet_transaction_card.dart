@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:drever_warr/core/widgets/customText.dart';
+import 'package:drever_warr/core/widgets/custom_text.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
 
 import '../../../../core/transleat/app_translat.dart';
@@ -26,7 +26,7 @@ class WalletTransactionCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(15.r),
        
-        border: Border.all(color: AppColors.main1.withOpacity(0.5), width: 1),
+        border: Border.all(color: AppColors.main1.withValues(alpha: 0.5), width: 1),
         
         boxShadow: [
           BoxShadow(
@@ -39,7 +39,7 @@ class WalletTransactionCard extends StatelessWidget {
           ),
          
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             offset: const Offset(0, 8),
             blurRadius: 10,
           ),

@@ -1,6 +1,5 @@
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../model/ScheduledTrips.dart';
 import '../model/accsept_model.dart';
 import '../repo/scheduled_accept_order_repo/repo.dart';
 import 'cubit_state.dart';

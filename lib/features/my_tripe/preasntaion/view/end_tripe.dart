@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:drever_warr/features/home/preasntaion/data/cubit/cubit_update_location/cubit_state.dart';
-import 'package:drever_warr/features/home/preasntaion/data/cubit/model/model_finsh_trips.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geocoding/geocoding.dart';
@@ -17,14 +16,12 @@ import 'package:drever_warr/core/widgets/animated_marker_controller.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/service/soket_serves.dart';
 
-import '../../../../core/cash/preferences_servis.dart';
 import '../../../../core/transleat/app_translat.dart';
 import '../../../home/preasntaion/data/cubit/cubit_update_location/cubit.dart';
-import '../../../home/preasntaion/view/home_view.dart';
 import '../../../my_oreder/preasntaion/data/cubit/cubet_end_tripe/cubit.dart';
 import '../../../my_oreder/preasntaion/data/cubit/cubet_end_tripe/cubit_stat.dart';
 import '../../../my_oreder/preasntaion/data/cubit/model/accsept_model.dart';
-import '../widget/TripLocationPath.dart';
+import '../widget/trip_location_path.dart';
 import 'details_trip.dart';
 
 class EndTripe extends StatefulWidget {
@@ -305,7 +302,7 @@ class _EndTripeState extends State<EndTripe> with TickerProviderStateMixin {
           place.subLocality,
           place.locality,
           place.country,
-        ].where((e) => e != null && e!.isNotEmpty).map((e) => e!).join(', ');
+        ].whereType<String>().where((e) => e.isNotEmpty).join(', ');
       }
     } catch (_) {}
 
@@ -331,8 +328,8 @@ class _EndTripeState extends State<EndTripe> with TickerProviderStateMixin {
         Marker(
           markerId: const MarkerId("destination"),
           position: LatLng(
-            widget.trip.destinationLat ?? 35.5111,
-            widget.trip.destinationLng ?? 35.7922,
+            widget.trip.destinationLat,
+            widget.trip.destinationLng,
           ),
           icon: BitmapDescriptor.defaultMarkerWithHue(
             BitmapDescriptor.hueViolet,
@@ -407,41 +404,6 @@ class _EndTripeState extends State<EndTripe> with TickerProviderStateMixin {
     return null;
   }
 
-  LatLng? _extractLocation(Map<String, dynamic> payload) {
-    final candidates = <dynamic>[
-      payload['location'],
-      payload['driverLocation'],
-      payload['currentLocation'],
-      payload['position'],
-    ];
-
-    for (final item in candidates) {
-      if (item is Map) {
-        final map = Map<String, dynamic>.from(item);
-
-        final lat = _toDouble(
-          map['lat'] ?? map['latitude'] ?? map['y'],
-        );
-        final lng = _toDouble(
-          map['lng'] ?? map['longitude'] ?? map['x'],
-        );
-
-        if (lat != null && lng != null) {
-          return LatLng(lat, lng);
-        }
-      }
-    }
-
-    final lat = _toDouble(payload['lat'] ?? payload['latitude']);
-    final lng = _toDouble(payload['lng'] ?? payload['longitude']);
-
-    if (lat != null && lng != null) {
-      return LatLng(lat, lng);
-    }
-
-    return null;
-  }
-
   double? _toDouble(dynamic value) {
     if (value == null) return null;
     if (value is double) return value;
@@ -464,7 +426,7 @@ class _EndTripeState extends State<EndTripe> with TickerProviderStateMixin {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16.r),
         border: Border.all(
-          color: AppColors.main1.withOpacity(0.45),
+          color: AppColors.main1.withValues(alpha: 0.45),
           width: 1,
         ),
         boxShadow: [
@@ -474,7 +436,7 @@ class _EndTripeState extends State<EndTripe> with TickerProviderStateMixin {
             blurRadius: 0,
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             offset: const Offset(0, 8),
             blurRadius: 10,
           ),
@@ -485,7 +447,7 @@ class _EndTripeState extends State<EndTripe> with TickerProviderStateMixin {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: AppColors.main1.withOpacity(0.1),
+              color: AppColors.main1.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -642,7 +604,7 @@ class _EndTripeState extends State<EndTripe> with TickerProviderStateMixin {
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(15.r),
                       border: Border.all(
-                        color: AppColors.main1.withOpacity(0.5),
+                        color: AppColors.main1.withValues(alpha: 0.5),
                         width: 1,
                       ),
                       boxShadow: [
@@ -652,7 +614,7 @@ class _EndTripeState extends State<EndTripe> with TickerProviderStateMixin {
                           blurRadius: 0,
                         ),
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: Colors.black.withValues(alpha: 0.05),
                           offset: const Offset(0, 8),
                           blurRadius: 10,
                         ),

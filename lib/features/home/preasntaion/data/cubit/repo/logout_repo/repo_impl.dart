@@ -1,7 +1,6 @@
-import 'dart:developer';
-
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+import 'package:drever_warr/core/logging/app_logger.dart';
 import 'package:drever_warr/core/service/api_servise.dart';
 import 'package:drever_warr/core/service/failear.dart';
 import 'package:drever_warr/features/home/preasntaion/data/cubit/repo/logout_repo/repo.dart';
@@ -13,9 +12,9 @@ class LogoutRepositoryImpl implements LogoutRepository {
 
   @override
   Future<Either<Failur, String>> logout() async {
-    print("---------------- [🚪 LOGOUT REQUEST] ----------------");
-    print("🔗 Endpoint: auth-users/logout");
-    print("🔑 Status: Sending GET Request...");
+    AppLogger.debug("---------------- [🚪 LOGOUT REQUEST] ----------------");
+    AppLogger.debug("🔗 Endpoint: auth-users/logout");
+    AppLogger.debug("🔑 Status: Sending GET Request...");
 
     try {
       final response = await apiService.get(
@@ -23,8 +22,8 @@ class LogoutRepositoryImpl implements LogoutRepository {
         needToken: true,
       );
 
-      print("✅ [SUCCESS] Server Responded Successfully");
-      print("📦 Response Body: ${response.data}");
+      AppLogger.debug("✅ [SUCCESS] Server Responded Successfully");
+      AppLogger.debug("📦 Response Body: ${response.data}");
 
       String message = "Logged out successfully";
 
@@ -32,25 +31,25 @@ class LogoutRepositoryImpl implements LogoutRepository {
         message = response.data['message'] ?? message;
       }
 
-      print("💬 Final Message: $message");
-      print("------------------------------------------------------------");
+      AppLogger.debug("💬 Final Message: $message");
+      AppLogger.debug("------------------------------------------------------------");
 
       return right(message);
     } catch (e) {
-      print("❌ [FAILURE] Error in logout");
+      AppLogger.error("❌ [FAILURE] Error in logout");
 
       if (e is DioException) {
         final failure = ServierFailur.fromDioError(e);
-        print("🚨 Dio Error Type: ${e.type}");
-        print("🚨 Status Code: ${e.response?.statusCode}");
-        print("🚨 Error Data from Server: ${e.response?.data}");
-        print("🚨 Failure Message: ${failure.errMassage}");
-        print("------------------------------------------------------------");
+        AppLogger.error("🚨 Dio Error Type: ${e.type}");
+        AppLogger.error("🚨 Status Code: ${e.response?.statusCode}");
+        AppLogger.error("🚨 Error Data from Server: ${e.response?.data}");
+        AppLogger.error("🚨 Failure Message: ${failure.errMassage}");
+        AppLogger.error("------------------------------------------------------------");
         return left(failure);
       }
 
-      print("🚨 Unexpected Error: ${e.toString()}");
-      print("------------------------------------------------------------");
+      AppLogger.error("🚨 Unexpected Error: ${e.toString()}");
+      AppLogger.error("------------------------------------------------------------");
       return left(ServierFailur(e.toString(), 500));
     }
   }

@@ -1,11 +1,11 @@
 import 'package:drever_warr/core/asset/icon_asset.dart';
-import 'package:drever_warr/core/widgets/customText.dart';
+import 'package:drever_warr/core/widgets/custom_text.dart';
 import 'package:drever_warr/features/my_oreder/preasntaion/widget/card_point_order.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 // تأكد من استيراد ملفاتك الخاصة هنا
-// import 'package:drever_warr/core/widgets/customText.dart';
+// import 'package:drever_warr/core/widgets/custom_text.dart';
 // import 'package:drever_warr/core/constant/app_colors.dart';
 
 class TripLocationPath extends StatelessWidget {
@@ -63,7 +63,10 @@ class TripLocationPath extends StatelessWidget {
                   ),
                   SvgPicture.asset(
                     IconsAssets.locationsearch,
-                    color: endIconColor ?? const Color(0xFF9C4DB9),
+                    colorFilter: ColorFilter.mode(
+                      endIconColor ?? const Color(0xFF9C4DB9),
+                      BlendMode.srcIn,
+                    ),
                     height: 20,
                   ),
                   
@@ -106,7 +109,10 @@ class TripLocationPath extends StatelessWidget {
                   ),
                   SvgPicture.asset(
                     IconsAssets.locationsearch,
-                    color: endIconColor ?? const Color(0xFF9C4DB9),
+                    colorFilter: ColorFilter.mode(
+                      endIconColor ?? const Color(0xFF9C4DB9),
+                      BlendMode.srcIn,
+                    ),
                     height: 20,
                   ),
                   

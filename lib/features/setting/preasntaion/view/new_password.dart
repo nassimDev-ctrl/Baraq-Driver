@@ -4,9 +4,8 @@ import 'package:drever_warr/core/asset/image_asset.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/constant/app_spacing.dart';
 import 'package:drever_warr/core/utiles/faledtor.dart';
-import 'package:drever_warr/core/widgets/coustm_text_fild_all.dart';
-import 'package:drever_warr/core/widgets/customButton.dart';
-import 'package:drever_warr/core/widgets/customText.dart';
+import 'package:drever_warr/core/widgets/custom_button.dart';
+import 'package:drever_warr/core/widgets/custom_text.dart';
 import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_forget_passwrde/cubit_state.dart';
 import 'package:drever_warr/features/preasntaion/widhets/icon_bak.dart';
 import 'package:drever_warr/features/setting/data/cubit/cubit_edit_passwrd/cubit.dart';
@@ -42,8 +41,6 @@ class _NewPasswordState extends State<NewPassword> {
 
   @override
   Widget build(BuildContext context) {
-    bool isArabic = true;
-
     return Scaffold(
       backgroundColor: AppColors.secondary1,
       // استخدمنا BlocConsumer للاستماع للحالات (Success/Failure) وبناء الـ UI (Loading)
@@ -89,7 +86,7 @@ class _NewPasswordState extends State<NewPassword> {
                       Column(
                         children: [
                           Image.asset(
-                            ImageAssets.logo_warr,
+                            ImageAssets.logoWarr,
                             height: 130.h,
                             width: 130.w,
                           ),

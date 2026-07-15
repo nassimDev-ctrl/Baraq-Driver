@@ -1,4 +1,3 @@
-import 'dart:ui';
 
 import 'package:drever_warr/core/asset/icon_asset.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
@@ -225,7 +224,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         borderRadius: BorderRadius.circular(12.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.3),
+            color: Colors.black.withValues(alpha: 0.3),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -279,7 +278,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Widget _buildDivider() {
     return Divider(
-      color: Colors.white.withOpacity(0.4),
+      color: Colors.white.withValues(alpha: 0.4),
       thickness: 0.5.h,
       height: 0,
     );

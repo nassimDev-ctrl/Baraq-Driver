@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
-import 'package:drever_warr/core/widgets/customText.dart';
+import 'package:drever_warr/core/widgets/custom_text.dart';
 import '../view/order_view.dart';
 
 class UrgentOrdersCard extends StatelessWidget {
@@ -39,12 +39,12 @@ class UrgentOrdersCard extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(
-            color: const Color(0xFF9C4DB9).withOpacity(0.5),
+            color: const Color(0xFF9C4DB9).withValues(alpha: 0.5),
             width: 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF9C4DB9).withOpacity(0.2),
+              color: const Color(0xFF9C4DB9).withValues(alpha: 0.2),
               blurRadius: 16,
               offset: const Offset(0, 6),
             ),

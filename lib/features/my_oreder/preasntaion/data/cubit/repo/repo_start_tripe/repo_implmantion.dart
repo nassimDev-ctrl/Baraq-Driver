@@ -1,8 +1,12 @@
-import 'dart:developer';
 import 'package:dartz/dartz.dart';
+import 'package:drever_warr/core/logging/app_logger.dart';
+
 import 'package:dio/dio.dart';
+
 import 'package:drever_warr/core/service/api_servise.dart';
+
 import 'package:drever_warr/core/service/failear.dart';
+
 import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/repo/repo_start_tripe/repo.dart';
 
 class TripRepositoryImpl implements TripRepository {
@@ -12,9 +16,9 @@ class TripRepositoryImpl implements TripRepository {
 
   @override
   Future<Either<Failur, String>> startTrip({required String tripId}) async {
-    print("---------------- [🚀 START TRIP REQUEST] ----------------");
-    print("🆔 Trip ID: $tripId");
-    print("🔗 Endpoint: trips/start-trip/$tripId");
+    AppLogger.error("---------------- [🚀 START TRIP REQUEST] ----------------");
+    AppLogger.debug("🆔 Trip ID: $tripId");
+    AppLogger.debug("🔗 Endpoint: trips/start-trip/$tripId");
 
     try {
       final response = await apiService.get(
@@ -22,7 +26,7 @@ class TripRepositoryImpl implements TripRepository {
         endpoint: 'trips/start-trip/$tripId',
       );
 
-      print("✅ [SUCCESS] Response Data: ${response.data}");
+      AppLogger.debug("✅ [SUCCESS] Response Data: ${response.data}");
 
       String message = "Trip started successfully";
 
@@ -30,25 +34,25 @@ class TripRepositoryImpl implements TripRepository {
         message = response.data['message'] ?? message;
       }
 
-      print("💬 Success Message: $message");
-      print("---------------------------------------------------------");
+      AppLogger.debug("💬 Success Message: $message");
+      AppLogger.debug("---------------------------------------------------------");
 
       return right(message);
     } catch (e) {
-      print("❌ [FAILURE] Error detected during startTrip");
+      AppLogger.debug("❌ [FAILURE] Error detected during startTrip");
 
       if (e is DioException) {
         final failure = ServierFailur.fromDioError(e);
-        print("🚨 Dio Error Type: ${e.type}");
-        print("🚨 Error Message: ${failure.errMassage}");
-        print("🚨 Status Code: ${e.response?.statusCode}");
-        print("🚨 Response Data: ${e.response?.data}");
-        print("---------------------------------------------------------");
+        AppLogger.error("🚨 Dio Error Type: ${e.type}");
+        AppLogger.error("🚨 Error Message: ${failure.errMassage}");
+        AppLogger.error("🚨 Status Code: ${e.response?.statusCode}");
+        AppLogger.debug("🚨 Response Data: ${e.response?.data}");
+        AppLogger.debug("---------------------------------------------------------");
         return left(failure);
       }
 
-      print("🚨 Unknown Error: ${e.toString()}");
-      print("---------------------------------------------------------");
+      AppLogger.error("🚨 Unknown Error: ${e.toString()}");
+      AppLogger.error("---------------------------------------------------------");
       return left(ServierFailur(e.toString(), 500));
     }
   }

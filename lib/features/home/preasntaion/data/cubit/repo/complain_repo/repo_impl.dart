@@ -1,11 +1,16 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
+import 'package:drever_warr/core/logging/app_logger.dart';
+
 import 'package:dio/dio.dart';
+
 import 'package:drever_warr/core/service/api_servise.dart';
+
 import 'package:drever_warr/core/service/failear.dart';
+
 import 'package:drever_warr/features/home/preasntaion/data/cubit/repo/complain_repo/repo.dart';
+
 import 'package:path/path.dart' as path;
 
 class AddComplainRepositoryImpl implements AddComplainRepository {
@@ -18,11 +23,11 @@ class AddComplainRepositoryImpl implements AddComplainRepository {
     required String description,
     File? image,
   }) async {
-    print("---------------- [📝 SEND COMPLAINT REQUEST] ----------------");
-    print("📄 Description: $description");
-    print("🖼️ Image Exists: ${image != null}");
-    print("🔗 Endpoint: complains/create");
-    print("🔑 Status: Sending POST Request...");
+    AppLogger.debug("---------------- [📝 SEND COMPLAINT REQUEST] ----------------");
+    AppLogger.debug("📄 Description: $description");
+    AppLogger.debug("🖼️ Image Exists: ${image != null}");
+    AppLogger.debug("🔗 Endpoint: complains/create");
+    AppLogger.debug("🔑 Status: Sending POST Request...");
 
     try {
       final formData = FormData.fromMap({
@@ -41,8 +46,8 @@ class AddComplainRepositoryImpl implements AddComplainRepository {
         isfromdata: true,
       );
 
-      print("✅ [SUCCESS] Server Responded Successfully");
-      print("📦 Response Body: ${response.data}");
+      AppLogger.debug("✅ [SUCCESS] Server Responded Successfully");
+      AppLogger.debug("📦 Response Body: ${response.data}");
 
       String message = "Complaint sent successfully";
 
@@ -50,25 +55,25 @@ class AddComplainRepositoryImpl implements AddComplainRepository {
         message = response.data['message'] ?? message;
       }
 
-      print("💬 Final Message: $message");
-      print("------------------------------------------------------------");
+      AppLogger.debug("💬 Final Message: $message");
+      AppLogger.debug("------------------------------------------------------------");
 
       return right(message);
     } catch (e) {
-      print("❌ [FAILURE] Error in sendComplain");
+      AppLogger.debug("❌ [FAILURE] Error in sendComplain");
 
       if (e is DioException) {
         final failure = ServierFailur.fromDioError(e);
-        print("🚨 Dio Error Type: ${e.type}");
-        print("🚨 Status Code: ${e.response?.statusCode}");
-        print("🚨 Error Data from Server: ${e.response?.data}");
-        print("🚨 Failure Message: ${failure.errMassage}");
-        print("------------------------------------------------------------");
+        AppLogger.error("🚨 Dio Error Type: ${e.type}");
+        AppLogger.error("🚨 Status Code: ${e.response?.statusCode}");
+        AppLogger.debug("🚨 Error Data from Server: ${e.response?.data}");
+        AppLogger.error("🚨 Failure Message: ${failure.errMassage}");
+        AppLogger.error("------------------------------------------------------------");
         return left(failure);
       }
 
-      print("🚨 Unexpected Error: ${e.toString()}");
-      print("------------------------------------------------------------");
+      AppLogger.error("🚨 Unexpected Error: ${e.toString()}");
+      AppLogger.error("------------------------------------------------------------");
       return left(ServierFailur(e.toString(), 500));
     }
   }

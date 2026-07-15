@@ -1,7 +1,12 @@
 import 'package:dartz/dartz.dart';
+import 'package:drever_warr/core/logging/app_logger.dart';
+
 import 'package:dio/dio.dart';
+
 import 'package:drever_warr/core/service/api_servise.dart';
+
 import 'package:drever_warr/core/service/failear.dart';
+
 import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/repo/scheduled_accept_order_repo/repo.dart';
 
 class ScheduledAcceptOrderRepoImpl extends ScheduledAcceptOrderRepo {
@@ -14,46 +19,46 @@ class ScheduledAcceptOrderRepoImpl extends ScheduledAcceptOrderRepo {
     required String tripId,
   }) async {
     try {
-      print("---------------- [🚀 START ACCEPT SCHEDULED TRIP REQUEST] ----------------");
-      print("📌 Trip ID: $tripId");
-      print("🔗 Endpoint: /trips/accept-scheduled-trip/$tripId");
+      AppLogger.debug("---------------- [🚀 START ACCEPT SCHEDULED TRIP REQUEST] ----------------");
+      AppLogger.debug("📌 Trip ID: $tripId");
+      AppLogger.debug("🔗 Endpoint: /trips/accept-scheduled-trip/$tripId");
 
       var response = await _apiService.get(
         endpoint: "/trips/accept-scheduled-trip/$tripId",
         needToken: true,
       );
 
-      print("📡 HTTP Status Code: ${response.statusCode}");
-      print("📥 Full Response Data: ${response.data}");
+      AppLogger.debug("📡 HTTP Status Code: ${response.statusCode}");
+      AppLogger.debug("📥 Full Response Data: ${response.data}");
 
       if (response.data["success"] == true) {
-        print("✅ Success: Scheduled trip accepted successfully by server.");
-        print("---------------- [🏁 END REQUEST - SUCCESS] ----------------");
+        AppLogger.debug("✅ Success: Scheduled trip accepted successfully by server.");
+        AppLogger.debug("---------------- [🏁 END REQUEST - SUCCESS] ----------------");
         return right(response.data);
       } else {
-        print("⚠️ Business Logic Error: 'success' is false in response.");
-        print(
+        AppLogger.debug("⚠️ Business Logic Error: 'success' is false in response.");
+        AppLogger.error(
           "📄 Error Message: ${response.data['message'] ?? 'No message provided'}",
         );
-        print("---------------- [🏁 END REQUEST - LOGIC ERROR] ----------------");
+        AppLogger.debug("---------------- [🏁 END REQUEST - LOGIC ERROR] ----------------");
         return left(
           ServierFailur.fromResponse(response.statusCode ?? 400, response.data),
         );
       }
     } catch (e) {
-      print("---------------- [🚨 CRITICAL ERROR DURING REQUEST] ----------------");
+      AppLogger.debug("---------------- [🚨 CRITICAL ERROR DURING REQUEST] ----------------");
 
       if (e is DioException) {
-        print("🚩 DioException Type: ${e.type}");
-        print("🚩 Dio Message: ${e.message}");
-        print("🚩 Server Response Data: ${e.response?.data}");
-        print("🚩 Status Code: ${e.response?.statusCode}");
-        print("---------------- [🏁 END REQUEST - DIO ERROR] ----------------");
+        AppLogger.debug("🚩 DioException Type: ${e.type}");
+        AppLogger.debug("🚩 Dio Message: ${e.message}");
+        AppLogger.debug("🚩 Server Response Data: ${e.response?.data}");
+        AppLogger.debug("🚩 Status Code: ${e.response?.statusCode}");
+        AppLogger.debug("---------------- [🏁 END REQUEST - DIO ERROR] ----------------");
         return left(ServierFailur.fromDioError(e));
       }
 
-      print("🚩 General Error: ${e.toString()}");
-      print("---------------- [🏁 END REQUEST - GENERAL ERROR] ----------------");
+      AppLogger.error("🚩 General Error: ${e.toString()}");
+      AppLogger.error("---------------- [🏁 END REQUEST - GENERAL ERROR] ----------------");
       return left(ServierFailur(e.toString(), 500));
     }
   }

@@ -1,6 +1,6 @@
 import 'package:drever_warr/core/asset/image_asset.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
-import 'package:drever_warr/core/widgets/customButton.dart';
+import 'package:drever_warr/core/widgets/custom_button.dart';
 import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_verificationRepo/cubit.dart';
 import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_verificationRepo/cubite_state.dart';
 import 'package:drever_warr/features/preasntaion/widhets/icon_bak.dart';

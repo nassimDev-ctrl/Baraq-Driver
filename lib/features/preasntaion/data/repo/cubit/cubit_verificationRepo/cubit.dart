@@ -1,6 +1,10 @@
 import 'package:drever_warr/core/utiles/normlize_number.dart';
+import 'package:drever_warr/core/logging/app_logger.dart';
+
 import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_verificationRepo/cubite_state.dart';
+
 import 'package:drever_warr/features/preasntaion/data/repo/repo/repo_verificationRepo/repo.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class VerificationCubit extends Cubit<VerificationState> {
@@ -14,7 +18,7 @@ class VerificationCubit extends Cubit<VerificationState> {
     required String typeOfUse,
   }) async {
     emit(VerificationLoading());
-    print("⏳ [CUBIT]: Sending Verification Code to $mobilePhone...");
+    AppLogger.debug("⏳ [CUBIT]: Sending Verification Code to $mobilePhone...");
 
     var result = await _verificationRepo.createVerificationCode(
       mobilePhone: normalizePhone(mobilePhone),
@@ -23,11 +27,11 @@ class VerificationCubit extends Cubit<VerificationState> {
 
     result.fold(
       (failure) {
-        print("📢 [CUBIT ERROR]: ${failure.errMassage}");
+        AppLogger.error("📢 [CUBIT ERROR]: ${failure.errMassage}");
         emit(VerificationFailure(failure.errMassage));
       },
       (success) {
-        print("📢 [CUBIT SUCCESS]: OTP Sent Successfully!");
+        AppLogger.error("📢 [CUBIT SUCCESS]: OTP Sent Successfully!");
         emit(CreateVerificationCodeSuccess(success));
       },
     );
@@ -40,7 +44,7 @@ class VerificationCubit extends Cubit<VerificationState> {
     required String code,
   }) async {
     emit(VerificationLoading());
-    print("⏳ [CUBIT]: Verifying Code $code for $mobilePhone...");
+    AppLogger.debug("⏳ [CUBIT]: Verifying Code $code for $mobilePhone...");
 
     var result = await _verificationRepo.verifyMobileNumber(
       mobilePhone: normalizePhone(mobilePhone),
@@ -50,11 +54,11 @@ class VerificationCubit extends Cubit<VerificationState> {
 
     result.fold(
       (failure) {
-        print("📢 [CUBIT ERROR]: ${failure.errMassage}");
+        AppLogger.error("📢 [CUBIT ERROR]: ${failure.errMassage}");
         emit(VerificationFailure(failure.errMassage));
       },
       (success) {
-        print("📢 [CUBIT SUCCESS]: Phone Verified!");
+        AppLogger.error("📢 [CUBIT SUCCESS]: Phone Verified!");
         emit(VerifyMobileNumberSuccess(success));
       },
     );

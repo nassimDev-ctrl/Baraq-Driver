@@ -1,8 +1,14 @@
 import 'package:dartz/dartz.dart';
+import 'package:drever_warr/core/logging/app_logger.dart';
+
 import 'package:dio/dio.dart';
+
 import 'package:drever_warr/core/service/api_servise.dart';
+
 import 'package:drever_warr/core/service/failear.dart';
+
 import 'package:drever_warr/features/setting/data/model/model_profail.dart';
+
 import 'package:drever_warr/features/setting/data/repo/repo_profail/repo.dart';
  
 class ImplementRepoProfile extends RepoProfile {
@@ -13,8 +19,8 @@ class ImplementRepoProfile extends RepoProfile {
 
   @override
   Future<Either<Failur, ProfileModel>> getProfile() async {
-    print("--------------------------------------------------");
-    print("🚀 [START REQUEST] Endpoint: /drivers/get-profile");
+    AppLogger.error("--------------------------------------------------");
+    AppLogger.debug("🚀 [START REQUEST] Endpoint: /drivers/get-profile");
 
     try {
       Response response = await _apiService.get(
@@ -23,40 +29,40 @@ class ImplementRepoProfile extends RepoProfile {
       );
 
       
-      print("✅ [RESPONSE RECEIVED]");
-      print("📌 Status Code: ${response.statusCode}");
-      print("📄 Response Data: ${response.data}"); 
+      AppLogger.debug("✅ [RESPONSE RECEIVED]");
+      AppLogger.debug("📌 Status Code: ${response.statusCode}");
+      AppLogger.debug("📄 Response Data: ${response.data}"); 
 
       if (response.data["success"] == true) {
-        print("✨ [PARSING DATA] Converting JSON to ProfileModel...");
+        AppLogger.debug("✨ [PARSING DATA] Converting JSON to ProfileModel...");
 
         final profileModel = ProfileModel.fromJson(response.data);
 
        
-        print(
+        AppLogger.debug(
           "👤 User Name from Model: ${profileModel.data?.firstName} ${profileModel.data?.lastName}",
         );
-        print("--------------------------------------------------");
+        AppLogger.debug("--------------------------------------------------");
 
         return right(profileModel);
       } else {
-        print("⚠️ [SERVER ERROR] Success is false");
-        print("📝 Error Message: ${response.data['message']}");
+        AppLogger.debug("⚠️ [SERVER ERROR] Success is false");
+        AppLogger.error("📝 Error Message: ${response.data['message']}");
         return left(
           ServierFailur.fromResponse(response.statusCode ?? 400, response.data),
         );
       }
     } catch (e) {
-      print("❌ [EXCEPTION CAUGHT]");
+      AppLogger.debug("❌ [EXCEPTION CAUGHT]");
       if (e is DioException) {
-        print("🔌 Dio Error Type: ${e.type}");
-        print("📥 Dio Error Response: ${e.response?.data}");
-        print("🔢 Dio Status Code: ${e.response?.statusCode}");
+        AppLogger.debug("🔌 Dio Error Type: ${e.type}");
+        AppLogger.error("📥 Dio Error Response: ${e.response?.data}");
+        AppLogger.error("🔢 Dio Status Code: ${e.response?.statusCode}");
         return left(ServierFailur.fromDioError(e));
       }
 
-      print("🆘 Generic Error: ${e.toString()}");
-      print("--------------------------------------------------");
+      AppLogger.error("🆘 Generic Error: ${e.toString()}");
+      AppLogger.error("--------------------------------------------------");
       return left(
         ServierFailur('حدث خطأ أثناء جلب البيانات: ${e.toString()}', 500),
       );

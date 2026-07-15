@@ -1,7 +1,7 @@
 import 'package:drever_warr/features/home/preasntaion/view/home_view.dart';
 import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_login/cubit.dart';
 import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_login/cubit_state.dart';
-import 'package:drever_warr/features/preasntaion/view/WaitingReviewScreen.dart';
+import 'package:drever_warr/features/preasntaion/view/waiting_review_screen.dart';
 import 'package:drever_warr/features/preasntaion/view/location_drever.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,14 +12,13 @@ import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/constant/app_spacing.dart';
 import 'package:drever_warr/core/utiles/faledtor.dart';
 import 'package:drever_warr/core/widgets/coustm_text_fild_all.dart';
-import 'package:drever_warr/core/widgets/customButton.dart';
-import 'package:drever_warr/core/widgets/customText.dart';
+import 'package:drever_warr/core/widgets/custom_button.dart';
+import 'package:drever_warr/core/widgets/custom_text.dart';
 import 'package:drever_warr/core/widgets/logo_app.dart';
 import 'package:drever_warr/features/preasntaion/view/forget_password_login.dart';
 
 import '../../../core/cash/preferences_servis.dart';
 import '../../../core/service/notification_service.dart';
-import '../../../core/utiles/normlize_number.dart';
 import '../../../core/widgets/password_helper.dart';
 
 class LoginView extends StatefulWidget {
@@ -30,9 +29,6 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
-  bool _isPasswordHidden = true;
-
-
   void _showError(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -66,15 +62,17 @@ class _LoginViewState extends State<LoginView> {
             await CacheManager.saveData(CacheManager.authUserKey, authUser);
           }
 
+          if (!context.mounted) return;
+
           if (status == 'active' || status == 'change-category') {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => HomeView()),
             );
-          }else{
+          } else {
             Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => WaitingReviewScreen()),
+              context,
+              MaterialPageRoute(builder: (context) => WaitingReviewScreen()),
             );
           }
 

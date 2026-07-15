@@ -19,8 +19,8 @@ import 'package:drever_warr/core/asset/icon_asset.dart';
 import 'package:drever_warr/core/widgets/car_marker_painter.dart';
 import 'package:drever_warr/core/widgets/animated_marker_controller.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
-import 'package:drever_warr/core/widgets/customText.dart';
-import 'package:drever_warr/features/my_tripe/preasntaion/widget/TripLocationPath.dart';
+import 'package:drever_warr/core/widgets/custom_text.dart';
+import 'package:drever_warr/features/my_tripe/preasntaion/widget/trip_location_path.dart';
 import 'package:drever_warr/features/my_tripe/preasntaion/view/end_tripe.dart';
 import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/cubit_start_order/cubit.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -69,7 +69,6 @@ class _LiveTripScreenState extends State<LiveTripScreen>
 
   Timer? _confirmationTimer;
   bool _isStartUnlocked = false;
-  bool _isCheckingConfirmation = false;
 
   BitmapDescriptor? _driverMarkerIcon;
   LatLng? _previousPosition;
@@ -294,10 +293,6 @@ class _LiveTripScreenState extends State<LiveTripScreen>
   void _checkTripConfirmationOnce() {
     if (!mounted) return;
 
-    setState(() {
-      _isCheckingConfirmation = true;
-    });
-
     context
         .read<TripDetailsCubit>()
         .checkIfClientConfirmed(tripId: widget.trip.id.toString());
@@ -366,7 +361,7 @@ class _LiveTripScreenState extends State<LiveTripScreen>
           place.subLocality,
           place.locality,
           place.country,
-        ].where((e) => e != null && e!.isNotEmpty).map((e) => e!).join(', ');
+        ].whereType<String>().where((e) => e.isNotEmpty).join(', ');
       }
     } catch (_) {}
 
@@ -448,24 +443,9 @@ class _LiveTripScreenState extends State<LiveTripScreen>
 
                   setState(() {
                     _isStartUnlocked = true;
-                    _isCheckingConfirmation = false;
                   });
 
                   _confirmationTimer?.cancel();
-                } else {
-                  if (mounted) {
-                    setState(() {
-                      _isCheckingConfirmation = false;
-                    });
-                  }
-                }
-              }
-
-              if (state is TripDetailsFailure) {
-                if (mounted) {
-                  setState(() {
-                    _isCheckingConfirmation = false;
-                  });
                 }
               }
             },
@@ -626,12 +606,12 @@ class _LiveTripScreenState extends State<LiveTripScreen>
                 const Spacer(),
                 GestureDetector(
                   onTap: () async {
-                    final String? phoneNumber = widget.trip.clientPhone;
+                    final String phoneNumber = widget.trip.clientPhone;
                     final Uri url = Uri(
                       scheme: 'tel',
-                      path: phoneNumber != null && !phoneNumber.startsWith('+')
-                          ? '+$phoneNumber'
-                          : phoneNumber ?? '',
+                      path: phoneNumber.startsWith('+')
+                          ? phoneNumber
+                          : '+$phoneNumber',
                     );
 
                     if (await canLaunchUrl(url)) {
@@ -715,7 +695,7 @@ class _LiveTripScreenState extends State<LiveTripScreen>
               color: const Color(0xFFF8F3FB),
               borderRadius: BorderRadius.circular(16.r),
               border: Border.all(
-                color: const Color(0xFF9C4DB9).withOpacity(0.15),
+                color: const Color(0xFF9C4DB9).withValues(alpha: 0.15),
               ),
             ),
             child: Row(
@@ -766,7 +746,7 @@ class _LiveTripScreenState extends State<LiveTripScreen>
             color: const Color(0xFFF8F3FB),
             borderRadius: BorderRadius.circular(16.r),
             border: Border.all(
-              color: const Color(0xFF9C4DB9).withOpacity(0.18),
+              color: const Color(0xFF9C4DB9).withValues(alpha: 0.18),
             ),
           ),
           child: Row(
@@ -815,7 +795,11 @@ class _LiveTripScreenState extends State<LiveTripScreen>
     return Container(
       padding: EdgeInsets.all(8.w),
       decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-      child: SvgPicture.asset(path, color: Colors.white, width: 20.sp),
+      child: SvgPicture.asset(
+        path,
+        colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),
+        width: 20.sp,
+      ),
     );
   }
 }

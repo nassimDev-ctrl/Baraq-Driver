@@ -2,7 +2,7 @@ import 'package:drever_warr/core/asset/icon_asset.dart';
 import 'package:drever_warr/core/asset/image_asset.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/constant/app_spacing.dart';
-import 'package:drever_warr/core/widgets/customText.dart';
+import 'package:drever_warr/core/widgets/custom_text.dart';
 import 'package:drever_warr/features/my_tripe/preasntaion/view/my_profail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -32,8 +32,6 @@ class HeaderHomeView extends StatefulWidget {
 }
 
 class _HeaderHomeViewState extends State<HeaderHomeView> {
-  bool _imageLoading = true;
-
   @override
   void initState() {
     super.initState();
@@ -79,7 +77,10 @@ class _HeaderHomeViewState extends State<HeaderHomeView> {
                 onTap: widget.onMenuTap,
                 child: SvgPicture.asset(
                   IconsAssets.menu,
-                  color: AppColors.secondary1,
+                  colorFilter: ColorFilter.mode(
+                    AppColors.secondary1,
+                    BlendMode.srcIn,
+                  ),
                 ),
               ),
               const Spacer(),

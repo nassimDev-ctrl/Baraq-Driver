@@ -1,6 +1,5 @@
 import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/model/accsept_model.dart';
 
-import '../model/ScheduledTrips.dart';
 
 abstract class ScheduledAcceptTripState {}
 

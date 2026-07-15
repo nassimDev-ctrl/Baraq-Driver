@@ -1,19 +1,32 @@
  
 import 'package:drever_warr/core/asset/icon_asset.dart';
+import 'package:drever_warr/core/logging/app_logger.dart';
+
 import 'package:drever_warr/core/constant/app_colors.dart';
+
 import 'package:drever_warr/core/constant/app_spacing.dart';
-import 'package:drever_warr/core/widgets/customText.dart';
-import 'package:drever_warr/features/my_tripe/preasntaion/widget/ColumnImageNamePhoneProfaildriver.dart';
-import 'package:drever_warr/features/my_tripe/preasntaion/widget/ColumnNumberOfTripsRatingDistancesDriveprofail.dart';
-import 'package:drever_warr/features/my_tripe/preasntaion/widget/ColumnTypecarePhondrive.dart';
-import 'package:drever_warr/features/my_tripe/preasntaion/widget/OpinionsAboutDrive.dart';
+
+import 'package:drever_warr/core/widgets/custom_text.dart';
+
+import 'package:drever_warr/features/my_tripe/preasntaion/widget/column_image_name_phone_profail_driver.dart';
+
+import 'package:drever_warr/features/my_tripe/preasntaion/widget/column_number_of_trips_rating_distances_drive_profail.dart';
+
+import 'package:drever_warr/features/my_tripe/preasntaion/widget/column_type_care_phone_drive.dart';
+
+import 'package:drever_warr/features/my_tripe/preasntaion/widget/opinions_about_drive.dart';
+
 import 'package:drever_warr/features/preasntaion/widhets/icon_bak.dart';
+
 import 'package:flutter/material.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
  
 import 'package:drever_warr/features/setting/data/cubit/cubit_profail/cubit.dart';
+
 import 'package:drever_warr/features/setting/data/cubit/cubit_profail/cubit_stat.dart';
 
 class DriverProfail extends StatefulWidget {
@@ -71,7 +84,7 @@ class _DriverProfailState extends State<DriverProfail> {
                       ),
                       ColumnNumberOfTripsRatingDistancesDriveprofail(
                         col: AppColors.secondary2,
-                        image: IconsAssets.Numberoftrips,
+                        image: IconsAssets.numberOfTrips,
                         title1: "${profile?.numberOfTrips ?? 00}",
                         title2: "trips_count",
                       ),
@@ -89,10 +102,10 @@ class _DriverProfailState extends State<DriverProfail> {
                       carType: () {
                         final name = profile?.car?.carName ?? '';
                         final color = profile?.car?.carColor ?? '';
-                        print("name $name");
-                        print("color $color");
+                        AppLogger.debug("name $name");
+                        AppLogger.debug("color $color");
 
-                        return '$name (${color})'.trim();
+                        return '$name ($color)'.trim();
                       }(),
                       driverPhone: profile?.authUser?.mobilePhone ?? '',
                       colors: AppColors.secondary2,

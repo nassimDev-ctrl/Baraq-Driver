@@ -1,6 +1,10 @@
 import 'package:dartz/dartz.dart';
+import 'package:drever_warr/core/logging/app_logger.dart';
+
 import 'package:dio/dio.dart';
+
 import 'package:drever_warr/core/service/api_servise.dart';
+
 import 'package:drever_warr/core/service/failear.dart';
 import 'dart:io';
 
@@ -17,9 +21,9 @@ class ImplementRepoUploadImage extends RepoUploadImage {
     required File imageFile,
   }) async {
      
-    print("📤 [REPO]: Starting Image Upload...");
-    print("📁 [File Path]: ${imageFile.path}");
-    print("📏 [File Size]: ${await imageFile.length()} bytes");
+    AppLogger.debug("📤 [REPO]: Starting Image Upload...");
+    AppLogger.debug("📁 [File Path]: ${imageFile.path}");
+    AppLogger.debug("📏 [File Size]: ${await imageFile.length()} bytes");
 
     try {
      
@@ -31,10 +35,10 @@ class ImplementRepoUploadImage extends RepoUploadImage {
         ),
       });
 
-      print("🌐 >>> [API REQUEST: UPLOAD IMAGE] <<< 🌐");
-      print("🔗 URL: drivers/upload-driver-image");
-      print("📦 Payload: FormData with file: $fileName");
-      print("-----------------------------------------");
+      AppLogger.debug("🌐 >>> [API REQUEST: UPLOAD IMAGE] <<< 🌐");
+      AppLogger.debug("🔗 URL: drivers/upload-driver-image");
+      AppLogger.debug("📦 Payload: FormData with file: $fileName");
+      AppLogger.debug("-----------------------------------------");
 
       Response response = await _apiService.postdata(
         "drivers/upload-driver-image",
@@ -44,34 +48,34 @@ class ImplementRepoUploadImage extends RepoUploadImage {
       );
 
       
-      print("✅ <<< [API RESPONSE: SUCCESS] >>> ✅");
-      print("🔢 Status Code: ${response.statusCode}");
-      print("📄 Data: ${response.data}");
-      print("-----------------------------------------");
+      AppLogger.debug("✅ <<< [API RESPONSE: SUCCESS] >>> ✅");
+      AppLogger.debug("🔢 Status Code: ${response.statusCode}");
+      AppLogger.debug("📄 Data: ${response.data}");
+      AppLogger.debug("-----------------------------------------");
 
       if (response.data["success"] == true) {
-        print("🎉 [UPLOAD SUCCESSFUL]");
+        AppLogger.debug("🎉 [UPLOAD SUCCESSFUL]");
         return right(response.data);
       } else {
-        print("⚠️ [LOGIC ERROR]: Success field is false");
-        print("💬 Message: ${response.data["message"]}");
+        AppLogger.debug("⚠️ [LOGIC ERROR]: Success field is false");
+        AppLogger.error("💬 Message: ${response.data["message"]}");
         return left(
           ServierFailur.fromResponse(response.statusCode ?? 400, response.data),
         );
       }
     } catch (e) {
      
-      print("❌ !!! [API ERROR: EXCEPTION] !!! ❌");
+      AppLogger.debug("❌ !!! [API ERROR: EXCEPTION] !!! ❌");
 
       if (e is DioException) {
-        print("! Type: ${e.type}");
-        print("🔢 Status Code: ${e.response?.statusCode}");
-        print("📄 Error Body: ${e.response?.data}");
-        print("🚩 Message: ${e.message}");
+        AppLogger.error("! Type: ${e.type}");
+        AppLogger.debug("🔢 Status Code: ${e.response?.statusCode}");
+        AppLogger.debug("📄 Error Body: ${e.response?.data}");
+        AppLogger.error("🚩 Message: ${e.message}");
         return left(ServierFailur.fromDioError(e));
       }
 
-      print("‼️ Unknown Error: $e");
+      AppLogger.error("‼️ Unknown Error: $e");
       return left(ServierFailur('حدث خطأ أثناء رفع الصورة', 500));
     }
   }

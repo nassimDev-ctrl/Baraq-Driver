@@ -15,7 +15,7 @@ class ImageAssets {
   static const emergency = 'asets/image/emergency.png';
   static const care = 'asets/image/care.png';
   static const carMarker = 'asets/image/car_pin.png';
-  static const logo_warr = 'asets/image/logo_warr.png';
+  static const logoWarr = 'asets/image/logo_warr.png';
   static const taxi = 'asets/image/taxi.png';
   static const gep = 'asets/image/gep.png';
   static const van = 'asets/image/van.png';

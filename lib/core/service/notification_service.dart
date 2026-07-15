@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:drever_warr/core/logging/app_logger.dart';
+
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
 import 'package:drever_warr/core/service/api_servise.dart';
 
 class NotificationService {
@@ -52,7 +55,7 @@ class NotificationService {
       onDidReceiveNotificationResponse: (details) {
         if (details.payload != null && details.payload!.isNotEmpty) {
           try {
-            final data = jsonDecode(details.payload!);
+            jsonDecode(details.payload!);
             // Handle tap action here if needed.
           } catch (_) {
             // Ignore invalid payloads.
@@ -104,7 +107,7 @@ class NotificationService {
         isfromdata: false,
       );
     } catch (e) {
-      print('FCM clear error: $e');
+      AppLogger.error('FCM clear error: $e', error: e);
     }
   }
 
@@ -121,7 +124,7 @@ class NotificationService {
         isfromdata: false,
       );
     } catch (e) {
-      print('FCM update error: $e');
+      AppLogger.error('FCM update error: $e', error: e);
     }
   }
 

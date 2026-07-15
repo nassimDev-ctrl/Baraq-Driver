@@ -1,12 +1,10 @@
 import 'package:drever_warr/core/asset/icon_asset.dart';
-import 'package:drever_warr/core/asset/image_asset.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/constant/app_spacing.dart';
-import 'package:drever_warr/core/widgets/customText.dart';
-import 'package:drever_warr/core/widgets/customTextFieldsearch.dart';
+import 'package:drever_warr/core/widgets/custom_text.dart';
 import 'package:drever_warr/features/my_tripe/data/cubit/cubit_ratting/cubit.dart';
 import 'package:drever_warr/features/my_tripe/data/cubit/cubit_ratting/cubit_stat.dart';
-import 'package:drever_warr/features/my_tripe/preasntaion/widget/TopColoumnDetailsTripEnd.dart';
+import 'package:drever_warr/features/my_tripe/preasntaion/widget/top_coloumn_details_trip_end.dart';
 import 'package:drever_warr/features/my_tripe/preasntaion/widget/detals_row.dart';
 import 'package:drever_warr/features/preasntaion/widhets/icon_bak.dart';
 import 'package:flutter/material.dart';
@@ -130,17 +128,17 @@ class _DetailsOfTheCompletedTripState extends State<DetailsOfTheCompletedTrip> {
 
                     SizedBox(height: AppSpacing.xxxlg.h),
 
-                    details_row(
+                    DetailsRow(
                       t1: "${trip.distanceKmMeters} m",
                       t2: AppTranslations.getText(context, "distance_travelled"),
                     ),
                     SizedBox(height: AppSpacing.sm.h),
-                    details_row(
+                    DetailsRow(
                       t1: "${trip.durationInsideCar} min",
                       t2: AppTranslations.getText(context, "time_spent"),
                     ),
                     SizedBox(height: AppSpacing.sm.h),
-                    details_row(
+                    DetailsRow(
                       t1: "${trip.waitingDuration} min",
                       t2: AppTranslations.getText(context, "waiting_time_label"),
                     ),
@@ -194,31 +192,31 @@ class _DetailsOfTheCompletedTripState extends State<DetailsOfTheCompletedTrip> {
                     ),
                     SizedBox(height: AppSpacing.xxxlg.h),
 
-                    details_row(
+                    DetailsRow(
                       t1:
                       "${trip.totalPrice} ${AppTranslations.getText(context, "currency_syp")}",
                       t2: AppTranslations.getText(context, "trip_price"),
                     ),
                     SizedBox(height: AppSpacing.sm.h),
-                    details_row(
+                    DetailsRow(
                       t1: "0 ${AppTranslations.getText(context, "currency_syp")}",
                       t2: AppTranslations.getText(context, "discount"),
                     ),
                     SizedBox(height: AppSpacing.sm.h),
-                    details_row(
+                    DetailsRow(
                       t1:
                       "${trip.totalPrice} ${AppTranslations.getText(context, "currency_syp")}",
                       t2: AppTranslations.getText(context, "total"),
                     ),
                     SizedBox(height: AppSpacing.sm.h),
-                    details_row(
+                    DetailsRow(
                       t1:
                       "${trip.commissionAmount} ${AppTranslations.getText(context, "currency_syp")}",
                       t2: AppTranslations.getText(context, "admin_commission"),
                     ),
                     SizedBox(height: AppSpacing.sm.h),
 
-                    details_row(
+                    DetailsRow(
                       t1: trip.paymentWay == "cash"
                           ? AppTranslations.getText(context, "cash")
                           : trip.paymentWay,

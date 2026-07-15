@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:drever_warr/core/asset/image_asset.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
-import 'package:drever_warr/core/widgets/customText.dart';
+import 'package:drever_warr/core/widgets/custom_text.dart';
 import 'package:drever_warr/features/home/preasntaion/view/home_view.dart';
-import 'package:drever_warr/features/preasntaion/view/CarRegistrationScreen.dart';
-import 'package:drever_warr/features/preasntaion/view/Personal_identity.dart';
-import 'package:drever_warr/features/preasntaion/view/registerPhotoScreen.dart';
+import 'package:drever_warr/features/preasntaion/view/car_registration_screen.dart';
+import 'package:drever_warr/features/preasntaion/view/personal_identity.dart';
+import 'package:drever_warr/features/preasntaion/view/register_photo_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -59,6 +59,8 @@ class _WaitingReviewScreenState extends State<WaitingReviewScreen> {
 
     if (_navigated) return;
 
+    if (!mounted) return;
+
     if (newStatus == "active" || newStatus == "change-category") {
       _navigated = true;
       _timer?.cancel();
@@ -73,6 +75,7 @@ class _WaitingReviewScreenState extends State<WaitingReviewScreen> {
       if (page != null) {
         _navigated = true;
         _timer?.cancel();
+        if (!mounted) return;
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => page),
         );
@@ -172,7 +175,7 @@ class _WaitingReviewScreenState extends State<WaitingReviewScreen> {
               SizedBox(height: 50.h),
               Center(
                 child: Image.asset(
-                  ImageAssets.logo_warr,
+                  ImageAssets.logoWarr,
                   height: 150.h,
                   width: 150.w,
                 ),
@@ -195,7 +198,7 @@ class _WaitingReviewScreenState extends State<WaitingReviewScreen> {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.main1.withOpacity(0.3),
+                        color: AppColors.main1.withValues(alpha: 0.3),
                         blurRadius: 10,
                         offset: const Offset(0, 5),
                       ),

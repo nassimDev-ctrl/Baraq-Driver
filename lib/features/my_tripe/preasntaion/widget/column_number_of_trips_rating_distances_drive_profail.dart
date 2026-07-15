@@ -1,6 +1,6 @@
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/constant/app_spacing.dart';
-import 'package:drever_warr/core/widgets/customText.dart';
+import 'package:drever_warr/core/widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -22,7 +22,7 @@ class ColumnNumberOfTripsRatingDistancesDriveprofail extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        SvgPicture.asset(image, color: col),
+        SvgPicture.asset(image, colorFilter: ColorFilter.mode(col, BlendMode.srcIn)),
         SizedBox(height: AppSpacing.xs.h),
         CustomText(title1, type: AppTextType.titleSmall, color: AppColors.blue),
 

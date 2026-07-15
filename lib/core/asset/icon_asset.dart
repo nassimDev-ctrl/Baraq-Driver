@@ -22,7 +22,7 @@ class IconsAssets {
   static const telgram = "asets/icon/telgram.svg";
   static const distances = "asets/icon/distances1.svg";
   static const stare = "asets/icon/stare.svg";
-  static const Numberoftrips = "asets/icon/Numberoftrips.svg";
+  static const numberOfTrips = "asets/icon/Numberoftrips.svg";
   static const staroption = "asets/icon/star_opation.svg";
   static const stareoptionborder = "asets/icon/staroptionbordwe.svg";
   static const clockemergsy = "asets/icon/clock_emargesy.svg";

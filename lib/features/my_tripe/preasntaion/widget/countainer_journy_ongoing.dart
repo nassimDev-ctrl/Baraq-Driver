@@ -1,7 +1,7 @@
 import 'package:drever_warr/core/asset/icon_asset.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/constant/app_spacing.dart';
-import 'package:drever_warr/core/widgets/customText.dart';
+import 'package:drever_warr/core/widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -57,7 +57,7 @@ class CountainerJournyOngoing extends StatelessWidget {
           border: const Border(bottom: BorderSide(color: Colors.white)),
           boxShadow: [
             BoxShadow(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               spreadRadius: 1,
               blurRadius: 12,
               offset: const Offset(0, 8),
@@ -93,7 +93,7 @@ class CountainerJournyOngoing extends StatelessWidget {
                     loadingBuilder: (context, child, loadingProgress) {
                       if (loadingProgress == null) return child;
                       return Container(
-                        color: Colors.white.withOpacity(0.08),
+                        color: Colors.white.withValues(alpha: 0.08),
                         alignment: Alignment.center,
                         child: SizedBox(
                           width: 22.w,
@@ -107,7 +107,7 @@ class CountainerJournyOngoing extends StatelessWidget {
                     },
                     errorBuilder: (context, error, stackTrace) {
                       return Container(
-                        color: Colors.white.withOpacity(0.12),
+                        color: Colors.white.withValues(alpha: 0.12),
                         alignment: Alignment.center,
                         child: Icon(
                           Icons.map_outlined,
@@ -140,7 +140,7 @@ class CountainerJournyOngoing extends StatelessWidget {
                 children: [
                   CustomText(
                     color: AppColors.secondary1,
-                    "$totalPrice " + AppTranslations.getText(context, "currency_syp"),
+                    "$totalPrice ${AppTranslations.getText(context, "currency_syp")}",
                     type: AppTextType.bodyMedium,
                   ),
                   Row(
@@ -156,7 +156,10 @@ class CountainerJournyOngoing extends StatelessWidget {
                         IconsAssets.locationsearch,
                         height: 15.h,
                         width: 15.w,
-                        color: AppColors.secondary1,
+                        colorFilter: ColorFilter.mode(
+                          AppColors.secondary1,
+                          BlendMode.srcIn,
+                        ),
                       ),
                     ],
                   ),

@@ -97,7 +97,7 @@ class _UpdateRequiredViewState extends State<UpdateRequiredView> {
           const Spacer(flex: 2),
 
           Image.asset(
-            ImageAssets.logo_warr,
+            ImageAssets.logoWarr,
             width: 160.w,
             height: 160.w,
             fit: BoxFit.contain,
@@ -110,7 +110,7 @@ class _UpdateRequiredViewState extends State<UpdateRequiredView> {
             height: 72.w,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: const Color(0xFF9C46D1).withOpacity(0.1),
+              color: const Color(0xFF9C46D1).withValues(alpha: 0.1),
             ),
             child: Icon(
               Icons.system_update_rounded,
@@ -137,7 +137,7 @@ class _UpdateRequiredViewState extends State<UpdateRequiredView> {
             Container(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
               decoration: BoxDecoration(
-                color: const Color(0xFF9C46D1).withOpacity(0.08),
+                color: const Color(0xFF9C46D1).withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(20.r),
               ),
               child: Text(

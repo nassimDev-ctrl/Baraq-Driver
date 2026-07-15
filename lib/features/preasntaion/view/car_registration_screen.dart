@@ -5,15 +5,15 @@ import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/transleat/app_translat.dart';
 import 'package:drever_warr/core/utiles/faledtor.dart';
 import 'package:drever_warr/core/widgets/coustm_text_fild_all.dart';
-import 'package:drever_warr/core/widgets/customButton.dart';
-import 'package:drever_warr/core/widgets/customText.dart';
-import 'package:drever_warr/core/widgets/customTextFieldname.dart';
+import 'package:drever_warr/core/widgets/custom_button.dart';
+import 'package:drever_warr/core/widgets/custom_text.dart';
+import 'package:drever_warr/core/widgets/custom_text_field_name.dart';
 import 'package:drever_warr/core/widgets/logo_app.dart';
 import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_category/cubit.dart';
 import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_category/cubit_stat.dart';
 import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_information_car/cubit.dart';
 import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_information_car/cubit_stat.dart';
-import 'package:drever_warr/features/preasntaion/view/WaitingReviewScreen.dart';
+import 'package:drever_warr/features/preasntaion/view/waiting_review_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -62,7 +62,6 @@ class _CarRegistrationScreenState extends State<CarRegistrationScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   bool _acceptTerms = false;
-  String? _selectedColor;
   String? _selectedCategoryId;
 
   @override
@@ -146,7 +145,6 @@ class _CarRegistrationScreenState extends State<CarRegistrationScreen> {
   @override
   Widget build(BuildContext context) {
     final carCubit = context.watch<CarInfoCubit>();
-    final categoryState = context.watch<CarCategoryCubit>().state;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -295,14 +293,17 @@ class _CarRegistrationScreenState extends State<CarRegistrationScreen> {
                                       await cubit.getCarCategories();
                                     }
 
-                                    if (cubit.state is CarCategorySuccess) {
-                                      final categoryState =
-                                      cubit.state as CarCategorySuccess;
+                                    if (!mounted) return;
+                                    if (cubit.state is! CarCategorySuccess) return;
 
-                                      final RenderBox button =
-                                      _categoryKey.currentContext!
-                                          .findRenderObject() as RenderBox;
-                                      final RenderBox overlay = Overlay.of(context)
+                                    final categoryState =
+                                    cubit.state as CarCategorySuccess;
+
+                                    final RenderBox button =
+                                    _categoryKey.currentContext!
+                                        .findRenderObject() as RenderBox;
+                                    if (!context.mounted) return;
+                                    final RenderBox overlay = Overlay.of(context)
                                           .context
                                           .findRenderObject() as RenderBox;
 
@@ -335,6 +336,7 @@ class _CarRegistrationScreenState extends State<CarRegistrationScreen> {
                                         }).toList(),
                                       );
 
+                                      if (!context.mounted) return;
                                       if (selected != null) {
                                         setState(() {
                                           _selectedCategoryId = selected;
@@ -348,7 +350,6 @@ class _CarRegistrationScreenState extends State<CarRegistrationScreen> {
                                               "";
                                         });
                                       }
-                                    }
                                   },
                                   child: AbsorbPointer(
                                     child: Container(
@@ -509,7 +510,7 @@ class _CarRegistrationScreenState extends State<CarRegistrationScreen> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 4.w),
             child: CustomText(
-              errorMessage!,
+              errorMessage,
               type: AppTextType.bodySmall,
               color: Colors.red,
               textAlign: TextAlign.right,

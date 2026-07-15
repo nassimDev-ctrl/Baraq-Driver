@@ -1,12 +1,12 @@
- 
 import 'package:drever_warr/core/asset/image_asset.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/constant/app_spacing.dart';
+import 'package:drever_warr/core/logging/app_logger.dart';
 import 'package:drever_warr/core/utiles/faledtor.dart';
 import 'package:drever_warr/core/utiles/normlize_number.dart';
 import 'package:drever_warr/core/widgets/coustm_text_fild_all.dart';
-import 'package:drever_warr/core/widgets/customButton.dart';
-import 'package:drever_warr/core/widgets/customText.dart';
+import 'package:drever_warr/core/widgets/custom_button.dart';
+import 'package:drever_warr/core/widgets/custom_text.dart';
 import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_verificationRepo/cubit.dart';
 import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_verificationRepo/cubite_state.dart';
 import 'package:drever_warr/features/preasntaion/widhets/icon_bak.dart';
@@ -14,12 +14,6 @@ import 'package:drever_warr/features/setting/preasntaion/view/verficationcode_ed
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
- 
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart'; 
-import 'package:flutter_screenutil/flutter_screenutil.dart';
- 
 
 class EdetPhone extends StatefulWidget {
   const EdetPhone({super.key});
@@ -81,7 +75,7 @@ class _EdetPhoneState extends State<EdetPhone> {
                       Column(
                         children: [
                           Image.asset(
-                            ImageAssets.logo_warr,
+                            ImageAssets.logoWarr,
                             height: 130.h,
                             width: 130.w,
                           ),
@@ -127,7 +121,7 @@ class _EdetPhoneState extends State<EdetPhone> {
                             onTap: () {
                               if (_formKey.currentState!.validate()) {
                                 // 🚀 استدعاء الـ Cubit لإرسال الكود
-                                print("phone phone ${normalizePhone(phoneController.text)}");
+                                AppLogger.debug("phone phone ${normalizePhone(phoneController.text)}");
                                 context
                                     .read<VerificationCubit>()
                                     .sendVerificationCode(

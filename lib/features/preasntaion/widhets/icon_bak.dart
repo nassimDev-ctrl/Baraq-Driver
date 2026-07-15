@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 
-import '../../../core/widgets/customText.dart';
  
 class IconBak extends StatelessWidget {
   const IconBak({super.key, this.image});
@@ -20,7 +19,10 @@ class IconBak extends StatelessWidget {
             onTap: () => Navigator.pop(context),
             child: SvgPicture.asset(
               image ?? IconsAssets.back,
-              color: AppColors.secondary2,
+              colorFilter: ColorFilter.mode(
+                AppColors.secondary2,
+                BlendMode.srcIn,
+              ),
               matchTextDirection: true, //
             ),
           ),

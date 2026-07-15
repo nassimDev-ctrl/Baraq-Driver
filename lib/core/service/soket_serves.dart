@@ -1,15 +1,17 @@
 import 'dart:developer';
+
+import 'package:drever_warr/core/logging/app_logger.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:socket_io_client/socket_io_client.dart' as io;
 
 class TripSocketService {
-  late IO.Socket socket;
+  late io.Socket socket;
   final String serverUrl = 'https://api.taxiwaar.com';
 
   void connect(String token) {
-    socket = IO.io(
+    socket = io.io(
       serverUrl,
-      IO.OptionBuilder()
+      io.OptionBuilder()
           .setTransports(['websocket'])
           .setAuth({'token': token})
           .enableAutoConnect()
@@ -154,7 +156,7 @@ class TripSocketService {
   void listenToNewMessages(Function(dynamic data) onMessage) {
     socket.off("new:message");
     socket.on("new:message", (data) {
-      print("New Message: $data");
+      AppLogger.debug("New Message: $data");
       onMessage(data);
     });
   }

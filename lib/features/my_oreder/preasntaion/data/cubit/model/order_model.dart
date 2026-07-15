@@ -56,9 +56,9 @@ class TripModel {
       status: json['status'] ?? '',
       // تعيين الإحداثيات
       startLat: startCoords.length > 1 ? startCoords[1].toDouble() : 0.0,
-      startLng: startCoords.length > 0 ? startCoords[0].toDouble() : 0.0,
+      startLng: startCoords.isNotEmpty ? startCoords[0].toDouble() : 0.0,
       destinationLat: endCoords.length > 1 ? endCoords[1].toDouble() : 0.0,
-      destinationLng: endCoords.length > 0 ? endCoords[0].toDouble() : 0.0,
+      destinationLng: endCoords.isNotEmpty ? endCoords[0].toDouble() : 0.0,
     );
   }
 }

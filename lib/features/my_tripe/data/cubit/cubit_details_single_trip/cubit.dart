@@ -1,4 +1,3 @@
-import 'package:drever_warr/features/home/preasntaion/data/cubit/model/model_finsh_trips.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 

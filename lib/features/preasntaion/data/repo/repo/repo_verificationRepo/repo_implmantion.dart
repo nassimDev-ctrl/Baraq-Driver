@@ -1,7 +1,12 @@
 import 'package:dartz/dartz.dart';
+import 'package:drever_warr/core/logging/app_logger.dart';
+
 import 'package:dio/dio.dart';
+
 import 'package:drever_warr/core/service/api_servise.dart';
+
 import 'package:drever_warr/core/service/failear.dart';
+
 import 'package:drever_warr/features/preasntaion/data/repo/repo/repo_verificationRepo/repo.dart';
  
  
@@ -93,32 +98,32 @@ class VerificationRepoImpl extends VerificationRepo {
    
 
   void _printRequestLog(String label, String url, dynamic body) {
-    print("🌐 >>> [API REQUEST: $label] <<< 🌐");
-    print("🔗 URL: $url");
-    print("📤 BODY: $body");
-    print("-----------------------------------------");
+    AppLogger.debug("🌐 >>> [API REQUEST: $label] <<< 🌐");
+    AppLogger.debug("🔗 URL: $url");
+    AppLogger.debug("📤 BODY: $body");
+    AppLogger.debug("-----------------------------------------");
   }
 
   void _printResponseLog(String label, Response response) {
-    print("✅ <<< [API RESPONSE: $label] >>> ✅");
-    print("🔢 STATUS: ${response.statusCode}");
-    print("📄 DATA: ${response.data}");
-    print("-----------------------------------------");
+    AppLogger.debug("✅ <<< [API RESPONSE: $label] >>> ✅");
+    AppLogger.debug("🔢 STATUS: ${response.statusCode}");
+    AppLogger.debug("📄 DATA: ${response.data}");
+    AppLogger.debug("-----------------------------------------");
   }
 
   void _handleDetailedError(String label, dynamic e) {
-    print("❌ !!! [API ERROR: $label] !!! ❌");
+    AppLogger.error("❌ !!! [API ERROR: $label] !!! ❌");
     if (e is DioException) {
-      print("⚠️ Type: ${e.type}");
-      print("💬 Message: ${e.message}");
+      AppLogger.error("⚠️ Type: ${e.type}");
+      AppLogger.debug("💬 Message: ${e.message}");
       if (e.response != null) {
-        print("🔢 Status Code: ${e.response?.statusCode}");
-        print("📄 Error Body: ${e.response?.data}");
-        print("🚩 Headers: ${e.response?.headers}");
+        AppLogger.debug("🔢 Status Code: ${e.response?.statusCode}");
+        AppLogger.debug("📄 Error Body: ${e.response?.data}");
+        AppLogger.error("🚩 Headers: ${e.response?.headers}");
       }
     } else {
-      print("🌪️ Raw Error: $e");
+      AppLogger.debug("🌪️ Raw Error: $e");
     }
-    print("-----------------------------------------");
+    AppLogger.error("-----------------------------------------");
   }
 }

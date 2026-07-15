@@ -2,7 +2,6 @@ import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/transleat/app_translat.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
  
 
 class CustomTextFieldsearch extends StatefulWidget {

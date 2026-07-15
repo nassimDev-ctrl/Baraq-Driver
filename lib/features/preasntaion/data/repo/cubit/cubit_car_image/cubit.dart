@@ -1,6 +1,9 @@
 import 'dart:io';
 import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_car_image/cubit_stat.dart';
+import 'package:drever_warr/core/logging/app_logger.dart';
+
 import 'package:drever_warr/features/preasntaion/data/repo/repo/repo_car_image/repo.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
  
 class UploadIdCubit extends Cubit<UploadIdState> {
@@ -26,11 +29,11 @@ class UploadIdCubit extends Cubit<UploadIdState> {
 
     result.fold(
       (failure) {
-        print("📢 [CUBIT ERROR]: ${failure.errMassage}");
+        AppLogger.error("📢 [CUBIT ERROR]: ${failure.errMassage}");
         emit(UploadIdFailure(failure.errMassage));
       },
       (success) {
-        print("📢 [CUBIT SUCCESS]: ID Uploaded Successfully");
+        AppLogger.error("📢 [CUBIT SUCCESS]: ID Uploaded Successfully");
         emit(UploadIdSuccess(success));
       },
     );

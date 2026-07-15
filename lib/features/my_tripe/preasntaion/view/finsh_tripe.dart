@@ -2,14 +2,14 @@ import 'dart:async';
 
 import 'package:drever_warr/core/cash/preferences_servis.dart';
 import 'package:drever_warr/core/service/soket_serves.dart';
-import 'package:drever_warr/core/widgets/customText.dart';
+import 'package:drever_warr/core/widgets/custom_text.dart';
 import 'package:drever_warr/features/home/preasntaion/data/cubit/cubit_finsh_trips/cubit.dart';
 import 'package:drever_warr/features/home/preasntaion/data/cubit/cubit_finsh_trips/cubit_stat.dart';
 import 'package:drever_warr/features/home/preasntaion/data/cubit/model/model_finsh_trips.dart';
 import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/model/accsept_model.dart';
 import 'package:drever_warr/features/my_tripe/preasntaion/view/details_trip.dart';
 import 'package:drever_warr/features/my_tripe/preasntaion/view/end_tripe.dart';
-import 'package:drever_warr/features/my_tripe/preasntaion/widget/CountainerJournyOngoing.dart';
+import 'package:drever_warr/features/my_tripe/preasntaion/widget/countainer_journy_ongoing.dart';
 import 'package:drever_warr/features/preasntaion/widhets/icon_bak.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -287,7 +287,7 @@ class CountainerCurrentJourney extends StatelessWidget {
           border: const Border(bottom: BorderSide(color: Colors.white)),
           boxShadow: [
             BoxShadow(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               spreadRadius: 1,
               blurRadius: 12,
               offset: const Offset(0, 8),
@@ -357,7 +357,10 @@ class CountainerCurrentJourney extends StatelessWidget {
                         IconsAssets.locationsearch,
                         height: 15.h,
                         width: 15.w,
-                        color: AppColors.secondary1,
+                        colorFilter: ColorFilter.mode(
+                          AppColors.secondary1,
+                          BlendMode.srcIn,
+                        ),
                       ),
                     ],
                   ),

@@ -1,8 +1,12 @@
-import 'dart:developer';
 import 'package:dartz/dartz.dart';
+import 'package:drever_warr/core/logging/app_logger.dart';
+
 import 'package:dio/dio.dart';
+
 import 'package:drever_warr/core/service/api_servise.dart';
+
 import 'package:drever_warr/core/service/failear.dart';
+
 import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/repo/repo_end_tripe/repo.dart';
 
 class EndTripRepositoryImpl implements EndTripRepository {
@@ -12,10 +16,10 @@ class EndTripRepositoryImpl implements EndTripRepository {
 
   @override
   Future<Either<Failur, String>> completeTrip({required String tripId}) async {
-    print("---------------- [🏁 COMPLETE TRIP REQUEST] ----------------");
-    print("🆔 Trip ID: $tripId");
-    print("🔗 Endpoint: trips/complete-trip/$tripId");
-    print("🔑 Status: Sending GET Request...");
+    AppLogger.error("---------------- [🏁 COMPLETE TRIP REQUEST] ----------------");
+    AppLogger.debug("🆔 Trip ID: $tripId");
+    AppLogger.debug("🔗 Endpoint: trips/complete-trip/$tripId");
+    AppLogger.debug("🔑 Status: Sending GET Request...");
 
     try {
       final response = await apiService.get(
@@ -23,8 +27,8 @@ class EndTripRepositoryImpl implements EndTripRepository {
         needToken: true,
       );
 
-      print("✅ [SUCCESS] Server Responded Successfully");
-      print("📦 Response Body: ${response.data}");
+      AppLogger.debug("✅ [SUCCESS] Server Responded Successfully");
+      AppLogger.debug("📦 Response Body: ${response.data}");
 
       String message = "Trip completed successfully";
 
@@ -32,25 +36,25 @@ class EndTripRepositoryImpl implements EndTripRepository {
         message = response.data['message'] ?? message;
       }
 
-      print("💬 Final Message: $message");
-      print("------------------------------------------------------------");
+      AppLogger.debug("💬 Final Message: $message");
+      AppLogger.debug("------------------------------------------------------------");
 
       return right(message);
     } catch (e) {
-      print("❌ [FAILURE] Error in completeTrip");
+      AppLogger.debug("❌ [FAILURE] Error in completeTrip");
 
       if (e is DioException) {
         final failure = ServierFailur.fromDioError(e);
-        print("🚨 Dio Error Type: ${e.type}");
-        print("🚨 Status Code: ${e.response?.statusCode}");
-        print("🚨 Error Data from Server: ${e.response?.data}");
-        print("🚨 Failure Message: ${failure.errMassage}");
-        print("------------------------------------------------------------");
+        AppLogger.error("🚨 Dio Error Type: ${e.type}");
+        AppLogger.error("🚨 Status Code: ${e.response?.statusCode}");
+        AppLogger.debug("🚨 Error Data from Server: ${e.response?.data}");
+        AppLogger.error("🚨 Failure Message: ${failure.errMassage}");
+        AppLogger.error("------------------------------------------------------------");
         return left(failure);
       }
 
-      print("🚨 Unexpected Error: ${e.toString()}");
-      print("------------------------------------------------------------");
+      AppLogger.error("🚨 Unexpected Error: ${e.toString()}");
+      AppLogger.error("------------------------------------------------------------");
       return left(ServierFailur(e.toString(), 500));
     }
   }

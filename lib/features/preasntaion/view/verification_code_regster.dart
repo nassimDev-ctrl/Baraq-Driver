@@ -2,11 +2,11 @@
 import 'package:drever_warr/core/asset/image_asset.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/constant/app_spacing.dart';
-import 'package:drever_warr/core/widgets/customButton.dart';
+import 'package:drever_warr/core/widgets/custom_button.dart';
 import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_regster.dart/cubit_regster_state.dart';
 import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_regster.dart/cubit_rejester.dart';
 import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_verificationRepo/cubit.dart';
-import 'package:drever_warr/features/preasntaion/view/registerPhotoScreen.dart';
+import 'package:drever_warr/features/preasntaion/view/register_photo_screen.dart';
 import 'package:drever_warr/features/preasntaion/widhets/icon_bak.dart';
 import 'package:drever_warr/features/preasntaion/widhets/row_verification_code.dart';
 import 'package:drever_warr/features/preasntaion/widhets/text_verification_code.dart';
@@ -89,7 +89,7 @@ class _VerificationCodeRegsterState extends State<VerificationCodeRegster> {
                           inactiveFillColor: Colors.white,
                           selectedFillColor: Colors.white,
                           activeColor: AppColors.main1,
-                          inactiveColor: AppColors.main1.withOpacity(0.5),
+                          inactiveColor: AppColors.main1.withValues(alpha: 0.5),
                           selectedColor: AppColors.main1,
                         ),
                         animationDuration: const Duration(milliseconds: 300),

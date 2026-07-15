@@ -1,7 +1,7 @@
 import 'package:drever_warr/core/asset/icon_asset.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
-import 'package:drever_warr/core/widgets/customText.dart';
-import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/model/ScheduledTrips.dart';
+import 'package:drever_warr/core/widgets/custom_text.dart';
+import 'package:drever_warr/features/my_oreder/preasntaion/data/cubit/model/scheduled_trips.dart';
 import 'package:drever_warr/features/my_oreder/preasntaion/view/order_view.dart';
 import 'package:drever_warr/features/my_oreder/preasntaion/widget/card_point_order.dart';
 import 'package:flutter/material.dart';
@@ -32,10 +32,10 @@ class OrderCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(15.r),
-        border: Border.all(color: AppColors.main1.withOpacity(0.5), width: 1.5),
+        border: Border.all(color: AppColors.main1.withValues(alpha: 0.5), width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: AppColors.main1.withOpacity(0.12),
+            color: AppColors.main1.withValues(alpha: 0.12),
             blurRadius: 15,
             spreadRadius: 1,
             offset: const Offset(0, 8),
@@ -128,7 +128,10 @@ class OrderCard extends StatelessWidget {
                         ),
                         SvgPicture.asset(
                           IconsAssets.locationsearch,
-                          color: AppColors.blue,
+                          colorFilter: ColorFilter.mode(
+                            AppColors.blue,
+                            BlendMode.srcIn,
+                          ),
                           width: 20.sp,
                         ),
                       ],

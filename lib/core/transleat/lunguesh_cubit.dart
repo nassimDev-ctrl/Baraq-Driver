@@ -26,12 +26,13 @@ class LanguageCubit extends Cubit<Language> {
  
   Future<void> setLanguage(Language lang) async {
     String langCode;
-    if (lang == Language.english)
+    if (lang == Language.english) {
       langCode = 'en';
-    else if (lang == Language.kurdish)
+    } else if (lang == Language.kurdish) {
       langCode = 'ku';
-    else
+    } else {
       langCode = 'ar';
+    }
 
     await CacheManager.saveData(_langKey, langCode);
     emit(lang);

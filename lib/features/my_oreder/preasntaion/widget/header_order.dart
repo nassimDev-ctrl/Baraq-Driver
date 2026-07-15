@@ -1,7 +1,7 @@
 import 'package:drever_warr/core/asset/icon_asset.dart';
 import 'package:drever_warr/core/asset/image_asset.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
-import 'package:drever_warr/core/widgets/customText.dart';
+import 'package:drever_warr/core/widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -65,7 +65,10 @@ class _HeaderOrderState extends State<HeaderOrder> {
                 onTap: widget.onMenuTap,
                 child: SvgPicture.asset(
                   IconsAssets.menu,
-                  color: AppColors.secondary2,
+                  colorFilter: ColorFilter.mode(
+                    AppColors.secondary2,
+                    BlendMode.srcIn,
+                  ),
                 ),
               ),
               SizedBox(width: 95.w),

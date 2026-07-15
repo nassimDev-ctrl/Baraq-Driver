@@ -18,7 +18,7 @@ class ColumnSearch extends StatelessWidget {
 
           CustomPaint(size: Size(1, 40.h), painter: DashedLinePainter()),
 
-          SvgPicture.asset(IconsAssets.locationsearch, color: AppColors.blue),
+          SvgPicture.asset(IconsAssets.locationsearch, colorFilter: ColorFilter.mode(AppColors.blue, BlendMode.srcIn)),
         ],
       ),
     );

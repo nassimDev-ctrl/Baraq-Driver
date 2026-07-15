@@ -1,6 +1,10 @@
 import 'package:dartz/dartz.dart';
+import 'package:drever_warr/core/logging/app_logger.dart';
+
 import 'package:dio/dio.dart';
+
 import 'package:drever_warr/core/service/api_servise.dart';
+
 import 'package:drever_warr/core/service/failear.dart';
 import 'dart:io';
 
@@ -16,7 +20,7 @@ class ImplementRepoUploadId extends RepoUploadId {
     required File frontImage,
     required File backImage,
   }) async {
-    print("📤 [REPO]: Starting ID Images Upload...");
+    AppLogger.debug("📤 [REPO]: Starting ID Images Upload...");
 
     try {
      
@@ -31,9 +35,9 @@ class ImplementRepoUploadId extends RepoUploadId {
         ),
       });
 
-      print("🌐 >>> [API REQUEST: UPLOAD ID] <<< 🌐");
-      print("🔗 URL: /drivers/upload-driver-personal-card");
-      print("📦 Files: Front and Back ID images attached.");
+      AppLogger.debug("🌐 >>> [API REQUEST: UPLOAD ID] <<< 🌐");
+      AppLogger.debug("🔗 URL: /drivers/upload-driver-personal-card");
+      AppLogger.debug("📦 Files: Front and Back ID images attached.");
 
       Response response = await _apiService.postdata(
         "/drivers/upload-driver-personal-card",
@@ -42,9 +46,9 @@ class ImplementRepoUploadId extends RepoUploadId {
         isfromdata: true,
       );
 
-      print("✅ <<< [API RESPONSE] >>> ✅");
-      print("🔢 Status: ${response.statusCode}");
-      print("📄 Data: ${response.data}");
+      AppLogger.debug("✅ <<< [API RESPONSE] >>> ✅");
+      AppLogger.debug("🔢 Status: ${response.statusCode}");
+      AppLogger.debug("📄 Data: ${response.data}");
 
       if (response.data["success"] == true) {
         return right(response.data);
@@ -52,7 +56,7 @@ class ImplementRepoUploadId extends RepoUploadId {
         return left(ServierFailur.fromResponse(response.statusCode ?? 400, response.data));
       }
     } catch (e) {
-      print("❌ [UPLOAD EXCEPTION]: $e");
+      AppLogger.debug("❌ [UPLOAD EXCEPTION]: $e");
       if (e is DioException) return left(ServierFailur.fromDioError(e));
       return left(ServierFailur('حدث خطأ أثناء رفع صور الهوية', 500));
     }

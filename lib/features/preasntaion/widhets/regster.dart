@@ -8,8 +8,8 @@ import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/constant/app_spacing.dart';
 import 'package:drever_warr/core/utiles/faledtor.dart';
 import 'package:drever_warr/core/widgets/coustm_text_fild_all.dart';
-import 'package:drever_warr/core/widgets/customButton.dart';
-import 'package:drever_warr/core/widgets/customText.dart';
+import 'package:drever_warr/core/widgets/custom_button.dart';
+import 'package:drever_warr/core/widgets/custom_text.dart';
 import 'package:drever_warr/core/widgets/logo_app.dart';
 
 import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_governorates/cubit.dart';
@@ -46,7 +46,6 @@ class _RegsterviewState extends State<Regsterview> {
   final TextEditingController _emergencyController = TextEditingController();
   final TextEditingController _gmail = TextEditingController();
   final TextEditingController _addres = TextEditingController();
-  bool _isPasswordHidden = true;
 
   final GlobalKey _govKey = GlobalKey();
 
@@ -109,9 +108,6 @@ class _RegsterviewState extends State<Regsterview> {
 
   @override
   Widget build(BuildContext context) {
-    final urgentCount = 0;
-    final scheduledCount = 0;
-
     return MultiBlocListener(
       listeners: [
         BlocListener<VerificationCubit, VerificationState>(
@@ -207,7 +203,7 @@ class _RegsterviewState extends State<Regsterview> {
                         ),
 
                         _buildLabel("select_governorate"),
-                        _buildGovernoratePicker(context),
+                        _buildGovernoratePicker(),
 
                         _buildLabel("enter_address"),
                         AppCustomTextField(
@@ -280,7 +276,7 @@ class _RegsterviewState extends State<Regsterview> {
     );
   }
 
-  Widget _buildGovernoratePicker(BuildContext context) {
+  Widget _buildGovernoratePicker() {
     return GestureDetector(
       onTap: () async {
         if (_isSubmitting) return;
@@ -291,18 +287,21 @@ class _RegsterviewState extends State<Regsterview> {
           await cubit.getGovernorates();
         }
 
-        if (!mounted || cubit.state is! GovernoratesSuccess) return;
+        if (!mounted) return;
+        if (cubit.state is! GovernoratesSuccess) return;
 
         final state = cubit.state as GovernoratesSuccess;
 
         final keyContext = _govKey.currentContext;
-        if (keyContext == null) return;
+        if (keyContext == null || !keyContext.mounted) return;
 
         final renderObject = keyContext.findRenderObject();
         if (renderObject is! RenderBox) return;
 
-        final overlay = Overlay.of(context).context.findRenderObject();
-        if (overlay is! RenderBox) return;
+        if (!mounted) return;
+        final overlayObject = Overlay.of(context).context.findRenderObject();
+        if (overlayObject is! RenderBox) return;
+        final overlay = overlayObject;
 
         final Offset fieldOffset = renderObject.localToGlobal(
           Offset.zero,
@@ -349,7 +348,8 @@ class _RegsterviewState extends State<Regsterview> {
           }).toList(),
         );
 
-        if (selected != null && mounted) {
+        if (!mounted) return;
+        if (selected != null) {
           setState(() {
             _governorateController.text = selected.name;
             _selectedGovernorateId = selected.id;

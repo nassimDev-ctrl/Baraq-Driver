@@ -1,8 +1,14 @@
 import 'package:dartz/dartz.dart';
+import 'package:drever_warr/core/logging/app_logger.dart';
+
 import 'package:dio/dio.dart';
+
 import 'package:drever_warr/core/cash/preferences_servis.dart';
+
 import 'package:drever_warr/core/service/api_servise.dart';
+
 import 'package:drever_warr/core/service/failear.dart';
+
 import 'package:drever_warr/features/preasntaion/data/repo/repo.dart';
 // استيراد الـ CacheManager (تأكد من صحة المسار)
  
@@ -16,8 +22,8 @@ class ImplementRepoRegister extends RepoRegister {
   Future<Either<Failur, dynamic>> register({
     required Map<String, dynamic> userData,
   }) async {
-    print("🚀 [POST Request] Endpoint: /drivers/register");
-    print("📦 [Request Data]: $userData");
+    AppLogger.debug("🚀 [POST Request] Endpoint: /drivers/register");
+    AppLogger.debug("📦 [Request Data]: $userData");
 
     try {
       Response response = await _apiService.postdata(
@@ -27,8 +33,8 @@ class ImplementRepoRegister extends RepoRegister {
         isfromdata: false,
       );
 
-      print("✅ [Response Received] Status Code: ${response.statusCode}");
-      print("📄 [Response Data]: ${response.data}");
+      AppLogger.debug("✅ [Response Received] Status Code: ${response.statusCode}");
+      AppLogger.debug("📄 [Response Data]: ${response.data}");
 
       if (response.data["success"] == true) {
        
@@ -36,27 +42,27 @@ class ImplementRepoRegister extends RepoRegister {
         
         if (token != null) {
           await CacheManager.saveData("token", token);
-          print("token : $token");
-          print("💾 [TOKEN SAVED]: Token has been stored in CacheManager.");
+          AppLogger.debug("token : $token");
+          AppLogger.debug("💾 [TOKEN SAVED]: Token has been stored in CacheManager.");
         } else {
-          print("⚠️ [TOKEN WARNING]: Success was true but no token found in response!");
+          AppLogger.debug("⚠️ [TOKEN WARNING]: Success was true but no token found in response!");
         }
        
 
-        print("🎉 [Register Success]");
+        AppLogger.debug("🎉 [Register Success]");
         return right(response.data);
       } else {
-        print("⚠️ [Logic Error from Server]: ${response.data}");
+        AppLogger.debug("⚠️ [Logic Error from Server]: ${response.data}");
         return left(
           ServierFailur.fromResponse(response.statusCode ?? 400, response.data),
         );
       }
     } catch (e) {
-      print("❌ [Exception Caught in Repo]: $e");
+      AppLogger.debug("❌ [Exception Caught in Repo]: $e");
 
       if (e is DioException) {
-        print("🔴 [Dio Error Type]: ${e.type}");
-        print("🔴 [Dio Error Response]: ${e.response?.data}");
+        AppLogger.debug("🔴 [Dio Error Type]: ${e.type}");
+        AppLogger.error("🔴 [Dio Error Response]: ${e.response?.data}");
         return left(ServierFailur.fromDioError(e));
       }
       return left(ServierFailur('حدث خطأ أثناء التسجيل', 500));

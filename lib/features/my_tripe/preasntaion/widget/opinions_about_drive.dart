@@ -1,7 +1,7 @@
 import 'package:drever_warr/core/asset/icon_asset.dart';
 import 'package:drever_warr/core/asset/image_asset.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
-import 'package:drever_warr/core/widgets/customText.dart';
+import 'package:drever_warr/core/widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -24,7 +24,7 @@ class OpinionsAboutDrive extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(15.r),
-        border: Border.all(color: AppColors.main1.withOpacity(0.5), width: 1),
+        border: Border.all(color: AppColors.main1.withValues(alpha: 0.5), width: 1),
         boxShadow: [
           BoxShadow(
             color: AppColors.main1,
@@ -32,7 +32,7 @@ class OpinionsAboutDrive extends StatelessWidget {
             blurRadius: 0,
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             offset: const Offset(0, 8),
             blurRadius: 10,
           ),

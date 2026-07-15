@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
-import 'package:drever_warr/core/cash/preferences_servis.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/service/soket_serves.dart';
 
@@ -41,8 +40,8 @@ class _DriverChatScreenState extends State<DriverChatScreen> {
       widget.trip.data.client?.authUser?.toString() ?? '';
 
   String get _chatTitle {
-    final firstName = widget.trip.data.client?.firstName?.trim() ?? '';
-    final lastName = widget.trip.data.client?.lastName?.trim() ?? '';
+    final firstName = widget.trip.data.client?.firstName.trim() ?? '';
+    final lastName = widget.trip.data.client?.lastName.trim() ?? '';
     final fullName = '$firstName $lastName'.trim();
     return fullName.isEmpty ? 'Chat' : fullName;
   }
@@ -260,7 +259,7 @@ class _DriverChatScreenState extends State<DriverChatScreen> {
               padding: const EdgeInsets.only(right: 16),
               child: CircleAvatar(
                 radius: 24,
-                backgroundColor: Colors.white.withOpacity(0.18),
+                backgroundColor: Colors.white.withValues(alpha: 0.18),
                 child: const Icon(
                   Icons.person,
                   color: Colors.white,
@@ -368,7 +367,7 @@ class _DriverChatScreenState extends State<DriverChatScreen> {
               blurRadius: 0,
             ),
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               offset: const Offset(0, 5),
               blurRadius: 10,
             ),

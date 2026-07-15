@@ -1,5 +1,8 @@
 import 'package:drever_warr/features/preasntaion/data/repo/cubit/cubit_regster.dart/cubit_regster_state.dart';
+import 'package:drever_warr/core/logging/app_logger.dart';
+
 import 'package:drever_warr/features/preasntaion/data/repo/repo.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
  
@@ -41,7 +44,7 @@ class RegisterCubit extends Cubit<RegisterState> {
       },
     };
 
-    print("User Data Set: $temporaryUserData");
+    AppLogger.debug("User Data Set: $temporaryUserData");
   }
 
   Future<void> registerUser({required String otp}) async {

@@ -1,6 +1,10 @@
 import 'package:dartz/dartz.dart';
+import 'package:drever_warr/core/logging/app_logger.dart';
+
 import 'package:dio/dio.dart';
+
 import 'package:drever_warr/core/service/api_servise.dart';
+
 import 'package:drever_warr/core/service/failear.dart';
 import 'dart:developer' as dev;
 
@@ -88,8 +92,8 @@ class DriverLocationRepositoryImpl implements DriverLocationRepository {
       return right(result);
     } catch (e) {
       if (e is DioException) {
-        print("ERROR DATA: ${e.response?.data}");
-        print("ERROR STATUS: ${e.response?.statusCode}");
+        AppLogger.debug("ERROR DATA: ${e.response?.data}");
+        AppLogger.error("ERROR STATUS: ${e.response?.statusCode}");
       }
       return left(ServierFailur(e.toString(), 500));
     }
@@ -111,7 +115,7 @@ class DriverLocationRepositoryImpl implements DriverLocationRepository {
           "address": address,
         }
       };
-      print("body $body");
+      AppLogger.debug("body $body");
 
       final response = await apiService.postdata(
         '/trips/activate-emergency/$tripId',
@@ -124,8 +128,8 @@ class DriverLocationRepositoryImpl implements DriverLocationRepository {
       return right(result);
     } catch (e) {
       if (e is DioException) {
-        print("ERROR DATA: ${e.response?.data}");
-        print("ERROR STATUS: ${e.response?.statusCode}");
+        AppLogger.debug("ERROR DATA: ${e.response?.data}");
+        AppLogger.error("ERROR STATUS: ${e.response?.statusCode}");
       }
       return left(ServierFailur(e.toString(), 500));
     }

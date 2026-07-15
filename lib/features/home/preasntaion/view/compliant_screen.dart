@@ -61,7 +61,7 @@ class _CommentsPageState extends State<CommentsPage> {
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
+                  color: Colors.black.withValues(alpha: 0.08),
                   blurRadius: 20,
                   offset: const Offset(0, 8),
                 ),
@@ -207,7 +207,7 @@ class _CommentsPageState extends State<CommentsPage> {
                 width: 46,
                 height: 46,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFA349CD).withOpacity(0.12),
+                  color: const Color(0xFFA349CD).withValues(alpha: 0.12),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -287,7 +287,7 @@ class _CommentsPageState extends State<CommentsPage> {
                   width: 52,
                   height: 52,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFA349CD).withOpacity(0.12),
+                    color: const Color(0xFFA349CD).withValues(alpha: 0.12),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -325,7 +325,7 @@ class _CommentsPageState extends State<CommentsPage> {
                     child: Container(
                       padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.55),
+                        color: Colors.black.withValues(alpha: 0.55),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
@@ -345,7 +345,7 @@ class _CommentsPageState extends State<CommentsPage> {
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.5),
+                      color: Colors.black.withValues(alpha: 0.5),
                       borderRadius: BorderRadius.circular(999),
                     ),
                     child: Text(
