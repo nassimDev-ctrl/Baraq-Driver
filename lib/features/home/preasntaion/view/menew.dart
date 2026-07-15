@@ -12,6 +12,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:drever_warr/core/asset/icon_asset.dart';
 import 'package:drever_warr/core/asset/image_asset.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
+import 'package:drever_warr/features/home/preasntaion/widget/contact_us_dialog.dart';
 import 'package:drever_warr/features/home/preasntaion/view/wallt_screen.dart';
 import 'package:drever_warr/features/home/preasntaion/widget/buildMenuItem.dart';
 import 'package:drever_warr/features/my_oreder/preasntaion/view/order_view.dart';
@@ -157,11 +158,13 @@ class MenueView extends StatelessWidget {
                         child: ElevatedButton(
                           onPressed: () async {
                             Navigator.of(dialogContext).pop();
-                            await Share.share(
-                              _appShareLink,
-                              subject: AppTranslations.getText(
-                                context,
-                                "share_app_title",
+                            await SharePlus.instance.share(
+                              ShareParams(
+                                text: _appShareLink,
+                                subject: AppTranslations.getText(
+                                  context,
+                                  "share_app_title",
+                                ),
                               ),
                             );
                           },
@@ -306,18 +309,9 @@ class MenueView extends StatelessWidget {
                             BuildMenuItem(
                               icon: IconsAssets.technicalsupport,
                               title: "technical_support",
-                              onTap: () async {
-                                final uri =
-                                    Uri.parse('https://wa.me/+41779877052');
-                                final ok = await launchUrl(
-                                  uri,
-                                  mode: LaunchMode.externalApplication,
-                                );
-                                if (!ok) {
-                                  throw Exception(
-                                    'Could not open WhatsApp link',
-                                  );
-                                }
+                              onTap: () {
+                                Navigator.pop(context);
+                                showContactUsDialog(context);
                               },
                             ),
                             BuildMenuItem(

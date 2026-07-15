@@ -58,6 +58,12 @@ class AppTranslations {
       "settings": "Settings",
       "discount_codes": "Discount Codes",
       "technical_support": "Technical Support",
+      "contact_us_title": "Contact us",
+      "contact_us_subtitle": "Reach our support team through WhatsApp or phone",
+      "contact_us_whatsapp": "WhatsApp",
+      "contact_us_call": "Phone call",
+      "contact_us_unavailable": "Could not open this contact option",
+      "contact_us_copied": "Phone number copied",
       "share_app": "Share App",
       "app_version": "Version",
       "saved_places": "Saved Places",
@@ -239,8 +245,14 @@ class AppTranslations {
       "delete_notification_confirm": "Are you sure you want to delete this notification?",
       "notification_deleted": "Notification deleted successfully",
       "cancel": "Cancel",
-      "delete": "Delete"
-
+      "delete": "Delete",
+      "update_required_title": "Update Required",
+      "update_required_message": "A new version of the app is available. Please update to continue using the app.",
+      "update_new_version": "New version",
+      "update_from_playstore": "Update from Google Play",
+      "update_from_appstore": "Update from App Store",
+      "update_direct_download": "Direct Download",
+      "update_no_link": "No download link available. Please try again later."
 
     },
     'ar': {
@@ -262,6 +274,12 @@ class AppTranslations {
       "wallet": "الرصيد",
       "settings": "الإعدادات",
       "technical_support": "الدعم الفني",
+      "contact_us_title": "تواصل معنا",
+      "contact_us_subtitle": "تواصل مع فريق الدعم عبر واتساب أو الهاتف",
+      "contact_us_whatsapp": "واتساب",
+      "contact_us_call": "اتصال هاتفي",
+      "contact_us_unavailable": "تعذر فتح خيار التواصل",
+      "contact_us_copied": "تم نسخ الرقم",
       "my_profile": "بروفايلي",
       "feedback_complaints": "الملاحظات والشكاوي",
       "share_app": "مشاركة التطبيق",
@@ -477,8 +495,14 @@ class AppTranslations {
       "delete_notification_confirm": "هل أنت متأكد من حذف هذا الإشعار؟",
       "notification_deleted": "تم حذف الإشعار بنجاح",
       "cancel": "إلغاء",
-      "delete": "حذف"
-
+      "delete": "حذف",
+      "update_required_title": "تحديث مطلوب",
+      "update_required_message": "يتوفر إصدار جديد من التطبيق. يرجى التحديث للاستمرار في استخدام التطبيق.",
+      "update_new_version": "الإصدار الجديد",
+      "update_from_playstore": "التحديث من Google Play",
+      "update_from_appstore": "التحديث من App Store",
+      "update_direct_download": "تحميل مباشر",
+      "update_no_link": "لا يوجد رابط تحميل متاح. يرجى المحاولة لاحقاً."
 
     },
     'ku': {
@@ -707,7 +731,14 @@ class AppTranslations {
       "delete_notification_confirm": "Ma tu piştrast î ku dixwazî vê agahdariyê jê bibî?",
       "notification_deleted": "Agahdarî bi serkeftî hat jêbirin",
       "cancel": "Betal bike",
-      "delete": "Jê bibe"
+      "delete": "Jê bibe",
+      "update_required_title": "Nûkirin pêwîst e",
+      "update_required_message": "Guhertoyek nû ya sepanê heye. Ji kerema xwe nûve bikin da ku bidomînin.",
+      "update_new_version": "Guhertoya nû",
+      "update_from_playstore": "Nûkirin ji Google Play",
+      "update_from_appstore": "Nûkirin ji App Store",
+      "update_direct_download": "Daxistina rasterast",
+      "update_no_link": "Lînka daxistinê tune ye. Ji kerema xwe paşê biceribîne."
 
     },
   };

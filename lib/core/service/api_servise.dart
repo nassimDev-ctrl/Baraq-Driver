@@ -1,5 +1,6 @@
 // ignore_for_file: constant_identifier_names
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:drever_warr/core/cash/preferences_servis.dart';
@@ -37,8 +38,11 @@ class ApiService {
   }) async {
     Map<String, dynamic>? header = {};
 
-
     header["Accept-Language"] = await _getCurrentLanguageCode();
+
+    header['version'] = '1.0.4';
+    header['app-type'] = Platform.isIOS ? 'ios' : 'android';
+    header['type'] = 'driver';
 
     if (needToken) {
       final token = await CacheManager.getData('token');
@@ -83,7 +87,6 @@ class ApiService {
     log(data.toString());
     Response response = await dio.post(
       "$_baseURL$endPoint",
-
       data: data,
       options: await _preparationOptionsRequest(
         needToken ?? false,

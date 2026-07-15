@@ -87,6 +87,7 @@ import 'features/setting/data/cubit/cubit_update_language/cubit_state.dart';
 import 'features/setting/data/repo/update_language_repo/repo.dart';
 import 'firebase_options.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'core/utiles/navigator_key.dart';
 
 Future<void> requestAppPermissions() async {
   final permissions = <Permission>[
@@ -109,20 +110,26 @@ Future<void> requestAppPermissions() async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  debugPrint('=== 1. setupServiceLocator ===');
   setupServiceLocator();
 
+  debugPrint('=== 2. Firebase.initializeApp ===');
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  debugPrint('=== 3. requestAppPermissions ===');
   await requestAppPermissions();
 
+  debugPrint('=== 4. NotificationService setup ===');
   NotificationService.instance.setApiService(getIt.get<ApiService>());
   FirebaseMessaging.onBackgroundMessage(
     NotificationService.firebaseBackgroundHandler,
   );
 
+  debugPrint('=== 5. NotificationService.init ===');
   await NotificationService.instance.init();
+  debugPrint('=== 6. runApp ===');
   runApp(const MyApp());
 }
 
@@ -396,6 +403,7 @@ class MyApp extends StatelessWidget {
             minTextAdapt: true,
             splitScreenMode: true,
             child: MaterialApp(
+              navigatorKey: navigatorKey,
               debugShowCheckedModeBanner: false,
               title: 'Warr App',
               locale: currentLocale,
