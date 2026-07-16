@@ -1,32 +1,35 @@
-import 'package:drever_warr/core/constant/api_constants.dart';
-import 'package:drever_warr/core/asset/icon_asset.dart';
 import 'package:drever_warr/core/asset/image_asset.dart';
+import 'package:drever_warr/core/constant/api_constants.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/constant/app_spacing.dart';
-import 'package:drever_warr/core/widgets/custom_text.dart';
+import 'package:drever_warr/core/translate/app_translate.dart';
+import 'package:drever_warr/core/widgets/auth/auth_ui_constants.dart';
+import 'package:drever_warr/features/home/presentation/data/cubit/driver_available_cubit/cubit.dart';
+import 'package:drever_warr/features/home/presentation/data/cubit/driver_available_cubit/cubit_state.dart';
+import 'package:drever_warr/features/home/presentation/view/notification_screen.dart';
+import 'package:drever_warr/features/home/presentation/view/wallt_screen.dart';
 import 'package:drever_warr/features/my_tripe/presentation/view/my_profail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
-
-import '../data/cubit/driver_available_cubit/cubit.dart';
-import '../data/cubit/driver_available_cubit/cubit_state.dart';
-import '../view/notification_screen.dart';
 
 class HeaderHomeView extends StatefulWidget {
-  final VoidCallback onMenuTap;
-  final String? imagePath;
-  final num driverBalance;
-  final bool isProfileLoading;
-
   const HeaderHomeView({
     super.key,
     required this.driverBalance,
     required this.onMenuTap,
     this.imagePath,
     this.isProfileLoading = false,
+    this.driverName,
+    this.rating,
   });
+
+  final VoidCallback onMenuTap;
+  final String? imagePath;
+  final num driverBalance;
+  final bool isProfileLoading;
+  final String? driverName;
+  final num? rating;
 
   @override
   State<HeaderHomeView> createState() => _HeaderHomeViewState();
@@ -42,109 +45,206 @@ class _HeaderHomeViewState extends State<HeaderHomeView> {
     });
   }
 
-  String? _resolveImageUrl(String? imagePath) {
-    return ApiConstants.resolveMediaUrl(imagePath);
-  }
-
   @override
   Widget build(BuildContext context) {
-    final imageUrl = _resolveImageUrl(widget.imagePath);
+    final imageUrl = ApiConstants.resolveMediaUrl(widget.imagePath);
+    final topInset = MediaQuery.paddingOf(context).top;
 
     return Container(
-      padding: EdgeInsets.only(
-        top: 40.h,
-        bottom: 20.h,
+      width: double.infinity,
+      padding: EdgeInsets.fromLTRB(
+        AppSpacing.md.w,
+        topInset + 10.h,
+        AppSpacing.md.w,
+        16.h,
       ),
-      decoration: BoxDecoration(
-        color: AppColors.main1,
-        borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(10),
-          bottomRight: Radius.circular(10),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: AuthUiConstants.headerGradient,
         ),
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
       ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(height: AppSpacing.x25.h),
           Row(
             children: [
-              SizedBox(width: 20.w),
-              GestureDetector(
+              _HeaderIconButton(
+                icon: Icons.menu_rounded,
                 onTap: widget.onMenuTap,
-                child: SvgPicture.asset(
-                  IconAssets.menu,
-                  colorFilter: ColorFilter.mode(
-                    AppColors.secondary1,
-                    BlendMode.srcIn,
+              ),
+              SizedBox(width: 10.w),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const DriverProfail(),
+                      ),
+                    );
+                  },
+                  child: Row(
+                    children: [
+                      _ProfileAvatar(
+                        imageUrl: imageUrl,
+                        isLoading: widget.isProfileLoading,
+                      ),
+                      SizedBox(width: 10.w),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.driverName?.trim().isNotEmpty == true
+                                  ? widget.driverName!
+                                  : AppTranslations.getText(
+                                      context,
+                                      'brand_name',
+                                    ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                            SizedBox(height: 2.h),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.star_rounded,
+                                  color: const Color(0xFFFFC107),
+                                  size: 16.sp,
+                                ),
+                                SizedBox(width: 4.w),
+                                Text(
+                                  (widget.rating ?? 0).toStringAsFixed(1),
+                                  style: TextStyle(
+                                    color: Colors.white.withValues(alpha: 0.9),
+                                    fontSize: 12.sp,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-              const Spacer(),
-              SizedBox(width: 20.w),
-              GestureDetector(
+              _HeaderIconButton(
+                icon: Icons.notifications_none_rounded,
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const DriverProfail(),
+                      builder: (_) => const NotificationScreen(),
                     ),
                   );
                 },
-                child: _profileAvatar(imageUrl),
               ),
-              const Spacer(),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const NotificationScreen(),
-                    ),
-                  );
-                },
-                child: Icon(
-                  Icons.notifications_outlined,
-                  color: Colors.white,
-                  size: 26.sp,
-                ),
-              ),
-              SizedBox(width: 12.w),
-              _buildAvailabilitySwitch(),
-              SizedBox(width: 20.w),
             ],
           ),
-          SizedBox(height: 15.h),
-          CustomText(
-            "current_balance",
-            color: Colors.white70,
-            type: AppTextType.bodyMedium,
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 5.h),
-          CustomText(
-            "${widget.driverBalance.toStringAsFixed(2)} SYP",
-            color: Colors.white,
-            type: AppTextType.bodyLarge,
-            textAlign: TextAlign.center,
+          SizedBox(height: 14.h),
+          Row(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const WalletScreen()),
+                    );
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 12.w,
+                      vertical: 12.h,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(16.r),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.16),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 36.r,
+                          height: 36.r,
+                          decoration: BoxDecoration(
+                            color: AppColors.button.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(11.r),
+                          ),
+                          child: Icon(
+                            Icons.account_balance_wallet_outlined,
+                            color: Colors.white,
+                            size: 18.sp,
+                          ),
+                        ),
+                        SizedBox(width: 10.w),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                AppTranslations.getText(
+                                  context,
+                                  'current_balance',
+                                ),
+                                style: TextStyle(
+                                  color: Colors.white.withValues(alpha: 0.75),
+                                  fontSize: 11.sp,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              SizedBox(height: 2.h),
+                              Text(
+                                '${widget.driverBalance.toStringAsFixed(0)} SYP',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15.sp,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(width: 10.w),
+              const _AvailabilityToggle(),
+            ],
           ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildAvailabilitySwitch() {
-    return BlocConsumer<DriverStatusCubit, DriverStatusState>(
-      listener: (context, state) {
-        if (state is DriverStatusFailure) {
-        }
-      },
+class _AvailabilityToggle extends StatelessWidget {
+  const _AvailabilityToggle();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<DriverStatusCubit, DriverStatusState>(
       builder: (context, state) {
-        final bool isAvailable = switch (state) {
+        final isAvailable = switch (state) {
           DriverStatusLoaded(:final isAvailable) => isAvailable,
           _ => false,
         };
-
-        final bool isLoading = switch (state) {
+        final isLoading = switch (state) {
           DriverStatusLoading() => true,
           DriverStatusLoaded(:final isUpdating) => isUpdating,
           _ => false,
@@ -153,109 +253,159 @@ class _HeaderHomeViewState extends State<HeaderHomeView> {
         return GestureDetector(
           onTap: isLoading
               ? null
-              : () {
-            context.read<DriverStatusCubit>().toggleDriverAvailability();
-          },
+              : () => context
+                  .read<DriverStatusCubit>()
+                  .toggleDriverAvailability(),
           child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            width: 50.w,
-            height: 26.h,
+            duration: const Duration(milliseconds: 220),
+            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20.r),
               color: isAvailable
-                  ? AppColors.blue
-                  : Colors.grey.shade400,
+                  ? AppColors.button.withValues(alpha: 0.22)
+                  : Colors.white.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(16.r),
+              border: Border.all(
+                color: isAvailable
+                    ? AppColors.button.withValues(alpha: 0.55)
+                    : Colors.white.withValues(alpha: 0.16),
+              ),
             ),
-            padding: EdgeInsets.symmetric(horizontal: 2.w),
-            child: isLoading
-                ? Center(
-              child: SizedBox(
-                width: 14.w,
-                height: 14.w,
-                child: const CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: Colors.white,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (isLoading)
+                  SizedBox(
+                    width: 16.r,
+                    height: 16.r,
+                    child: const CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                else
+                  Container(
+                    width: 10.r,
+                    height: 10.r,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: isAvailable
+                          ? const Color(0xFF86EFAC)
+                          : const Color(0xFFFCA5A5),
+                      boxShadow: [
+                        BoxShadow(
+                          color: (isAvailable
+                                  ? AppColors.button
+                                  : Colors.redAccent)
+                              .withValues(alpha: 0.45),
+                          blurRadius: 8,
+                        ),
+                      ],
+                    ),
+                  ),
+                SizedBox(width: 8.w),
+                Text(
+                  AppTranslations.getText(
+                    context,
+                    isAvailable ? 'driver_online' : 'driver_offline',
+                  ),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
-              ),
-            )
-                : AnimatedAlign(
-              duration: const Duration(milliseconds: 200),
-              alignment: isAvailable
-                  ? Alignment.centerLeft
-                  : Alignment.centerRight,
-              child: Container(
-                width: 20.w,
-                height: 20.h,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
+                SizedBox(width: 6.w),
+                Icon(
+                  isAvailable
+                      ? Icons.toggle_on_rounded
+                      : Icons.toggle_off_rounded,
                   color: Colors.white,
+                  size: 26.sp,
                 ),
-              ),
+              ],
             ),
           ),
         );
       },
     );
   }
+}
 
-  Widget _profileAvatar(String? imagePath) {
-    final String? resolvedUrl = ApiConstants.resolveMediaUrl(imagePath);
+class _HeaderIconButton extends StatelessWidget {
+  const _HeaderIconButton({required this.icon, required this.onTap});
 
-    return Container(
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(color: Colors.white, width: 2),
-      ),
-      child: CircleAvatar(
-        radius: 35.r,
-        backgroundColor: Colors.grey[200],
-        child: ClipOval(
-          child: SizedBox(
-            width: 70.r,
-            height: 70.r,
-            child: widget.isProfileLoading
-                ? Center(
-              child: SizedBox(
-                width: 18.w,
-                height: 18.w,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: AppColors.main1,
-                ),
-              ),
-            )
-                : (resolvedUrl != null)
-                ? Image.network(
-              resolvedUrl,
-              fit: BoxFit.cover,
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) return child;
-                return Center(
-                  child: SizedBox(
-                    width: 18.w,
-                    height: 18.w,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: AppColors.main1,
-                    ),
-                  ),
-                );
-              },
-              errorBuilder: (context, error, stackTrace) {
-                return Image.asset(
-                  ImageAssets.imageprofail,
-                  fit: BoxFit.cover,
-                );
-              },
-            )
-                : Image.asset(
-              ImageAssets.imageprofail,
-              fit: BoxFit.cover,
-            ),
-          ),
+  final IconData icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.white.withValues(alpha: 0.14),
+      borderRadius: BorderRadius.circular(14.r),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14.r),
+        child: SizedBox(
+          width: 42.r,
+          height: 42.r,
+          child: Icon(icon, color: Colors.white, size: 22.sp),
         ),
       ),
     );
   }
 }
 
+class _ProfileAvatar extends StatelessWidget {
+  const _ProfileAvatar({
+    required this.imageUrl,
+    required this.isLoading,
+  });
+
+  final String? imageUrl;
+  final bool isLoading;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 46.r,
+      height: 46.r,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.white, width: 2),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.2),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ClipOval(
+        child: isLoading
+            ? const ColoredBox(
+                color: Color(0x33FFFFFF),
+                child: Center(
+                  child: SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              )
+            : imageUrl != null
+                ? Image.network(
+                    imageUrl!,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Image.asset(
+                      ImageAssets.imageprofail,
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                : Image.asset(ImageAssets.imageprofail, fit: BoxFit.cover),
+      ),
+    );
+  }
+}

@@ -1,33 +1,32 @@
+import 'package:drever_warr/core/asset/image_asset.dart';
+import 'package:drever_warr/core/cash/preferences_service.dart';
+import 'package:drever_warr/core/constant/api_constants.dart';
+import 'package:drever_warr/core/constant/app_colors.dart';
+import 'package:drever_warr/core/constant/app_spacing.dart';
+import 'package:drever_warr/core/service/notification_service.dart';
+import 'package:drever_warr/core/translate/app_translate.dart';
+import 'package:drever_warr/core/widgets/app_snack_bar.dart';
+import 'package:drever_warr/core/widgets/auth/auth_ui_constants.dart';
+import 'package:drever_warr/features/home/presentation/data/cubit/logout_cubit/cubit.dart';
+import 'package:drever_warr/features/home/presentation/data/cubit/logout_cubit/cubit_state.dart';
 import 'package:drever_warr/features/home/presentation/view/compliant_screen.dart';
+import 'package:drever_warr/features/home/presentation/view/notification_screen.dart';
+import 'package:drever_warr/features/home/presentation/view/wallt_screen.dart';
+import 'package:drever_warr/features/home/presentation/widget/build_menu_item.dart';
+import 'package:drever_warr/features/home/presentation/widget/contact_us_dialog.dart';
+import 'package:drever_warr/features/my_oreder/presentation/view/order_view.dart';
 import 'package:drever_warr/features/my_tripe/presentation/view/finsh_tripe.dart';
+import 'package:drever_warr/features/my_tripe/presentation/view/my_profail.dart';
 import 'package:drever_warr/features/presentation/widgets/login.dart';
 import 'package:drever_warr/features/setting/data/cubit/cubit_profail/cubit.dart';
+import 'package:drever_warr/features/setting/data/cubit/cubit_profail/cubit_stat.dart';
+import 'package:drever_warr/features/setting/presentation/view/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import 'package:drever_warr/core/asset/icon_asset.dart';
-import 'package:drever_warr/core/asset/image_asset.dart';
-import 'package:drever_warr/core/constant/api_constants.dart';
-import 'package:drever_warr/core/constant/app_colors.dart';
-import 'package:drever_warr/features/home/presentation/widget/contact_us_dialog.dart';
-import 'package:drever_warr/features/home/presentation/view/wallt_screen.dart';
-import 'package:drever_warr/features/home/presentation/widget/build_menu_item.dart';
-import 'package:drever_warr/features/my_oreder/presentation/view/order_view.dart';
-import 'package:drever_warr/features/my_tripe/presentation/view/my_profail.dart';
-import 'package:drever_warr/features/setting/presentation/view/settings.dart';
-import 'package:drever_warr/features/setting/data/cubit/cubit_profail/cubit_stat.dart';
-
-import '../../../../core/cash/preferences_service.dart';
-import '../../../../core/service/notification_service.dart';
-import 'notification_screen.dart';
-import '../../../../core/translate/app_translate.dart';
-import '../../../../core/widgets/app_snack_bar.dart';
-import '../data/cubit/logout_cubit/cubit.dart';
-import '../data/cubit/logout_cubit/cubit_state.dart';
 
 class MenueView extends StatelessWidget {
   const MenueView({super.key});
@@ -84,23 +83,23 @@ class MenueView extends StatelessWidget {
                 ),
                 SizedBox(height: 18.h),
                 Text(
-                  AppTranslations.getText(context, "share_app_title"),
+                  AppTranslations.getText(context, 'share_app_title'),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 18.sp,
-                    fontWeight: FontWeight.w700,
-                    color: const Color(0xFF1F1F1F),
+                    fontWeight: FontWeight.w800,
+                    color: AuthUiConstants.textPrimary,
                   ),
                 ),
                 SizedBox(height: 8.h),
                 Text(
-                  AppTranslations.getText(context, "share_app_description"),
+                  AppTranslations.getText(context, 'share_app_description'),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 13.5.sp,
                     height: 1.4,
-                    color: Colors.grey.shade600,
-                    fontWeight: FontWeight.w400,
+                    color: AuthUiConstants.mutedText,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 SizedBox(height: 22.h),
@@ -112,39 +111,33 @@ class MenueView extends StatelessWidget {
                         child: OutlinedButton(
                           onPressed: () async {
                             Navigator.of(dialogContext).pop();
-
                             final uri = Uri.parse(_websiteUrl);
                             final ok = await launchUrl(
                               uri,
                               mode: LaunchMode.externalApplication,
                             );
-
                             if (!ok && context.mounted) {
                               AppSnackBar.error(
                                 context,
                                 AppTranslations.getText(
                                   context,
-                                  "could_not_open_website",
+                                  'could_not_open_website',
                                 ),
                               );
                             }
                           },
                           style: OutlinedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            side: BorderSide(
-                              color: AppColors.main1,
-                              width: 1.5,
-                            ),
+                            side: BorderSide(color: AppColors.main1, width: 1.5),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(14.r),
                             ),
                           ),
                           child: Text(
-                            AppTranslations.getText(context, "website"),
+                            AppTranslations.getText(context, 'website'),
                             style: TextStyle(
                               color: AppColors.main1,
                               fontSize: 14.sp,
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                         ),
@@ -162,7 +155,7 @@ class MenueView extends StatelessWidget {
                                 text: _appShareLink,
                                 subject: AppTranslations.getText(
                                   context,
-                                  "share_app_title",
+                                  'share_app_title',
                                 ),
                               ),
                             );
@@ -175,11 +168,11 @@ class MenueView extends StatelessWidget {
                             ),
                           ),
                           child: Text(
-                            AppTranslations.getText(context, "share"),
+                            AppTranslations.getText(context, 'share'),
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 14.sp,
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                         ),
@@ -203,11 +196,10 @@ class MenueView extends StatelessWidget {
       listener: (context, state) async {
         if (state is LogoutSuccess) {
           await _clearSessionData();
-
           if (context.mounted) {
             Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (context) => const LoginView()),
+              MaterialPageRoute(builder: (_) => const LoginView()),
               (route) => false,
             );
           }
@@ -217,143 +209,169 @@ class MenueView extends StatelessWidget {
         final isLoggingOut = state is LogoutLoading;
 
         return Drawer(
-          width: 285.w,
-          backgroundColor: AppColors.main1,
+          width: 304.w,
+          backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.horizontal(
-              right: Radius.circular(24.r),
+              right: isRtl ? Radius.zero : Radius.circular(28.r),
+              left: isRtl ? Radius.circular(28.r) : Radius.zero,
             ),
           ),
           child: Directionality(
             textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
             child: BlocBuilder<ProfileCubit, ProfileState>(
               builder: (context, profileState) {
-                String name = "جاري التحميل...";
-                String phone = "...";
+                String name = '...';
+                String phone = '...';
                 String? imagePath;
+                num rating = 0;
 
                 if (profileState is ProfileSuccess) {
                   final data = profileState.data.data;
                   name =
-                      "${data?.firstName ?? ''} ${data?.lastName ?? ''}".trim();
-                  if (name.isEmpty) name = "سائق برق";
-                  phone = data?.authUser?.mobilePhone ?? "لا يوجد رقم";
+                      '${data?.firstName ?? ''} ${data?.lastName ?? ''}'.trim();
+                  if (name.isEmpty) {
+                    name = AppTranslations.getText(context, 'driver_brand_name');
+                  }
+                  phone = data?.authUser?.mobilePhone ?? '-';
                   imagePath = data?.profileImage;
+                  rating = data?.rating ?? 0;
                 } else if (profileState is ProfileFailure) {
-                  name = "خطأ في البيانات";
+                  name = AppTranslations.getText(context, 'error_occurred');
                   phone = profileState.errMessage;
                 }
 
-                return SafeArea(
-                  child: Column(
-                    children: [
-                      _buildHeader(name: name, phone: phone, imagePath: imagePath),
-                      SizedBox(height: 12.h),
-                      Expanded(
-                        child: ListView(
-                          padding: EdgeInsets.zero,
-                          children: [
-                            BuildMenuItem(
-                              icon: IconAssets.mytrip,
-                              title: "my_trips",
-                              onTap: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => OngoingJourney(),
-                                ),
+                return Column(
+                  children: [
+                    _DrawerHeader(
+                      name: name,
+                      phone: phone,
+                      imagePath: imagePath,
+                      rating: rating,
+                      onClose: () => Navigator.pop(context),
+                      onProfileTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const DriverProfail(),
+                          ),
+                        );
+                      },
+                    ),
+                    Expanded(
+                      child: ListView(
+                        padding: EdgeInsets.only(top: 8.h, bottom: 8.h),
+                        children: [
+                          DrawerSectionTitle('menu_section_main'),
+                          BuildMenuItem(
+                            iconData: Icons.local_taxi_rounded,
+                            title: 'orders',
+                            accentColor: AppColors.main1,
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    OrdersScreen(imagePath: imagePath),
                               ),
                             ),
-                            BuildMenuItem(
-                              icon: IconAssets.savelocation11,
-                              title: "orders",
-                              onTap: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => OrdersScreen(
-                                    imagePath: imagePath,
-                                  ),
-                                ),
+                          ),
+                          BuildMenuItem(
+                            iconData: Icons.history_rounded,
+                            title: 'my_trips',
+                            accentColor: const Color(0xFF7C3AED),
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const OngoingJourney(),
                               ),
                             ),
-                            BuildMenuItem(
-                              icon: IconAssets.discountcodes,
-                              title: "wallet",
-                              onTap: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => WalletScreen(),
-                                ),
+                          ),
+                          BuildMenuItem(
+                            iconData: Icons.account_balance_wallet_outlined,
+                            title: 'wallet',
+                            accentColor: AppColors.button,
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const WalletScreen(),
                               ),
                             ),
-                            BuildMenuItem(
-                              icon: IconAssets.masseage,
-                              title: "notifications",
-                              onTap: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const NotificationScreen(),
-                                ),
+                          ),
+                          DrawerSectionTitle('menu_section_account'),
+                          BuildMenuItem(
+                            iconData: Icons.person_outline_rounded,
+                            title: 'my_profile',
+                            accentColor: const Color(0xFF0EA5E9),
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const DriverProfail(),
                               ),
                             ),
-                            BuildMenuItem(
-                              icon: IconAssets.setting,
-                              title: "settings",
-                              onTap: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => SettingsScreen(),
-                                ),
+                          ),
+                          BuildMenuItem(
+                            iconData: Icons.notifications_none_rounded,
+                            title: 'notifications',
+                            accentColor: const Color(0xFFF59E0B),
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const NotificationScreen(),
                               ),
                             ),
-                            BuildMenuItem(
-                              icon: IconAssets.technicalsupport,
-                              title: "technical_support",
-                              onTap: () {
-                                Navigator.pop(context);
-                                showContactUsDialog(context);
-                              },
-                            ),
-                            BuildMenuItem(
-                              icon: IconAssets.profailicon,
-                              title: "my_profile",
-                              onTap: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => DriverProfail(),
-                                ),
+                          ),
+                          BuildMenuItem(
+                            iconData: Icons.settings_outlined,
+                            title: 'settings',
+                            accentColor: AuthUiConstants.mutedText,
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const SettingsScreen(),
                               ),
                             ),
-                            BuildMenuItem(
-                              icon: IconAssets.masseage,
-                              title: "feedback_complaints",
-                              onTap: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => CommentsPage(),
-                                ),
+                          ),
+                          DrawerSectionTitle('menu_section_more'),
+                          BuildMenuItem(
+                            iconData: Icons.support_agent_rounded,
+                            title: 'technical_support',
+                            accentColor: const Color(0xFF14B8A6),
+                            onTap: () {
+                              Navigator.pop(context);
+                              showContactUsDialog(context);
+                            },
+                          ),
+                          BuildMenuItem(
+                            iconData: Icons.feedback_outlined,
+                            title: 'feedback_complaints',
+                            accentColor: const Color(0xFFEF4444),
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const CommentsPage(),
                               ),
                             ),
-                            BuildMenuItem(
-                              icon: IconAssets.shareapplaction,
-                              title: "share_app",
-                              onTap: () => _showShareAppPopup(context),
-                            ),
-                            BuildMenuItem(
-                              icon: IconAssets.logout,
-                              title: isLoggingOut ? "logging_out" : "logout",
-                              isDestructive: true,
-                              onTap: isLoggingOut
-                                  ? null
-                                  : () {
-                                      context.read<LogoutCubit>().logout();
-                                    },
-                            ),
-                          ],
-                        ),
+                          ),
+                          BuildMenuItem(
+                            iconData: Icons.ios_share_rounded,
+                            title: 'share_app',
+                            accentColor: AppColors.main1,
+                            onTap: () => _showShareAppPopup(context),
+                          ),
+                          SizedBox(height: 8.h),
+                          BuildMenuItem(
+                            iconData: Icons.logout_rounded,
+                            title: isLoggingOut ? 'logging_out' : 'logout',
+                            isDestructive: true,
+                            onTap: isLoggingOut
+                                ? null
+                                : () => context.read<LogoutCubit>().logout(),
+                          ),
+                        ],
                       ),
-                      _buildFooter(context),
-                    ],
-                  ),
+                    ),
+                    _DrawerFooter(getPackageInfo: _getPackageInfo),
+                  ],
                 );
               },
             ),
@@ -362,180 +380,279 @@ class MenueView extends StatelessWidget {
       },
     );
   }
+}
 
-  Widget _buildHeader({
-    required String name,
-    required String phone,
-    required String? imagePath,
-  }) {
+class _DrawerHeader extends StatelessWidget {
+  const _DrawerHeader({
+    required this.name,
+    required this.phone,
+    required this.imagePath,
+    required this.rating,
+    required this.onClose,
+    required this.onProfileTap,
+  });
+
+  final String name;
+  final String phone;
+  final String? imagePath;
+  final num rating;
+  final VoidCallback onClose;
+  final VoidCallback onProfileTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final topInset = MediaQuery.paddingOf(context).top;
+    final resolvedUrl = ApiConstants.resolveMediaUrl(imagePath);
+
     return Container(
       width: double.infinity,
-      margin: EdgeInsets.fromLTRB(14.w, 10.h, 14.w, 0),
-      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+      padding: EdgeInsets.fromLTRB(
+        AppSpacing.md.w,
+        topInset + 12.h,
+        AppSpacing.md.w,
+        20.h,
       ),
-      child: Row(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: AuthUiConstants.headerGradient,
+        ),
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
+      ),
+      child: Column(
         children: [
-          _profileAvatar(imagePath),
-          SizedBox(width: 12.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 15.sp,
-                    fontWeight: FontWeight.w700,
-                    color: const Color(0xFF1F1F1F),
+          Row(
+            children: [
+              Text(
+                AppTranslations.getText(context, 'brand_name'),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              const Spacer(),
+              Material(
+                color: Colors.white.withValues(alpha: 0.14),
+                shape: const CircleBorder(),
+                child: InkWell(
+                  customBorder: const CircleBorder(),
+                  onTap: onClose,
+                  child: SizedBox(
+                    width: 36.r,
+                    height: 36.r,
+                    child: Icon(
+                      Icons.close_rounded,
+                      color: Colors.white,
+                      size: 18.sp,
+                    ),
                   ),
                 ),
-                SizedBox(height: 4.h),
-                Text(
-                  phone,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 12.5.sp,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey.shade600,
-                  ),
+              ),
+            ],
+          ),
+          SizedBox(height: 16.h),
+          GestureDetector(
+            onTap: onProfileTap,
+            child: Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(12.r),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(18.r),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.16),
                 ),
-              ],
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 56.r,
+                    height: 56.r,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 2),
+                    ),
+                    child: ClipOval(
+                      child: resolvedUrl != null
+                          ? Image.network(
+                              resolvedUrl,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => Image.asset(
+                                ImageAssets.imageprofail,
+                                fit: BoxFit.cover,
+                              ),
+                            )
+                          : Image.asset(
+                              ImageAssets.imageprofail,
+                              fit: BoxFit.cover,
+                            ),
+                    ),
+                  ),
+                  SizedBox(width: 12.w),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        SizedBox(height: 3.h),
+                        Text(
+                          phone,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textDirection: TextDirection.ltr,
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.8),
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        SizedBox(height: 6.h),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.star_rounded,
+                              color: const Color(0xFFFFC107),
+                              size: 15.sp,
+                            ),
+                            SizedBox(width: 4.w),
+                            Text(
+                              rating.toStringAsFixed(1),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12.sp,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            SizedBox(width: 8.w),
+                            Text(
+                              AppTranslations.getText(context, 'my_profile'),
+                              style: TextStyle(
+                                color: Colors.white.withValues(alpha: 0.75),
+                                fontSize: 11.sp,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    color: Colors.white.withValues(alpha: 0.7),
+                    size: 14.sp,
+                  ),
+                ],
+              ),
             ),
           ),
         ],
       ),
     );
   }
+}
 
-  Widget _profileAvatar(String? imagePath) {
-    final resolvedUrl = ApiConstants.resolveMediaUrl(imagePath);
+class _DrawerFooter extends StatelessWidget {
+  const _DrawerFooter({required this.getPackageInfo});
 
+  final Future<PackageInfo> Function() getPackageInfo;
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
+      width: double.infinity,
+      padding: EdgeInsets.fromLTRB(16.w, 10.h, 16.w, 16.h),
       decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: AppColors.main1.withValues(alpha: 0.35),
-          width: 2,
+        color: AuthUiConstants.fieldFill,
+        border: Border(
+          top: BorderSide(color: AuthUiConstants.fieldBorder),
         ),
       ),
-      child: CircleAvatar(
-        radius: 30.r,
-        backgroundColor: Colors.grey[200],
-        child: ClipOval(
-          child: resolvedUrl != null
-              ? Image.network(
-                  resolvedUrl,
-                  width: 60.r,
-                  height: 60.r,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Image.asset(
-                    ImageAssets.imageprofail,
-                    fit: BoxFit.cover,
-                  ),
-                )
-              : Image.asset(ImageAssets.imageprofail, fit: BoxFit.cover),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFooter(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(14.w, 8.h, 14.w, 16.h),
-      child: Column(
-        children: [
-          Divider(
-            color: Colors.white.withValues(alpha: 0.25),
-            height: 1,
-          ),
-          SizedBox(height: 12.h),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _socialButton(
-                icon: Icons.facebook,
-                onTap: () async {
-                  final uri = Uri.parse(
-                    'https://www.facebook.com/share/1BAa9GrmrH/',
-                  );
-                  final ok = await launchUrl(
-                    uri,
-                    mode: LaunchMode.externalApplication,
-                  );
-                  if (!ok) {
-                    throw Exception('Could not open Facebook link');
-                  }
-                },
-              ),
-              SizedBox(width: 16.w),
-              _socialButton(
-                icon: Icons.camera_alt,
-                onTap: () async {
-                  final uri = Uri.parse(
-                    'https://www.instagram.com/waar.taxi/',
-                  );
-                  final ok = await launchUrl(
-                    uri,
-                    mode: LaunchMode.externalApplication,
-                  );
-                  if (!ok) {
-                    throw Exception('Could not open Instagram link');
-                  }
-                },
-              ),
-            ],
-          ),
-          SizedBox(height: 12.h),
-          FutureBuilder<PackageInfo>(
-            future: _getPackageInfo(),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                return const SizedBox.shrink();
-              }
-
-              final info = snapshot.data!;
-              return Text(
-                '${AppTranslations.getText(context, "app_version")} ${info.version} (${info.buildNumber})',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.65),
-                  fontSize: 11.5.sp,
-                  fontWeight: FontWeight.w500,
+      child: SafeArea(
+        top: false,
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _SocialButton(
+                  icon: Icons.facebook_rounded,
+                  onTap: () async {
+                    final uri = Uri.parse(
+                      'https://www.facebook.com/share/1BAa9GrmrH/',
+                    );
+                    await launchUrl(uri, mode: LaunchMode.externalApplication);
+                  },
                 ),
-              );
-            },
-          ),
-        ],
+                SizedBox(width: 12.w),
+                _SocialButton(
+                  icon: Icons.camera_alt_outlined,
+                  onTap: () async {
+                    final uri = Uri.parse(
+                      'https://www.instagram.com/waar.taxi/',
+                    );
+                    await launchUrl(uri, mode: LaunchMode.externalApplication);
+                  },
+                ),
+              ],
+            ),
+            SizedBox(height: 10.h),
+            FutureBuilder<PackageInfo>(
+              future: getPackageInfo(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) return const SizedBox.shrink();
+                final info = snapshot.data!;
+                return Text(
+                  '${AppTranslations.getText(context, 'app_version')} ${info.version} (${info.buildNumber})',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: AuthUiConstants.mutedText,
+                    fontSize: 11.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
+}
 
-  Widget _socialButton({
-    required IconData icon,
-    required VoidCallback onTap,
-  }) {
+class _SocialButton extends StatelessWidget {
+  const _SocialButton({required this.icon, required this.onTap});
+
+  final IconData icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
     return Material(
-      color: Colors.white.withValues(alpha: 0.14),
+      color: Colors.white,
       shape: const CircleBorder(),
+      elevation: 0,
       child: InkWell(
         onTap: onTap,
         customBorder: const CircleBorder(),
-        child: Padding(
+        child: Container(
           padding: EdgeInsets.all(10.r),
-          child: Icon(icon, color: Colors.white, size: 20.sp),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(color: AuthUiConstants.fieldBorder),
+          ),
+          child: Icon(icon, color: AppColors.main1, size: 18.sp),
         ),
       ),
     );

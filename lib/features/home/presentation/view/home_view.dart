@@ -3,9 +3,12 @@ import 'dart:math' as math;
 
 import 'package:drever_warr/features/home/presentation/view/menew.dart';
 import 'package:drever_warr/features/home/presentation/widget/header_home_view.dart';
+import 'package:drever_warr/features/home/presentation/widget/home_driver_panel.dart';
 import 'package:drever_warr/core/cash/preferences_service.dart';
 import 'package:drever_warr/core/service/notification_service.dart';
 import 'package:drever_warr/features/presentation/widgets/login.dart';
+import 'package:drever_warr/features/my_oreder/presentation/data/cubit/cubit_current_trip/cubit.dart';
+import 'package:drever_warr/features/my_oreder/presentation/data/cubit/cubit_order/cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -103,6 +106,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
 
     context.read<ProfileCubit>().getProfileData();
     context.read<WalletCubit>().fetchWalletOperations();
+    context.read<GetStartedTripsCubit>().fetchStartedTrips();
+    context.read<SearchingTripsCubit>().getSearchingTrips();
     _determinePosition();
   }
 
@@ -751,9 +756,20 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
 
     String? imagePath;
     num balance = 0;
+    String? driverName;
+    num rating = 0;
+    int tripsCount = 0;
+    num distanceKm = 0;
 
     if (profileState is ProfileSuccess) {
-      imagePath = profileState.data.data?.profileImage;
+      final data = profileState.data.data;
+      imagePath = data?.profileImage;
+      final first = data?.firstName?.trim() ?? '';
+      final last = data?.lastName?.trim() ?? '';
+      driverName = '$first $last'.trim();
+      rating = data?.rating ?? 0;
+      tripsCount = data?.numberOfTrips ?? 0;
+      distanceKm = data?.distancePassed ?? 0;
     }
 
     if (walletState is WalletSuccess) {
@@ -852,6 +868,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                       imagePath: imagePath,
                       driverBalance: balance,
                       isProfileLoading: isProfileLoading,
+                      driverName: driverName,
+                      rating: rating,
                       onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
                     ),
                     Expanded(
@@ -888,14 +906,16 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                           ),
                           Positioned(
                             bottom: 20.h,
-                            right: 20.w,
+                            right: 16.w,
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 FloatingActionButton(
                                   mini: true,
                                   heroTag: 'follow',
-                                  backgroundColor: _followDriver ? AppColors.main1 : Colors.white,
+                                  elevation: 3,
+                                  backgroundColor:
+                                      _followDriver ? AppColors.main1 : Colors.white,
                                   onPressed: () {
                                     setState(() {
                                       _followDriver = !_followDriver;
@@ -905,22 +925,27 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                                     }
                                   },
                                   child: Icon(
-                                    _followDriver ? Icons.gps_fixed : Icons.gps_not_fixed,
-                                    color: _followDriver ? Colors.white : Colors.grey,
+                                    _followDriver
+                                        ? Icons.gps_fixed
+                                        : Icons.gps_not_fixed,
+                                    color: _followDriver
+                                        ? Colors.white
+                                        : Colors.grey,
                                   ),
                                 ),
                                 SizedBox(height: 8.h),
                                 FloatingActionButton(
                                   mini: true,
                                   heroTag: 'locate',
+                                  elevation: 3,
                                   backgroundColor: Colors.white,
                                   onPressed: () {
                                     setState(() => _followDriver = true);
                                     _moveCameraToCurrentPosition(force: true);
                                   },
-                                  child: const Icon(
+                                  child: Icon(
                                     Icons.my_location,
-                                    color: Colors.blue,
+                                    color: AppColors.main1,
                                   ),
                                 ),
                               ],
@@ -928,6 +953,12 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                           ),
                         ],
                       ),
+                    ),
+                    HomeDriverPanel(
+                      imagePath: imagePath,
+                      rating: rating,
+                      tripsCount: tripsCount,
+                      distanceKm: distanceKm,
                     ),
                   ],
                 ),
