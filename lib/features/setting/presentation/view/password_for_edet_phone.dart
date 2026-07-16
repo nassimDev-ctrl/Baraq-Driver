@@ -2,8 +2,8 @@ import 'package:drever_warr/core/asset/image_asset.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/constant/app_spacing.dart';
 import 'package:drever_warr/core/utils/validator.dart';
-import 'package:drever_warr/core/widgets/custom_text_field_all.dart';
-import 'package:drever_warr/core/widgets/custom_button.dart';
+import 'package:drever_warr/core/widgets/auth/app_primary_button.dart';
+import 'package:drever_warr/core/widgets/auth/app_text_field.dart';
 import 'package:drever_warr/core/widgets/custom_text.dart';
 import 'package:drever_warr/features/presentation/widgets/icon_bak.dart';
 import 'package:drever_warr/features/setting/data/cubit/cubit_updet_phone/cubit.dart';
@@ -12,6 +12,7 @@ import 'package:drever_warr/features/setting/presentation/view/edet_phone.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:drever_warr/core/widgets/app_snack_bar.dart';
 
 class PasswordForgetPhone extends StatefulWidget {
   const PasswordForgetPhone({super.key});
@@ -23,6 +24,7 @@ class PasswordForgetPhone extends StatefulWidget {
 class _PasswordForgetPhoneState extends State<PasswordForgetPhone> {
   final TextEditingController passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _obscurePassword = true;
 
   @override
   void dispose() {
@@ -36,7 +38,6 @@ class _PasswordForgetPhoneState extends State<PasswordForgetPhone> {
       backgroundColor: AppColors.secondary1,
       body: BlocConsumer<UpdateMobileCubit, UpdateMobileState>(
         listener: (context, state) {
-        
           if (state is ConfirmPasswordSuccess) {
             Navigator.push(
               context,
@@ -48,13 +49,7 @@ class _PasswordForgetPhoneState extends State<PasswordForgetPhone> {
               ),
             );
           } else if (state is UpdateMobileFailure) {
-           
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.errMessage),
-                backgroundColor: Colors.red,
-              ),
-            );
+            AppSnackBar.error(context, state.errMessage);
           }
         },
         builder: (context, state) {
@@ -62,10 +57,9 @@ class _PasswordForgetPhoneState extends State<PasswordForgetPhone> {
             key: _formKey,
             child: SingleChildScrollView(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const IconBak(),
-                  
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -81,7 +75,6 @@ class _PasswordForgetPhoneState extends State<PasswordForgetPhone> {
                       ),
                     ],
                   ),
-                 
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20.w),
                     child: CustomText(
@@ -111,34 +104,46 @@ class _PasswordForgetPhoneState extends State<PasswordForgetPhone> {
                       color: AppColors.secondary2,
                     ),
                   ),
-                 
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 12.w),
-                    child: AppCustomTextField(
+                    child: AppTextField(
                       controller: passwordController,
-                      hintText: "",
-                      validator: (val) => Validators.validatePassword(val, context),
+                      hintKey: 'password',
+                      icon: Icons.lock_outline_rounded,
+                      obscureText: _obscurePassword,
+                      textDirection: TextDirection.ltr,
+                      suffix: IconButton(
+                        onPressed: () {
+                          setState(
+                            () => _obscurePassword = !_obscurePassword,
+                          );
+                        },
+                        icon: Icon(
+                          _obscurePassword
+                              ? Icons.visibility_off_outlined
+                              : Icons.visibility_outlined,
+                        ),
+                      ),
+                      validator: (val) =>
+                          Validators.validatePassword(val, context),
                     ),
                   ),
                   SizedBox(height: 250.h),
-                 
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 24.w),
-                    child: state is UpdateMobileLoading
-                        ? const Center(child: CircularProgressIndicator())
-                        : CustomButton(
-                            title: "confirm",
-                            onTap: () {
-                              if (_formKey.currentState!.validate()) {
-                                
-                                context
-                                    .read<UpdateMobileCubit>()
-                                    .confirmUserPassword(
-                                      passwordController.text,
-                                    );
-                              }
-                            },
-                          ),
+                    child: AppPrimaryButton(
+                      isLoading: state is UpdateMobileLoading,
+                      labelKey: 'confirm',
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          context
+                              .read<UpdateMobileCubit>()
+                              .confirmUserPassword(
+                                passwordController.text,
+                              );
+                        }
+                      },
+                    ),
                   ),
                 ],
               ),

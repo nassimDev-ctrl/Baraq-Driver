@@ -23,6 +23,7 @@ import '../../../my_oreder/presentation/data/cubit/cubet_end_tripe/cubit_stat.da
 import '../../../my_oreder/presentation/data/cubit/model/accsept_model.dart';
 import '../widget/trip_location_path.dart';
 import 'details_trip.dart';
+import 'package:drever_warr/core/widgets/app_snack_bar.dart';
 
 class EndTripe extends StatefulWidget {
   final ActiveTripModel trip;
@@ -533,15 +534,11 @@ class _EndTripeState extends State<EndTripe> with TickerProviderStateMixin {
 
             if (!mounted) return;
 
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  AppTranslations.getText(
-                    context,
-                    "trip_finished_successfully",
-                  ),
-                ),
-                backgroundColor: Colors.green,
+            AppSnackBar.success(
+              context,
+              AppTranslations.getText(
+                context,
+                "trip_finished_successfully",
               ),
             );
 
@@ -559,12 +556,7 @@ class _EndTripeState extends State<EndTripe> with TickerProviderStateMixin {
           } else if (state is EndTripFailure) {
             if (!mounted) return;
 
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.errMessage),
-                backgroundColor: Colors.red,
-              ),
-            );
+            AppSnackBar.error(context, state.errMessage);
           }
         },
         child: BlocListener<DriverLocationCubit, DriverLocationState>(
@@ -681,13 +673,9 @@ class _EndTripeState extends State<EndTripe> with TickerProviderStateMixin {
                           _currentPosition,
                           widget.trip.id.toString(),
                         );
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              AppTranslations.getText(context, "emergency_sent"),
-                            ),
-                            backgroundColor: Colors.red,
-                          ),
+                        AppSnackBar.info(
+                          context,
+                          AppTranslations.getText(context, "emergency_sent"),
                         );
                       }
                     },

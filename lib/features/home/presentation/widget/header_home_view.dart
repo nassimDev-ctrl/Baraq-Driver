@@ -43,12 +43,7 @@ class _HeaderHomeViewState extends State<HeaderHomeView> {
   }
 
   String? _resolveImageUrl(String? imagePath) {
-    const String baseUrl = ApiConstants.mediaBaseUrl;
-
-    if (imagePath == null || imagePath.isEmpty) return null;
-    if (imagePath.startsWith('http')) return imagePath;
-
-    return "$baseUrl$imagePath";
+    return ApiConstants.resolveMediaUrl(imagePath);
   }
 
   @override
@@ -204,13 +199,7 @@ class _HeaderHomeViewState extends State<HeaderHomeView> {
   }
 
   Widget _profileAvatar(String? imagePath) {
-    const String baseUrl = ApiConstants.mediaBaseUrl;
-
-    final String? resolvedUrl = (imagePath == null || imagePath.isEmpty)
-        ? null
-        : imagePath.startsWith('http')
-        ? imagePath
-        : "$baseUrl$imagePath";
+    final String? resolvedUrl = ApiConstants.resolveMediaUrl(imagePath);
 
     return Container(
       decoration: BoxDecoration(

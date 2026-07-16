@@ -27,6 +27,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:drever_warr/core/widgets/app_snack_bar.dart';
 
 class UserInformation extends StatefulWidget {
   const UserInformation({super.key});
@@ -128,20 +129,10 @@ class _UserInformationState extends State<UserInformation> {
           BlocListener<UpdateProfileCubit, UpdateProfileState>(
             listener: (context, state) {
               if (state is UpdateProfileSuccess) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.message),
-                    backgroundColor: Colors.green,
-                  ),
-                );
+                AppSnackBar.success(context, state.message);
                 context.read<ProfileCubit>().getProfileData();
               } else if (state is UpdateProfileFailure) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.errMessage),
-                    backgroundColor: Colors.red,
-                  ),
-                );
+                AppSnackBar.error(context, state.errMessage);
               }
             },
           ),
@@ -158,12 +149,7 @@ class _UserInformationState extends State<UserInformation> {
                   ),
                 );
               } else if (state is VerificationFailure) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.errMessage),
-                    backgroundColor: Colors.red,
-                  ),
-                );
+                AppSnackBar.error(context, state.errMessage);
               }
             },
           ),
@@ -343,10 +329,9 @@ class _UserInformationState extends State<UserInformation> {
                               "reset-password",
                             );
                           } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("يرجى إدخال رقم الهاتف أولاً"),
-                              ),
+                            AppSnackBar.error(
+                              context,
+                              "يرجى إدخال رقم الهاتف أولاً",
                             );
                           }
                         },
@@ -538,7 +523,7 @@ class _UserInformationState extends State<UserInformation> {
     }
 
      
-    const String baseUrl = ApiConstants.mediaBaseUrl;
+    final resolvedUrl = ApiConstants.resolveMediaUrl(networkImageUrl);
 
     return Center(
       child: Stack(
@@ -561,12 +546,9 @@ class _UserInformationState extends State<UserInformation> {
                       File(_pickedImagePath!),
                       fit: BoxFit.cover,
                     )  
-                  : (networkImageUrl != null && networkImageUrl.isNotEmpty)
+                  : resolvedUrl != null
                   ? Image.network(
-                     
-                      networkImageUrl.startsWith('http')
-                          ? networkImageUrl
-                          : "$baseUrl$networkImageUrl",
+                      resolvedUrl,
                       fit: BoxFit.cover,
                       
                       loadingBuilder: (context, child, loadingProgress) {

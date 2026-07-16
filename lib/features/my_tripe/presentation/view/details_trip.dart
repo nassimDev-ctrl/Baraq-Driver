@@ -15,6 +15,7 @@ import 'package:flutter_svg/svg.dart';
 import '../../../../core/translate/app_translate.dart';
 import '../../data/cubit/cubit_details_single_trip/cubit.dart';
 import '../../data/cubit/cubit_details_single_trip/cubit_state.dart';
+import 'package:drever_warr/core/widgets/app_snack_bar.dart';
 
 class DetailsOfTheCompletedTrip extends StatefulWidget {
   final String tripId;
@@ -49,12 +50,7 @@ class _DetailsOfTheCompletedTripState extends State<DetailsOfTheCompletedTrip> {
     return BlocConsumer<SingleTripDetailsCubit, SingleTripDetailsState>(
       listener: (context, state) {
         if (state is SingleTripDetailsFailure) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.errMessage),
-              backgroundColor: Colors.red,
-            ),
-          );
+          AppSnackBar.error(context, state.errMessage);
         }
       },
       builder: (context, state) {
@@ -81,20 +77,10 @@ class _DetailsOfTheCompletedTripState extends State<DetailsOfTheCompletedTrip> {
         return BlocConsumer<AddRatingCubit, AddRatingState>(
           listener: (context, state) {
             if (state is AddRatingSuccess) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.message),
-                  backgroundColor: Colors.green,
-                ),
-              );
+              AppSnackBar.success(context, state.message);
               Navigator.pop(context);
             } else if (state is AddRatingFailure) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.errMessage),
-                  backgroundColor: Colors.red,
-                ),
-              );
+              AppSnackBar.error(context, state.errMessage);
             }
           },
           builder: (context, ratingState) {

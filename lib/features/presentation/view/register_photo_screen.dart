@@ -17,6 +17,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'waiting_review_screen.dart';
+import 'package:drever_warr/core/widgets/app_snack_bar.dart';
 
 class RegisterPhotoScreen extends StatefulWidget {
   final bool isUpdate;
@@ -106,14 +107,7 @@ class _RegisterPhotoScreenState extends State<RegisterPhotoScreen> {
       body: BlocListener<UploadImageCubit, UploadImageState>(
         listener: (context, state) {
           if (state is UploadImageSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  AppTranslations.getText(context, "image_upload_success"),
-                ),
-                backgroundColor: Colors.green,
-              ),
-            );
+            AppSnackBar.success(context, AppTranslations.getText(context, "image_upload_success"));
 
             if (!widget.isUpdate) {
               Navigator.push(
@@ -131,12 +125,7 @@ class _RegisterPhotoScreenState extends State<RegisterPhotoScreen> {
               );
             }
           } else if (state is UploadImageFailure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.errMessage),
-                backgroundColor: Colors.red,
-              ),
-            );
+            AppSnackBar.error(context, state.errMessage);
           }
         },
         child: SafeArea(

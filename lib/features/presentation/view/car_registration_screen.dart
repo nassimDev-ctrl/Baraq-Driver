@@ -19,6 +19,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:drever_warr/core/widgets/app_snack_bar.dart';
 
 
 class CarRegistrationScreen extends StatefulWidget {
@@ -158,12 +159,7 @@ class _CarRegistrationScreenState extends State<CarRegistrationScreen> {
               ),
             );
           } else if (state is CarInfoFailure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.errMessage),
-                backgroundColor: Colors.red,
-              ),
-            );
+            AppSnackBar.error(context, state.errMessage);
           }
         },
         child: SafeArea(
@@ -446,12 +442,11 @@ class _CarRegistrationScreenState extends State<CarRegistrationScreen> {
                                   if (_formKey.currentState!.validate() &&
                                       _acceptTerms) {
                                     if (_selectedCategoryId == null) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                            AppTranslations.getText(
-                                                context, "please_select_category"),
-                                          ),
+                                      AppSnackBar.error(
+                                        context,
+                                        AppTranslations.getText(
+                                          context,
+                                          "please_select_category",
                                         ),
                                       );
                                       return;

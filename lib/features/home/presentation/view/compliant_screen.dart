@@ -10,6 +10,7 @@ import '../../../../core/cash/preferences_service.dart';
 import '../../../../core/translate/app_translate.dart';
 import '../data/cubit/complain_cubit/cubit.dart';
 import '../data/cubit/complain_cubit/cubit_state.dart';
+import 'package:drever_warr/core/widgets/app_snack_bar.dart';
 
 class CommentsPage extends StatefulWidget {
   const CommentsPage({super.key});
@@ -138,12 +139,7 @@ class _CommentsPageState extends State<CommentsPage> {
 
       if (fileSize > _maxImageSizeBytes) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppTranslations.getText(context, "image_too_large")),
-            backgroundColor: Colors.red,
-          ),
-        );
+        AppSnackBar.error(context, AppTranslations.getText(context, "image_too_large"));
         return;
       }
 
@@ -152,12 +148,7 @@ class _CommentsPageState extends State<CommentsPage> {
       });
     } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppTranslations.getText(context, "could_not_pick_image")),
-          backgroundColor: Colors.red,
-        ),
-      );
+      AppSnackBar.error(context, AppTranslations.getText(context, "could_not_pick_image"));
     }
   }
 
@@ -171,13 +162,9 @@ class _CommentsPageState extends State<CommentsPage> {
     final description = _descriptionController.text.trim();
 
     if (description.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            AppTranslations.getText(context, "please_write_your_complaint"),
-          ),
-          backgroundColor: Colors.red,
-        ),
+      AppSnackBar.error(
+        context,
+        AppTranslations.getText(context, "please_write_your_complaint"),
       );
       return;
     }
@@ -372,20 +359,10 @@ class _CommentsPageState extends State<CommentsPage> {
     return BlocConsumer<AddComplainCubit, AddComplainState>(
       listener: (context, state) {
         if (state is AddComplainSuccess) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: Colors.green,
-            ),
-          );
+          AppSnackBar.success(context, state.message);
           Navigator.pop(context);
         } else if (state is AddComplainFailure) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.errMessage),
-              backgroundColor: Colors.red,
-            ),
-          );
+          AppSnackBar.error(context, state.errMessage);
         }
       },
       builder: (context, state) {

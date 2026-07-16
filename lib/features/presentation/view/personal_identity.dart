@@ -15,6 +15,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:drever_warr/core/widgets/app_snack_bar.dart';
 
 class Personalidentity extends StatefulWidget {
   final bool isUpdate;
@@ -115,14 +116,7 @@ class _PersonalidentityState extends State<Personalidentity> {
       body: BlocListener<UploadIdCubit, UploadIdState>(
         listener: (context, state) {
           if (state is UploadIdSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  AppTranslations.getText(context, "id_upload_success"),
-                ),
-                backgroundColor: Colors.green,
-              ),
-            );
+            AppSnackBar.success(context, AppTranslations.getText(context, "id_upload_success"));
 
             if (!widget.isUpdate) {
               Navigator.push(
@@ -142,12 +136,7 @@ class _PersonalidentityState extends State<Personalidentity> {
               );
             }
           } else if (state is UploadIdFailure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.errMessage),
-                backgroundColor: Colors.red,
-              ),
-            );
+            AppSnackBar.error(context, state.errMessage);
           }
         },
         child: SafeArea(

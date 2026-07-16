@@ -19,6 +19,7 @@ import '../data/cubit/model/scheduled_trips.dart';
 import '../data/cubit/scheduled_accept_order_cubit/cubit.dart';
 import '../data/cubit/scheduled_accept_order_cubit/cubit_state.dart';
 import '../widget/header_order.dart';
+import 'package:drever_warr/core/widgets/app_snack_bar.dart';
 
 enum OrderButtonStatus { accept, start, accepted, loading }
 
@@ -133,12 +134,7 @@ class _OrdersScreenState extends State<OrdersScreen>
                 ),
               );
             } else if (state is AcceptTripFailure) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.errMessage),
-                  backgroundColor: Colors.red,
-                ),
-              );
+              AppSnackBar.error(context, state.errMessage);
             }
           },
         ),
@@ -147,23 +143,13 @@ class _OrdersScreenState extends State<OrdersScreen>
             if (!mounted) return;
 
             if (state is ScheduledAcceptTripSuccess) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text("Order accepted."),
-                  backgroundColor: Colors.green,
-                ),
-              );
+              AppSnackBar.success(context, "Order accepted.");
 
               // Pull fresh data from the server so the card switches to "Start"
               // only when the backend status becomes "client_confirmed".
               context.read<ScheduledTripsCubit>().getScheduledTrips();
             } else if (state is ScheduledAcceptTripFailure) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.errMessage),
-                  backgroundColor: Colors.red,
-                ),
-              );
+              AppSnackBar.error(context, state.errMessage);
             }
           },
         ),

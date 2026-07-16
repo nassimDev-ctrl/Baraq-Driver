@@ -11,6 +11,7 @@ import 'package:flutter_svg/svg.dart';
 import '../../../../core/translate/app_translate.dart';
 import '../../../home/presentation/data/cubit/driver_available_cubit/cubit.dart';
 import '../../../home/presentation/data/cubit/driver_available_cubit/cubit_state.dart';
+import 'package:drever_warr/core/widgets/app_snack_bar.dart';
 
 class HeaderOrder extends StatefulWidget {
   final VoidCallback onMenuTap;
@@ -106,12 +107,7 @@ class _HeaderOrderState extends State<HeaderOrder> {
     return BlocConsumer<DriverStatusCubit, DriverStatusState>(
       listener: (context, state) {
         if (state is DriverStatusFailure) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.errMessage),
-              backgroundColor: Colors.red,
-            ),
-          );
+          AppSnackBar.error(context, state.errMessage);
         }
       },
       builder: (context, state) {
@@ -181,7 +177,7 @@ class _HeaderOrderState extends State<HeaderOrder> {
   }
 
   Widget _profileAvatar(String? imagePath) {
-    const String baseUrl = ApiConstants.mediaBaseUrl;
+    final resolvedUrl = ApiConstants.resolveMediaUrl(imagePath);
 
     return Container(
       decoration: BoxDecoration(
@@ -192,15 +188,15 @@ class _HeaderOrderState extends State<HeaderOrder> {
         radius: 35.r,
         backgroundColor: Colors.grey[200],
         child: ClipOval(
-          child: (imagePath != null && imagePath.isNotEmpty)
+          child: resolvedUrl != null
               ? Image.network(
-            imagePath.startsWith('http') ? imagePath : "$baseUrl$imagePath",
-            width: 70.r,
-            height: 70.r,
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) =>
-                Image.asset(ImageAssets.imageprofail, fit: BoxFit.cover),
-          )
+                  resolvedUrl,
+                  width: 70.r,
+                  height: 70.r,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) =>
+                      Image.asset(ImageAssets.imageprofail, fit: BoxFit.cover),
+                )
               : Image.asset(ImageAssets.imageprofail, fit: BoxFit.cover),
         ),
       ),

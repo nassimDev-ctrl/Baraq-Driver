@@ -1,6 +1,7 @@
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/service/contact_support_service.dart';
 import 'package:drever_warr/core/translate/app_translate.dart';
+import 'package:drever_warr/core/widgets/app_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -15,19 +16,13 @@ void showContactUsDialog(BuildContext context) {
 class ContactUsDialog extends StatelessWidget {
   const ContactUsDialog({super.key});
 
-  void _showSnackBar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
-  }
-
   Future<void> _copyPhone(BuildContext context) async {
     await Clipboard.setData(
       ClipboardData(text: ContactSupportService.supportPhone),
     );
     HapticFeedback.lightImpact();
     if (!context.mounted) return;
-    _showSnackBar(
+    AppSnackBar.info(
       context,
       AppTranslations.getStaticText(context, 'contact_us_copied'),
     );
@@ -40,7 +35,7 @@ class ContactUsDialog extends StatelessWidget {
       Navigator.pop(context);
       return;
     }
-    _showSnackBar(
+    AppSnackBar.info(
       context,
       AppTranslations.getStaticText(context, 'contact_us_unavailable'),
     );
@@ -53,7 +48,7 @@ class ContactUsDialog extends StatelessWidget {
       Navigator.pop(context);
       return;
     }
-    _showSnackBar(
+    AppSnackBar.info(
       context,
       AppTranslations.getStaticText(context, 'contact_us_unavailable'),
     );

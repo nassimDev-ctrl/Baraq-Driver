@@ -2,10 +2,10 @@ import 'package:drever_warr/core/asset/image_asset.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/constant/app_spacing.dart';
 import 'package:drever_warr/core/logging/app_logger.dart';
-import 'package:drever_warr/core/utils/validator.dart';
 import 'package:drever_warr/core/utils/normalize_number.dart';
-import 'package:drever_warr/core/widgets/custom_text_field_all.dart';
-import 'package:drever_warr/core/widgets/custom_button.dart';
+import 'package:drever_warr/core/utils/validator.dart';
+import 'package:drever_warr/core/widgets/auth/app_primary_button.dart';
+import 'package:drever_warr/core/widgets/auth/app_text_field.dart';
 import 'package:drever_warr/core/widgets/custom_text.dart';
 import 'package:drever_warr/features/presentation/data/repo/cubit/cubit_verificationRepo/cubit.dart';
 import 'package:drever_warr/features/presentation/data/repo/cubit/cubit_verificationRepo/cubite_state.dart';
@@ -14,6 +14,7 @@ import 'package:drever_warr/features/setting/presentation/view/verficationcode_e
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:drever_warr/core/widgets/app_snack_bar.dart';
 
 class EdetPhone extends StatefulWidget {
   const EdetPhone({super.key});
@@ -39,7 +40,6 @@ class _EdetPhoneState extends State<EdetPhone> {
       body: BlocConsumer<VerificationCubit, VerificationState>(
         listener: (context, state) {
           if (state is CreateVerificationCodeSuccess) {
-             
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -52,13 +52,7 @@ class _EdetPhoneState extends State<EdetPhone> {
               ),
             );
           } else if (state is VerificationFailure) {
-            
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.errMessage),
-                backgroundColor: Colors.red,
-              ),
-            );
+            AppSnackBar.error(context, state.errMessage);
           }
         },
         builder: (context, state) {
@@ -66,7 +60,7 @@ class _EdetPhoneState extends State<EdetPhone> {
             key: _formKey,
             child: SingleChildScrollView(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const IconBak(),
                   Row(
@@ -104,33 +98,31 @@ class _EdetPhoneState extends State<EdetPhone> {
                   SizedBox(height: AppSpacing.x30.h),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 12.w),
-                    child: AppCustomTextField(
-                      countryCode: "+963",
+                    child: AppPhoneField(
                       controller: phoneController,
-                      hintText: "",
-                      validator: (val) => Validators.isEmptyValue(val, context),
+                      validator: (val) =>
+                          Validators.isEmptyValue(val, context),
                     ),
                   ),
                   SizedBox(height: 250.h),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 24.w),
-                    child: state is VerificationLoading
-                        ? const Center(child: CircularProgressIndicator())
-                        : CustomButton(
-                            title: "send_verification_code",
-                            onTap: () {
-                              if (_formKey.currentState!.validate()) {
-                                // 🚀 استدعاء الـ Cubit لإرسال الكود
-                                AppLogger.debug("phone phone ${normalizePhone(phoneController.text)}");
-                                context
-                                    .read<VerificationCubit>()
-                                    .sendVerificationCode(
-                                      mobilePhone: "963${normalizePhone(phoneController.text) }",
-                                      typeOfUse: "change-mobile-phone",
-                                    );
-                              }
-                            },
-                          ),
+                    child: AppPrimaryButton(
+                      isLoading: state is VerificationLoading,
+                      labelKey: 'send_verification_code',
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          AppLogger.debug(
+                            "phone phone ${normalizePhone(phoneController.text)}",
+                          );
+                          context.read<VerificationCubit>().sendVerificationCode(
+                                mobilePhone:
+                                    "963${normalizePhone(phoneController.text)}",
+                                typeOfUse: "change-mobile-phone",
+                              );
+                        }
+                      },
+                    ),
                   ),
                 ],
               ),

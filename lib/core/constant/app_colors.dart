@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  static Color main1 = const Color(0xffFFB100);
+  static Color main1 = const Color(0xFF0D4EA3); // User link blue — dominant
   static Color main2 = Color(0xFFCECECE);
   static Color secondary1 = Color(0xFFFFFFFF);
   static Color secondary2 = Colors.black;
   static Color error = Colors.red;
-  static Color button = Color(0xFF5CAD1F);
-  static Color blue = Color(0xFF0D4EA3);
+  static Color button = Color(0xFF5CAD1F); // green CTA only
+  static const Color blue = Color(0xFF031D4E); // dark blue for headers/background
   static Color lightgrey = Color(0xFF999999);
 }
 

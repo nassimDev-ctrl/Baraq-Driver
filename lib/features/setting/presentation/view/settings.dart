@@ -13,6 +13,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../data/cubit/cubit_update_language/cubit.dart';
 import '../../data/cubit/cubit_update_language/cubit_state.dart';
+import 'package:drever_warr/core/widgets/app_snack_bar.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -66,19 +67,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return BlocListener<UpdateLanguageCubit, UpdateLanguageState>(
       listener: (context, state) {
         if (state is UpdateLanguageSuccess) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: Colors.green,
-            ),
-          );
+          AppSnackBar.success(context, state.message);
         } else if (state is UpdateLanguageFailure) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.errMessage),
-              backgroundColor: Colors.red,
-            ),
-          );
+          AppSnackBar.error(context, state.errMessage);
         }
       },
       child: Scaffold(

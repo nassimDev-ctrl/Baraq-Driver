@@ -11,6 +11,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 
 import 'notification_detail_screen.dart';
+import 'package:drever_warr/core/widgets/app_snack_bar.dart';
 
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({super.key});
@@ -105,23 +106,13 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     setState(() {
                       _items.removeWhere((e) => e.id == state.deletedId);
                     });
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          AppTranslations.getText(
-                              context, "notification_deleted"),
-                        ),
-                        backgroundColor: AppColors.main1,
-                      ),
+                    AppSnackBar.info(
+                      context,
+                      AppTranslations.getText(context, "notification_deleted"),
                     );
                   }
                   if (state is NotificationDeleteFailure) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(state.errMessage),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
+                    AppSnackBar.error(context, state.errMessage);
                   }
                 },
                 buildWhen: (prev, curr) =>

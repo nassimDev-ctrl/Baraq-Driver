@@ -1,82 +1,75 @@
+import 'package:drever_warr/core/cash/preferences_service.dart';
+import 'package:drever_warr/core/constant/app_spacing.dart';
+import 'package:drever_warr/core/service/notification_service.dart';
 import 'package:drever_warr/features/home/presentation/view/home_view.dart';
 import 'package:drever_warr/features/presentation/data/repo/cubit/cubit_login/cubit.dart';
 import 'package:drever_warr/features/presentation/data/repo/cubit/cubit_login/cubit_state.dart';
-import 'package:drever_warr/features/presentation/view/waiting_review_screen.dart';
+import 'package:drever_warr/features/presentation/view/forget_password_login.dart';
 import 'package:drever_warr/features/presentation/view/location_drever.dart';
+import 'package:drever_warr/features/presentation/view/waiting_review_screen.dart';
+import 'package:drever_warr/features/presentation/widgets/login/login_form_card.dart';
+import 'package:drever_warr/features/presentation/widgets/login/login_header.dart';
+import 'package:drever_warr/core/widgets/auth/auth_ui_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:drever_warr/core/widgets/app_snack_bar.dart';
 
-import 'package:drever_warr/core/asset/icon_asset.dart';
-import 'package:drever_warr/core/constant/app_colors.dart';
-import 'package:drever_warr/core/constant/app_spacing.dart';
-import 'package:drever_warr/core/utils/validator.dart';
-import 'package:drever_warr/core/widgets/custom_text_field_all.dart';
-import 'package:drever_warr/core/widgets/custom_button.dart';
-import 'package:drever_warr/core/widgets/custom_text.dart';
-import 'package:drever_warr/core/widgets/logo_app.dart';
-import 'package:drever_warr/features/presentation/view/forget_password_login.dart';
-
-import '../../../core/cash/preferences_service.dart';
-import '../../../core/service/notification_service.dart';
-import '../../../core/widgets/password_helper.dart';
-
-class LoginView extends StatefulWidget {
+class LoginView extends StatelessWidget {
   const LoginView({super.key});
 
-  @override
-  State<LoginView> createState() => _LoginViewState();
-}
-
-class _LoginViewState extends State<LoginView> {
   void _showError(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.red,
-      ),
-    );
+    AppSnackBar.error(context, message);
+  }
+
+  Future<void> _onLoginSuccess(
+    BuildContext context,
+    LoginSuccess state,
+  ) async {
+    final cubit = context.read<LoginCubit>();
+    await NotificationService.instance.syncToken();
+
+    final dataUser = state.data['data']['user'];
+    cubit.mobilePhoneController.clear();
+    cubit.passwordController.clear();
+
+    final profile = dataUser['profile'];
+    final status =
+        profile?['status']?.toString() ?? dataUser['status']?.toString();
+    if (status != null && status.isNotEmpty) {
+      await CacheManager.saveData(CacheManager.statusKey, status);
+    }
+
+    final authUser = profile?['authUser']?.toString() ?? '';
+    if (authUser.isNotEmpty) {
+      await CacheManager.saveData(CacheManager.authUserKey, authUser);
+    }
+
+    if (!context.mounted) return;
+
+    if (status == 'active' || status == 'change-category') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => HomeView()),
+      );
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => WaitingReviewScreen()),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
 
     return BlocConsumer<LoginCubit, LoginState>(
-      listenWhen: (previous, current) => current is LoginSuccess || current is LoginFailure,
+      listenWhen: (previous, current) =>
+          current is LoginSuccess || current is LoginFailure,
       listener: (context, state) async {
         if (state is LoginSuccess) {
-          final cubit = context.read<LoginCubit>();
-          await NotificationService.instance.syncToken();
-          dynamic dataUser = state.data['data']['user'];
-          cubit.mobilePhoneController.clear();
-          cubit.passwordController.clear();
-
-          final profile = dataUser['profile'];
-          final status = profile?['status']?.toString() ?? dataUser['status']?.toString();
-          if (status != null && status.isNotEmpty) {
-            await CacheManager.saveData(CacheManager.statusKey, status);
-          }
-
-          final authUser = profile?['authUser']?.toString() ?? '';
-          if (authUser.isNotEmpty) {
-            await CacheManager.saveData(CacheManager.authUserKey, authUser);
-          }
-
-          if (!context.mounted) return;
-
-          if (status == 'active' || status == 'change-category') {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => HomeView()),
-            );
-          } else {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => WaitingReviewScreen()),
-            );
-          }
-
-
+          await _onLoginSuccess(context, state);
         } else if (state is LoginFailure) {
           _showError(context, state.errMessage);
         }
@@ -86,102 +79,58 @@ class _LoginViewState extends State<LoginView> {
         final isLoading = state is LoginLoading;
 
         return Scaffold(
-          backgroundColor: AppColors.secondary1,
-          body: Padding(
-            padding: EdgeInsets.all(15.r),
-            child: SingleChildScrollView(
-              child: Form(
-                key: cubit.formKey,
+          resizeToAvoidBottomInset: true,
+          backgroundColor: Colors.white,
+          body: GestureDetector(
+            onTap: () => FocusScope.of(context).unfocus(),
+            behavior: HitTestBehavior.translucent,
+            child: SafeArea(
+              bottom: false,
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
+                padding: EdgeInsets.only(
+                  bottom: bottomInset + AppSpacing.lg.h,
+                ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    SizedBox(height: AppSpacing.lg.h),
-                    Center(
-                      child: Column(
-                        children: [
-                          const LogoSection(),
-                          CustomText(
-                            "login",
-                            type: AppTextType.titleSmall,
-                            color: AppColors.main1,
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: AppSpacing.xxxlg.h),
-
-                    _buildLabel("phone_number"),
-                    AppCustomTextField(
-                      countryCode: "+963",
-                      controller: cubit.mobilePhoneController,
-                      hintText: "",
-                      keyboardType: TextInputType.phone,
-                      validator: (val) => Validators.isEmptyValue(val, context),
-                    ),
-
-                    _buildLabel("password"),
-                    PasswordTextField(
-                      hintText: "",
-                      controller: cubit.passwordController,
-                      iconImage: IconAssets.eyeoff,
-                      validator: (val) =>
-                          Validators.validatePassword(val, context),
-                    ),
-
-                    GestureDetector(
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const ForgetPasswordLogin(),
-                        ),
-                      ),
+                    const LoginHeader(),
+                    Transform.translate(
+                      offset: Offset(0, -AuthUiConstants.cardOverlap.h),
                       child: Padding(
                         padding: EdgeInsets.symmetric(
-                          vertical: 10.h,
-                          horizontal: 8.w,
+                          horizontal: AppSpacing.md.w,
                         ),
-                        child: CustomText(
-                          "forgot_password_question",
-                          color: AppColors.blue,
-                          type: AppTextType.titleSmall,
+                        child: LoginFormCard(
+                          formKey: cubit.formKey,
+                          phoneController: cubit.mobilePhoneController,
+                          passwordController: cubit.passwordController,
+                          isLoading: isLoading,
+                          onLogin: () {
+                            FocusScope.of(context).unfocus();
+                            final form = cubit.formKey.currentState;
+                            if (form == null || !form.validate()) return;
+                            cubit.loginUser();
+                          },
+                          onForgotPassword: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const ForgetPasswordLogin(),
+                              ),
+                            );
+                          },
+                          onCreateAccount: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const AddLocation(),
+                              ),
+                            );
+                          },
                         ),
                       ),
-                    ),
-
-                    GestureDetector(
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const AddLocation(),
-                        ),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 10.h,
-                          horizontal: 8.w,
-                        ),
-                        child: CustomText(
-                          "create_new_account",
-                          color: AppColors.blue,
-                          type: AppTextType.titleSmall,
-                        ),
-                      ),
-                    ),
-
-                    SizedBox(height: 260.h),
-
-                    isLoading
-                        ? const Center(child: CircularProgressIndicator())
-                        : CustomButton(
-                      title: "login",
-                      onTap: () {
-                        final form = cubit.formKey.currentState;
-                        if (form == null) return;
-
-                        if (!form.validate()) return;
-
-                        cubit.loginUser();
-                      },
                     ),
                   ],
                 ),
@@ -190,13 +139,6 @@ class _LoginViewState extends State<LoginView> {
           ),
         );
       },
-    );
-  }
-
-  Widget _buildLabel(String text) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.h),
-      child: CustomText(text, type: AppTextType.titleSmall),
     );
   }
 }

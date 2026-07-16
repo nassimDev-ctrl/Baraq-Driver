@@ -34,6 +34,7 @@ import '../../../my_oreder/presentation/data/cubit/trip_details_cubit/cubit_stat
 import '../../../my_oreder/presentation/data/models/trip_response_model.dart';
 import '../../data/cubit/cubit_trip_note/cubit.dart';
 import '../../data/cubit/cubit_trip_note/cubit_state.dart';
+import 'package:drever_warr/core/widgets/app_snack_bar.dart';
 
 class LiveTripScreen extends StatefulWidget {
   final ActiveTripModel trip;
@@ -463,12 +464,7 @@ class _LiveTripScreenState extends State<LiveTripScreen>
                   ),
                 );
               } else if (state is StartTripFailure) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.errMessage),
-                    backgroundColor: Colors.red,
-                  ),
-                );
+                AppSnackBar.error(context, state.errMessage);
               }
             },
           ),

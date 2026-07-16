@@ -1,14 +1,9 @@
 import 'package:dartz/dartz.dart';
-import 'package:drever_warr/core/logging/app_logger.dart';
-
 import 'package:dio/dio.dart';
-
+import 'package:drever_warr/core/logging/app_logger.dart';
 import 'package:drever_warr/core/service/api_service.dart';
-
 import 'package:drever_warr/core/service/failure.dart';
-
 import 'package:drever_warr/features/presentation/data/repo/model/model_governorates.dart';
-
 import 'package:drever_warr/features/presentation/data/repo/repo/repo_governorates/repo.dart';
 
 class RepoGovernoratesImpl extends RepoGovernorates {
@@ -19,33 +14,41 @@ class RepoGovernoratesImpl extends RepoGovernorates {
   @override
   Future<Either<Failure, List<GovernorateModel>>> fetchGovernorates() async {
     try {
-      AppLogger.error("🚀 [GET Request] Endpoint: governorates");
+      AppLogger.debug('[GET] governorates');
 
-     
-      var response = await _apiService.get(
-        endpoint: "/cities", 
+      final response = await _apiService.get(
+        endpoint: 'governorates/',
         needToken: false,
       );
 
-      AppLogger.debug("✅ [Governorates Response]: ${response.data}");
+      final data = response.data;
+      final rawList = data['governorates'] as List?;
 
-      if (response.data["success"] == true) {
-        List<GovernorateModel> governorates = [];
-        
-     
-        var items = response.data["cities"] as List; 
-        
-        for (var item in items) {
-          governorates.add(GovernorateModel.fromJson(item));
+      if (rawList != null) {
+        final governorates = rawList
+            .whereType<Map>()
+            .map(
+              (item) => GovernorateModel.fromJson(
+                item.cast<String, dynamic>(),
+              ),
+            )
+            .where((gov) => gov.id.isNotEmpty && gov.name.isNotEmpty)
+            .toList();
+
+        if (governorates.isNotEmpty) {
+          return right(governorates);
         }
-        return right(governorates);
-      } else {
-        return left(
-          ServerFailure.fromResponse(response.statusCode ?? 400, response.data),
-        );
       }
+
+      if (data['success'] == true) {
+        return right([]);
+      }
+
+      return left(
+        ServerFailure.fromResponse(response.statusCode ?? 400, data),
+      );
     } catch (e) {
-      AppLogger.debug("❌ [Exception in Governorates Repo]: $e");
+      AppLogger.debug('[Governorates Repo Error]: $e');
       if (e is DioException) {
         return left(ServerFailure.fromDioError(e));
       }

@@ -1,28 +1,20 @@
+import 'package:drever_warr/core/constant/app_spacing.dart';
+import 'package:drever_warr/core/translate/app_translate.dart';
+import 'package:drever_warr/core/utils/normalize_number.dart';
+import 'package:drever_warr/features/presentation/data/repo/cubit/cubit_governorates/cubit.dart';
 import 'package:drever_warr/features/presentation/data/repo/cubit/cubit_regster.dart/cubit_rejester.dart';
+import 'package:drever_warr/features/presentation/data/repo/cubit/cubit_verificationRepo/cubit.dart';
+import 'package:drever_warr/features/presentation/data/repo/cubit/cubit_verificationRepo/cubite_state.dart';
+import 'package:drever_warr/features/presentation/view/verification_code_regster.dart';
+import 'package:drever_warr/features/presentation/widgets/login.dart';
+import 'package:drever_warr/features/presentation/widgets/register/governorates_picker_sheet.dart';
+import 'package:drever_warr/core/widgets/auth/auth_ui_constants.dart';
+import 'package:drever_warr/features/presentation/widgets/register/register_form.dart';
+import 'package:drever_warr/features/presentation/widgets/register/register_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-import 'package:drever_warr/core/asset/icon_asset.dart';
-import 'package:drever_warr/core/constant/app_colors.dart';
-import 'package:drever_warr/core/constant/app_spacing.dart';
-import 'package:drever_warr/core/utils/validator.dart';
-import 'package:drever_warr/core/widgets/custom_text_field_all.dart';
-import 'package:drever_warr/core/widgets/custom_button.dart';
-import 'package:drever_warr/core/widgets/custom_text.dart';
-import 'package:drever_warr/core/widgets/logo_app.dart';
-
-import 'package:drever_warr/features/presentation/data/repo/cubit/cubit_governorates/cubit.dart';
-import 'package:drever_warr/features/presentation/data/repo/cubit/cubit_governorates/cubit_state.dart';
-import 'package:drever_warr/features/presentation/data/repo/cubit/cubit_verificationRepo/cubit.dart';
-import 'package:drever_warr/features/presentation/data/repo/cubit/cubit_verificationRepo/cubite_state.dart';
-import 'package:drever_warr/features/presentation/data/repo/model/model_governorates.dart';
-import 'package:drever_warr/features/presentation/view/verification_code_regster.dart';
-import 'package:drever_warr/features/presentation/widgets/login.dart';
-import 'package:drever_warr/features/presentation/widgets/row_select_gender.dart';
-
-import '../../../core/utils/normalize_number.dart';
-import '../../../core/widgets/password_helper.dart';
+import 'package:drever_warr/core/widgets/app_snack_bar.dart';
 
 class Regsterview extends StatefulWidget {
   final String? initialAddress;
@@ -40,28 +32,53 @@ class _RegsterviewState extends State<Regsterview> {
 
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
-  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _governorateController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _emergencyController = TextEditingController();
-  final TextEditingController _gmail = TextEditingController();
-  final TextEditingController _addres = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
 
-  final GlobalKey _govKey = GlobalKey();
+  final FocusNode _firstNameFocus = FocusNode();
+  final FocusNode _lastNameFocus = FocusNode();
+  final FocusNode _phoneFocus = FocusNode();
+  final FocusNode _emailFocus = FocusNode();
+  final FocusNode _addressFocus = FocusNode();
+  final FocusNode _passwordFocus = FocusNode();
+  final FocusNode _emergencyFocus = FocusNode();
 
   String? _selectedGovernorateId;
-  String _selectedGender = "male";
+  String _selectedGender = 'male';
   bool _isSubmitting = false;
+  bool _obscurePassword = true;
 
   @override
   void initState() {
     super.initState();
     if (widget.initialAddress != null) {
-      _addres.text = widget.initialAddress!;
+      _addressController.text = widget.initialAddress!;
     }
   }
 
-
+  @override
+  void dispose() {
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _phoneController.dispose();
+    _governorateController.dispose();
+    _passwordController.dispose();
+    _emergencyController.dispose();
+    _emailController.dispose();
+    _addressController.dispose();
+    _firstNameFocus.dispose();
+    _lastNameFocus.dispose();
+    _phoneFocus.dispose();
+    _emailFocus.dispose();
+    _addressFocus.dispose();
+    _passwordFocus.dispose();
+    _emergencyFocus.dispose();
+    super.dispose();
+  }
 
   Future<void> _handleSubmit() async {
     if (_isSubmitting) return;
@@ -70,25 +87,23 @@ class _RegsterviewState extends State<Regsterview> {
     if (formState == null) return;
 
     FocusScope.of(context).unfocus();
-
     if (!formState.validate()) return;
 
     if (_selectedGovernorateId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("يرجى اختيار المحافظة")),
+      AppSnackBar.error(
+        context,
+        AppTranslations.getText(context, 'please_select_governorate'),
       );
       return;
     }
 
-    setState(() {
-      _isSubmitting = true;
-    });
+    setState(() => _isSubmitting = true);
 
-    final formattedPhone = normalizePhone(phoneController.text);
+    final formattedPhone = normalizePhone(_phoneController.text);
     final formattedEmergency = normalizePhone(_emergencyController.text);
 
     context.read<RegisterCubit>().setUserData(
-      addres: _addres.text.trim(),
+      addres: _addressController.text.trim(),
       firstName: _firstNameController.text.trim(),
       lastName: _lastNameController.text.trim(),
       mobilePhone: formattedPhone,
@@ -101,13 +116,45 @@ class _RegsterviewState extends State<Regsterview> {
     );
 
     context.read<VerificationCubit>().sendVerificationCode(
-      mobilePhone: "963$formattedPhone",
-      typeOfUse: "activate-account",
+      mobilePhone: '963$formattedPhone',
+      typeOfUse: 'activate-account',
+    );
+  }
+
+  void _openGovernoratesSheet() {
+    FocusScope.of(context).unfocus();
+    context.read<GovernoratesCubit>().getGovernorates();
+
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+      ),
+      builder: (_) => GovernoratesPickerSheet(
+        selectedName: _governorateController.text,
+        onSelected: (gov) {
+          setState(() {
+            _governorateController.text = gov.name;
+            _selectedGovernorateId = gov.id;
+          });
+        },
+      ),
+    );
+  }
+
+  void _goToLogin() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const LoginView()),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
+
     return MultiBlocListener(
       listeners: [
         BlocListener<VerificationCubit, VerificationState>(
@@ -115,284 +162,92 @@ class _RegsterviewState extends State<Regsterview> {
             if (!mounted) return;
 
             if (state is CreateVerificationCodeSuccess) {
-              final rawPhone = phoneController.text.trim();
+              final rawPhone = _phoneController.text.trim();
               final formattedPhone =
-              rawPhone.startsWith('0') ? rawPhone.substring(1) : rawPhone;
+                  rawPhone.startsWith('0') ? rawPhone.substring(1) : rawPhone;
 
-              setState(() {
-                _isSubmitting = false;
-              });
+              setState(() => _isSubmitting = false);
 
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) =>
-                      VerificationCodeRegster(phone: formattedPhone),
+                  builder: (_) => VerificationCodeRegster(phone: formattedPhone),
                 ),
               );
-
             } else if (state is VerificationFailure) {
-              setState(() {
-                _isSubmitting = false;
-              });
-
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.errMessage),
-                  backgroundColor: Colors.red,
-                ),
-              );
+              setState(() => _isSubmitting = false);
+              AppSnackBar.error(context, state.errMessage);
             }
           },
         ),
       ],
       child: Scaffold(
-        backgroundColor: AppColors.secondary1,
-        body: SafeArea(
-          child: Column(
-            children: [
-              SizedBox(height: AppSpacing.lg.h),
-              const LogoSection(),
-              CustomText(
-                "Register",
-                type: AppTextType.titleSmall,
-                color: AppColors.main1,
-              ),
-              SizedBox(height: AppSpacing.md.h),
-              Expanded(
-                child: SingleChildScrollView(
+        resizeToAvoidBottomInset: true,
+        backgroundColor: Colors.white,
+        body: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          behavior: HitTestBehavior.translucent,
+          child: SafeArea(
+            bottom: false,
+            child: BlocBuilder<VerificationCubit, VerificationState>(
+              builder: (context, state) {
+                final isLoading =
+                    state is VerificationLoading || _isSubmitting;
+
+                return SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
-                  padding: EdgeInsets.symmetric(horizontal: 16.w),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        _buildLabel("first_name"),
-                        AppCustomTextField(
-                          controller: _firstNameController,
-                          hintText: "",
-                          validator: (val) =>
-                              Validators.isEmptyValue(val, context),
-                        ),
-
-                        _buildLabel("last_name"),
-                        AppCustomTextField(
-                          controller: _lastNameController,
-                          hintText: "",
-                          validator: (val) =>
-                              Validators.isEmptyValue(val, context),
-                        ),
-
-                        _buildLabel("phone_number"),
-                        AppCustomTextField(
-                          countryCode: "+963",
-                          controller: phoneController,
-                          hintText: "",
-                          keyboardType: TextInputType.phone,
-                          validator: (val) =>
-                              Validators.validatePhone(val, context),
-                        ),
-
-                        _buildLabel("enter_email"),
-                        AppCustomTextField(
-                          controller: _gmail,
-                          hintText: "",
-                          validator: (val) =>
-                              Validators.validateEmail(val, context),
-                        ),
-
-                        _buildLabel("select_governorate"),
-                        _buildGovernoratePicker(),
-
-                        _buildLabel("enter_address"),
-                        AppCustomTextField(
-                          controller: _addres,
-                          hintText: "",
-                          validator: (val) =>
-                              Validators.isEmptyValue(val, context),
-                        ),
-
-                        _buildLabel("password"),
-                        PasswordTextField(
-                          hintText: "",
-                          controller: _passwordController,
-                          iconImage: IconAssets.eyeoff,
-                          validator: (val) =>
-                              Validators.validatePassword(val, context),
-                        ),
-                        _buildLabel("emergency_number"),
-                        AppCustomTextField(
-                          iconImage: IconAssets.emergemcy,
-                          controller: _emergencyController,
-                          hintText: "",
-                          keyboardType: TextInputType.phone,
-                          validator: (val) =>
-                              Validators.validatePhone(val, context),
-                        ),
-
-                        SizedBox(height: AppSpacing.lg.h),
-                        Selectgender(
-                          onGenderSelected: (gender) {
-                            setState(() {
-                              _selectedGender = gender;
-                            });
-                          },
-                        ),
-                        SizedBox(height: AppSpacing.x30.h),
-
-                        _buildLoginButton(context),
-
-                        SizedBox(height: AppSpacing.lg.h),
-
-                        BlocBuilder<VerificationCubit, VerificationState>(
-                          builder: (context, state) {
-                            final isLoading =
-                                state is VerificationLoading || _isSubmitting;
-
-                            return IgnorePointer(
-                              ignoring: isLoading,
-                              child: Opacity(
-                                opacity: isLoading ? 0.75 : 1,
-                                child: CustomButton(
-                                  title: "next",
-                                  onTap: _handleSubmit,
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-
-                        SizedBox(height: 30.h),
-                      ],
-                    ),
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  padding: EdgeInsets.only(
+                    bottom: bottomInset + AppSpacing.lg.h,
                   ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildGovernoratePicker() {
-    return GestureDetector(
-      onTap: () async {
-        if (_isSubmitting) return;
-
-        final cubit = context.read<GovernoratesCubit>();
-
-        if (cubit.state is! GovernoratesSuccess) {
-          await cubit.getGovernorates();
-        }
-
-        if (!mounted) return;
-        if (cubit.state is! GovernoratesSuccess) return;
-
-        final state = cubit.state as GovernoratesSuccess;
-
-        final keyContext = _govKey.currentContext;
-        if (keyContext == null || !keyContext.mounted) return;
-
-        final renderObject = keyContext.findRenderObject();
-        if (renderObject is! RenderBox) return;
-
-        if (!mounted) return;
-        final overlayObject = Overlay.of(context).context.findRenderObject();
-        if (overlayObject is! RenderBox) return;
-        final overlay = overlayObject;
-
-        final Offset fieldOffset = renderObject.localToGlobal(
-          Offset.zero,
-          ancestor: overlay,
-        );
-
-        final bool isRtl = Directionality.of(context) == TextDirection.rtl;
-        final double anchorWidth = 44.w;
-
-        final double left = isRtl
-            ? fieldOffset.dx + renderObject.size.width - anchorWidth
-            : fieldOffset.dx;
-
-        final double top = fieldOffset.dy + renderObject.size.height + 4.h;
-        final double right = overlay.size.width - (left + anchorWidth);
-
-        final selected = await showMenu<GovernorateModel>(
-          context: context,
-          position: RelativeRect.fromLTRB(left, top, right, 0),
-          color: Colors.white,
-          elevation: 10,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12.r),
-          ),
-          menuPadding: EdgeInsets.zero,
-          constraints: BoxConstraints(
-            minWidth: renderObject.size.width,
-            maxHeight: 180.h,
-          ),
-          items: state.governorates.map((gov) {
-            return PopupMenuItem<GovernorateModel>(
-              value: gov,
-              padding: EdgeInsets.zero,
-              child: Container(
-                width: double.infinity,
-                padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
-                alignment: isRtl ? Alignment.centerRight : Alignment.centerLeft,
-                child: Text(
-                  gov.name,
-                  textAlign: isRtl ? TextAlign.right : TextAlign.left,
-                ),
-              ),
-            );
-          }).toList(),
-        );
-
-        if (!mounted) return;
-        if (selected != null) {
-          setState(() {
-            _governorateController.text = selected.name;
-            _selectedGovernorateId = selected.id;
-          });
-        }
-      },
-      child: AbsorbPointer(
-        child: AppCustomTextField(
-          key: _govKey,
-          iconImage: IconAssets.drowpdawn,
-          controller: _governorateController,
-          hintText: "",
-          validator: (val) => Validators.isEmptyValue(val, context),
-        ),
-      ),
-    );
-  }
-  Widget _buildLabel(String text) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 10.w),
-      child: CustomText(text, type: AppTextType.titleSmall),
-    );
-  }
-
-  Widget _buildLoginButton(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 45.w),
-      child: GestureDetector(
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const LoginView()),
-        ),
-        child: Container(
-          padding: EdgeInsets.symmetric(vertical: 4.h),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8.r),
-            border: Border.all(color: AppColors.main1),
-          ),
-          child: Center(
-            child: CustomText(
-              "login",
-              type: AppTextType.titleMedium,
-              color: TextColors.textPrimary,
+                  child: Column(
+                    children: [
+                      const RegisterHeader(),
+                      Transform.translate(
+                        offset: Offset(0, -AuthUiConstants.cardOverlap.h),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: AppSpacing.md.w,
+                          ),
+                          child: RegisterForm(
+                            formKey: _formKey,
+                            firstNameController: _firstNameController,
+                            lastNameController: _lastNameController,
+                            phoneController: _phoneController,
+                            emailController: _emailController,
+                            governorateController: _governorateController,
+                            addressController: _addressController,
+                            passwordController: _passwordController,
+                            emergencyController: _emergencyController,
+                            firstNameFocus: _firstNameFocus,
+                            lastNameFocus: _lastNameFocus,
+                            phoneFocus: _phoneFocus,
+                            emailFocus: _emailFocus,
+                            addressFocus: _addressFocus,
+                            passwordFocus: _passwordFocus,
+                            emergencyFocus: _emergencyFocus,
+                            obscurePassword: _obscurePassword,
+                            selectedGender: _selectedGender,
+                            isLoading: isLoading,
+                            onTogglePassword: () {
+                              setState(
+                                () => _obscurePassword = !_obscurePassword,
+                              );
+                            },
+                            onGenderSelected: (gender) {
+                              setState(() => _selectedGender = gender);
+                            },
+                            onGovernorateTap: _openGovernoratesSheet,
+                            onSubmit: _handleSubmit,
+                            onLoginTap: _goToLogin,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
           ),
         ),
@@ -400,4 +255,3 @@ class _RegsterviewState extends State<Regsterview> {
     );
   }
 }
-

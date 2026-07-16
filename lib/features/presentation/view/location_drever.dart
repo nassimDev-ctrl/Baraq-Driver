@@ -1,20 +1,19 @@
 import 'dart:async';
 
-import 'package:drever_warr/core/asset/icon_asset.dart';
-import 'package:drever_warr/core/constant/app_colors.dart';
-import 'package:drever_warr/core/constant/app_spacing.dart';
-import 'package:drever_warr/core/widgets/custom_text_field_search.dart';
+import 'package:dio/dio.dart';
+import 'package:drever_warr/core/models/place_search_result.dart';
+import 'package:drever_warr/features/presentation/widgets/location_pick/location_pick_animations.dart';
+import 'package:drever_warr/features/presentation/widgets/location_pick/location_pick_constants.dart';
+import 'package:drever_warr/features/presentation/widgets/location_pick/location_pick_loading_view.dart';
+import 'package:drever_warr/features/presentation/widgets/location_pick/location_pick_map_layer.dart';
+import 'package:drever_warr/features/presentation/widgets/location_pick/location_pick_overlay_layer.dart';
+import 'package:drever_warr/features/presentation/widgets/location_pick/models/location_pick_ui_state.dart';
+import 'package:drever_warr/features/presentation/widgets/location_pick/services/location_geocoding_service.dart';
 import 'package:drever_warr/features/presentation/widgets/login.dart';
 import 'package:drever_warr/features/presentation/widgets/regster.dart';
-import 'package:drever_warr/features/presentation/widgets/row_search.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
-
-import '../../../core/translate/app_translate.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class AddLocation extends StatefulWidget {
   const AddLocation({super.key});
@@ -23,64 +22,56 @@ class AddLocation extends StatefulWidget {
   State<AddLocation> createState() => _AddLocationState();
 }
 
-class _AddLocationState extends State<AddLocation> {
-  GoogleMapController? mapController;
-  final TextEditingController searchController = TextEditingController();
+class _AddLocationState extends State<AddLocation> with TickerProviderStateMixin {
+  final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
+  final LocationGeocodingService _geocodingService = LocationGeocodingService();
 
-  final Dio _dio = Dio();
-  Timer? _debounce;
-  CancelToken? _autocompleteCancelToken;
+  GoogleMapController? _mapController;
+  Timer? _searchDebounce;
+  late final LocationPickAnimations _animations;
 
-  LatLng _currentCameraPosition = const LatLng(37.0500, 41.2200);
-  LatLng? _lastReverseGeocodedPosition;
-
-  List<dynamic> _predictions = [];
-  final String apiKey = "AIzaSyC7HVNoQEjaMe07kLwpKAO7k_ZbDpZTpI4";
-
-  String _currentFullAddress = "";
-  bool _isDefaultAddress = true;
-  double? _lat;
-  double? _lng;
-
-  bool _isLoadingLocation = true;
-  bool _isResolvingAddress = false;
-
+  LocationPickUiState _state = const LocationPickUiState();
+  LatLng _liveCameraPosition = LocationPickConstants.defaultCameraPosition;
 
   @override
   void initState() {
     super.initState();
+    _animations = LocationPickAnimations(vsync: this)..playEntrance();
     _loadCurrentLocationFirst();
   }
 
   @override
   void dispose() {
-    _debounce?.cancel();
-    _autocompleteCancelToken?.cancel();
-    searchController.dispose();
-    mapController?.dispose();
+    _searchDebounce?.cancel();
+    _geocodingService.cancelAutocomplete();
+    _animations.dispose();
+    _searchFocusNode.dispose();
+    _searchController.dispose();
+    _mapController?.dispose();
     super.dispose();
+  }
+
+  void _updateState(LocationPickUiState Function(LocationPickUiState) updater) {
+    if (!mounted) return;
+    setState(() => _state = updater(_state));
   }
 
   Future<void> _loadCurrentLocationFirst() async {
     try {
-      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        if (mounted) {
-          setState(() => _isLoadingLocation = false);
-        }
+      if (!await Geolocator.isLocationServiceEnabled()) {
+        _updateState((s) => s.copyWith(isLoadingLocation: false));
         return;
       }
 
-      LocationPermission permission = await Geolocator.checkPermission();
+      var permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
       }
 
       if (permission == LocationPermission.denied ||
           permission == LocationPermission.deniedForever) {
-        if (mounted) {
-          setState(() => _isLoadingLocation = false);
-        }
+        _updateState((s) => s.copyWith(isLoadingLocation: false));
         return;
       }
 
@@ -94,169 +85,187 @@ class _AddLocationState extends State<AddLocation> {
 
       if (!mounted) return;
 
-      setState(() {
-        _currentCameraPosition = current;
-        _lat = position.latitude;
-        _lng = position.longitude;
-        _isLoadingLocation = false;
-      });
-
-      await _getAddressFromLatLng(current);
-
-      await mapController?.animateCamera(
-        CameraUpdate.newLatLngZoom(current, 16),
+      _updateState(
+        (s) => s.copyWith(
+          cameraPosition: current,
+          latitude: position.latitude,
+          longitude: position.longitude,
+          gpsAccuracyMeters: position.accuracy,
+          isLoadingLocation: false,
+        ),
       );
+      _liveCameraPosition = current;
+
+      await _resolveAddressFor(current);
+      await _animateTo(current);
+      _animations.playMarkerBounce();
     } catch (e) {
-      debugPrint("Current Location Error: $e");
-      if (mounted) {
-        setState(() => _isLoadingLocation = false);
-      }
+      debugPrint('Current Location Error: $e');
+      _updateState((s) => s.copyWith(isLoadingLocation: false));
     }
   }
 
-  bool _isSameLocation(LatLng a, LatLng b) {
-    return a.latitude == b.latitude && a.longitude == b.longitude;
-  }
+  Future<void> _resolveAddressFor(LatLng position) async {
+    if (_state.isResolvingAddress) return;
 
-  Future<void> _getAddressFromLatLng(LatLng position) async {
-    if (_isResolvingAddress) return;
+    final last = _state.lastReverseGeocodedPosition;
+    if (last != null && _isSameLocation(last, position)) return;
 
-    if (_lastReverseGeocodedPosition != null &&
-        _isSameLocation(_lastReverseGeocodedPosition!, position)) {
-      return;
-    }
-
-    _isResolvingAddress = true;
+    _updateState((s) => s.copyWith(isResolvingAddress: true));
 
     try {
-      final response = await _dio.get(
-        'https://maps.googleapis.com/maps/api/geocode/json',
-        queryParameters: {
-          'latlng': '${position.latitude},${position.longitude}',
-          'key': apiKey,
-          'language': 'ar',
-        },
+      final address = await _geocodingService.reverseGeocode(position);
+      if (!mounted || address == null) return;
+
+      _updateState(
+        (s) => s.copyWith(
+          fullAddress: address,
+          isDefaultAddress: false,
+          latitude: position.latitude,
+          longitude: position.longitude,
+          lastReverseGeocodedPosition: position,
+          isResolvingAddress: false,
+        ),
       );
-
-      if (!mounted) return;
-
-      if (response.statusCode == 200 && response.data['status'] == 'OK') {
-        final results = response.data['results'] as List<dynamic>;
-        if (results.isNotEmpty) {
-          setState(() {
-            _currentFullAddress = results[0]['formatted_address'];
-            _isDefaultAddress = false;
-            _lat = position.latitude;
-            _lng = position.longitude;
-            _lastReverseGeocodedPosition = position;
-          });
-        }
-      }
     } catch (e) {
-      debugPrint("Geocoding Error: $e");
-    } finally {
-      _isResolvingAddress = false;
+      debugPrint('Geocoding Error: $e');
+      _updateState((s) => s.copyWith(isResolvingAddress: false));
     }
   }
 
   void _onSearchChanged(String input) {
-    _debounce?.cancel();
-
-    _debounce = Timer(const Duration(milliseconds: 350), () {
-      _getAutocompleteSuggestions(input);
-    });
+    _searchDebounce?.cancel();
+    _searchDebounce = Timer(
+      const Duration(milliseconds: LocationPickConstants.searchDebounceMs),
+      () => _fetchAutocomplete(input),
+    );
   }
 
-  Future<void> _getAutocompleteSuggestions(String input) async {
-    if (input.trim().isEmpty) {
-      if (mounted) {
-        setState(() => _predictions = []);
-      }
-      return;
-    }
-
-    _autocompleteCancelToken?.cancel();
-    _autocompleteCancelToken = CancelToken();
-
+  Future<void> _fetchAutocomplete(String input) async {
     try {
-      final response = await _dio.get(
-        'https://maps.googleapis.com/maps/api/place/autocomplete/json',
-        queryParameters: {
-          'input': input.trim(),
-          'key': apiKey,
-          'language': 'ar',
-          'types': 'geocode',
-        },
-        cancelToken: _autocompleteCancelToken,
-      );
-
+      final predictions = await _geocodingService.autocomplete(input);
       if (!mounted) return;
-
-      if (response.statusCode == 200 && response.data['status'] == 'OK') {
-        setState(() => _predictions = response.data['predictions'] ?? []);
-      } else {
-        setState(() => _predictions = []);
-      }
+      _updateState((s) => s.copyWith(predictions: predictions));
+    } on DioException catch (e) {
+      if (CancelToken.isCancel(e)) return;
+      debugPrint('Autocomplete Error: $e');
     } catch (e) {
-      if (e is DioException && CancelToken.isCancel(e)) return;
-      debugPrint("Autocomplete Error: $e");
+      debugPrint('Autocomplete Error: $e');
     }
   }
 
   Future<void> _searchAndNavigate([String? customAddress]) async {
-    final address = (customAddress ?? searchController.text).trim();
+    final address = (customAddress ?? _searchController.text).trim();
     if (address.isEmpty) return;
 
     FocusScope.of(context).unfocus();
 
     try {
-      final response = await _dio.get(
-        'https://maps.googleapis.com/maps/api/geocode/json',
-        queryParameters: {
-          'address': address,
-          'key': apiKey,
-          'language': 'ar',
-        },
+      final result = await _geocodingService.geocodeAddress(address);
+      if (!mounted || result == null) return;
+
+      await _animateTo(result.position);
+
+      _updateState(
+        (s) => s.copyWith(
+          cameraPosition: result.position,
+          predictions: const [],
+          fullAddress: result.address,
+          isDefaultAddress: false,
+          latitude: result.position.latitude,
+          longitude: result.position.longitude,
+          lastReverseGeocodedPosition: result.position,
+        ),
       );
-
-      if (!mounted) return;
-
-      if (response.statusCode == 200 && response.data['status'] == 'OK') {
-        final location = response.data['results'][0]['geometry']['location'];
-        final target = LatLng(location['lat'], location['lng']);
-
-        await mapController?.animateCamera(
-          CameraUpdate.newLatLngZoom(target, 16),
-        );
-
-        setState(() {
-          _currentCameraPosition = target;
-          _predictions = [];
-          searchController.clear();
-          _currentFullAddress = response.data['results'][0]['formatted_address'];
-          _lat = target.latitude;
-          _lng = target.longitude;
-          _lastReverseGeocodedPosition = target;
-        });
-      }
+      _liveCameraPosition = result.position;
+      _searchController.clear();
+      _animations.playMarkerBounce();
     } catch (e) {
-      debugPrint("Search Error: $e");
+      debugPrint('Search Error: $e');
     }
   }
 
-  void _onMapTap(LatLng tappedPoint) {
-    setState(() {
-      _currentCameraPosition = tappedPoint;
-      _predictions = [];
-    });
+  Future<void> _onPredictionTap(PlaceSearchResult place) async {
+    FocusScope.of(context).unfocus();
 
-    mapController?.animateCamera(CameraUpdate.newLatLng(tappedPoint));
-    _getAddressFromLatLng(tappedPoint);
+    final position = LatLng(place.latitude, place.longitude);
+    await _animateTo(position);
+
+    _updateState(
+      (s) => s.copyWith(
+        cameraPosition: position,
+        predictions: const [],
+        fullAddress: place.displayName,
+        isDefaultAddress: false,
+        latitude: place.latitude,
+        longitude: place.longitude,
+        lastReverseGeocodedPosition: position,
+      ),
+    );
+    _liveCameraPosition = position;
+    _searchController.clear();
+    _animations.playMarkerBounce();
+  }
+
+  void _onMapTap(LatLng tappedPoint) {
+    _liveCameraPosition = tappedPoint;
+    _updateState(
+      (s) => s.copyWith(
+        cameraPosition: tappedPoint,
+        predictions: const [],
+      ),
+    );
+    _mapController?.animateCamera(CameraUpdate.newLatLng(tappedPoint));
+    _resolveAddressFor(tappedPoint);
     FocusScope.of(context).unfocus();
   }
 
-  void _onMapCameraIdle() {
-    _getAddressFromLatLng(_currentCameraPosition);
+  void _onCameraIdle() {
+    _resolveAddressFor(_liveCameraPosition);
+    _animations.playMarkerBounce();
+  }
+
+  Future<void> _animateTo(LatLng target) {
+    return _mapController?.animateCamera(
+          CameraUpdate.newLatLngZoom(
+            target,
+            LocationPickConstants.mapZoom,
+          ),
+        ) ??
+        Future.value();
+  }
+
+  void _onMapCreated(GoogleMapController controller) {
+    _mapController = controller;
+    _animateTo(_state.cameraPosition);
+  }
+
+  void _onConfirmLocation() {
+    final lat = _state.latitude;
+    final lng = _state.longitude;
+    if (lat == null || lng == null) return;
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Regsterview(
+          initialAddress: _state.fullAddress,
+          lat: lat,
+          lng: lng,
+        ),
+      ),
+    );
+  }
+
+  void _onBack() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginView()),
+    );
+  }
+
+  bool _isSameLocation(LatLng a, LatLng b) {
+    return a.latitude == b.latitude && a.longitude == b.longitude;
   }
 
   @override
@@ -265,214 +274,32 @@ class _AddLocationState extends State<AddLocation> {
       resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
-          if (!_isLoadingLocation)
-            GoogleMap(
-              initialCameraPosition: CameraPosition(
-                target: _currentCameraPosition,
-                zoom: 14,
-              ),
-              onMapCreated: (controller) {
-                mapController = controller;
-                mapController?.animateCamera(
-                  CameraUpdate.newLatLngZoom(_currentCameraPosition, 16),
-                );
-              },
-              myLocationEnabled: true,
-              myLocationButtonEnabled: false,
-              zoomControlsEnabled: false,
+          if (_state.isMapReady)
+            LocationPickMapLayer(
+              state: _state,
+              onMapCreated: _onMapCreated,
               onTap: _onMapTap,
               onCameraMove: (position) {
-                _currentCameraPosition = position.target;
+                _liveCameraPosition = position.target;
               },
-              onCameraIdle: _onMapCameraIdle,
+              onCameraIdle: _onCameraIdle,
             )
           else
-            Container(
-              color: Colors.white,
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CircularProgressIndicator(color: AppColors.main1),
-                    SizedBox(height: 16.h),
-                    Text(
-                      AppTranslations.getText(context, "detecting_location"),
-                      style: TextStyle(
-                        fontSize: 15.sp,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          Column(
-            children: [
-              SizedBox(height: 45.h),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10.w),
-                  child: GestureDetector(
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 16.w, top: 60.h, right: 16.w),
-                        child: Row(
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => LoginView(),
-                                  ),
-                                );
-                                },
-                              child: SvgPicture.asset(
-                                IconAssets.close,
-                                colorFilter: ColorFilter.mode(
-                                  AppColors.secondary2,
-                                  BlendMode.srcIn,
-                                ),
-                                matchTextDirection: true, //
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                  ),
-                ),
-              ),
-              SizedBox(height: AppSpacing.x45.h),
-              Container(
-                height: 70.h,
-                margin: EdgeInsets.symmetric(horizontal: 20.w),
-                padding: EdgeInsets.symmetric(horizontal: 12.w),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12.r),
-                  border: Border.all(
-                    color: AppColors.main1.withValues(alpha: 0.5),
-                    width: 1.2,
-                  ),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 10,
-                      offset: Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: CustomTextFieldsearch(
-                        hintText: _isDefaultAddress
-                            ? AppTranslations.getText(context, "search_location_hint")
-                            : _currentFullAddress,
-                        controller: searchController,
-                        onChanged: _onSearchChanged,
-                        onSubmitted: (_) => _searchAndNavigate(),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () => _searchAndNavigate(),
-                      child: SvgPicture.asset(
-                        IconAssets.locationsearch,
-                        colorFilter: ColorFilter.mode(
-                          AppColors.main1,
-                          BlendMode.srcIn,
-                        ),
-                        height: 24.h,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              if (_predictions.isNotEmpty)
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 25.w, vertical: 5.h),
-                  constraints: BoxConstraints(maxHeight: 250.h),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12.r),
-                    boxShadow: const [
-                      BoxShadow(color: Colors.black12, blurRadius: 10),
-                    ],
-                  ),
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    padding: EdgeInsets.zero,
-                    itemCount: _predictions.length,
-                    itemBuilder: (context, index) => ListTile(
-                      leading: Icon(
-                        Icons.location_on,
-                        color: AppColors.main1,
-                        size: 20.sp,
-                      ),
-                      title: Text(
-                        _predictions[index]['description'],
-                        style: TextStyle(fontSize: 13.sp),
-                      ),
-                      onTap: () => _searchAndNavigate(
-                        _predictions[index]['description'],
-                      ),
-                    ),
-                  ),
-                ),
-              const RowSearch(),
-            ],
-          ),
-          if (!_isLoadingLocation)
-            IgnorePointer(
-              child: Center(
-                child: Padding(
-                  padding: EdgeInsets.only(bottom: 35.h),
-                  child: Icon(
-                    Icons.location_on,
-                    size: 48.sp,
-                    color: AppColors.main1,
-                  ),
-                ),
-              ),
-            ),
-          Positioned(
-            bottom: 30.h,
-            left: 50.w,
-            right: 50.w,
-            child: ElevatedButton(
-              onPressed: _isLoadingLocation
-                  ? null
-                  : () {
-                if (_lat == null || _lng == null) return;
-
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => Regsterview(
-                      initialAddress: _currentFullAddress,
-                      lat: _lat!,
-                      lng: _lng!,
-                    ),
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.main1,
-                minimumSize: Size(double.infinity, 55.h),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.r),
-                ),
-                elevation: 5,
-              ),
-              child: Text(
-                AppTranslations.getText(context, "confirm_location_continue"),
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16.sp,
-                ),
-              ),
-            ),
+            const LocationPickLoadingView(),
+          LocationPickOverlayLayer(
+            state: _state,
+            animations: _animations,
+            searchController: _searchController,
+            searchFocusNode: _searchFocusNode,
+            onBack: _onBack,
+            onGpsTap: _loadCurrentLocationFirst,
+            onSearchChanged: _onSearchChanged,
+            onSearchSubmitted: _searchAndNavigate,
+            onSearchTap: () => _searchAndNavigate(),
+            onUseCurrentLocationTap: _loadCurrentLocationFirst,
+            onPredictionTap: _onPredictionTap,
+            onEditLocationTap: () => _searchFocusNode.requestFocus(),
+            onConfirmTap: _onConfirmLocation,
           ),
         ],
       ),

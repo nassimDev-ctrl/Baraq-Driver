@@ -21,15 +21,15 @@ class ColumnImageNamePhoneProfaildriver extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const String baseUrl = ApiConstants.mediaBaseUrl;
+    final resolvedUrl = ApiConstants.resolveMediaUrl(imagePath);
 
     return Column(
       children: [
        
         ClipOval(
-          child: (imagePath != null && imagePath!.isNotEmpty)
+          child: resolvedUrl != null
               ? Image.network(
-                  imagePath!.startsWith('http') ? imagePath! : "$baseUrl$imagePath",
+                  resolvedUrl,
                   height: 121.h,
                   width: 121.w,
                   fit: BoxFit.cover,

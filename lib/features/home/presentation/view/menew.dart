@@ -25,6 +25,7 @@ import '../../../../core/cash/preferences_service.dart';
 import '../../../../core/service/notification_service.dart';
 import 'notification_screen.dart';
 import '../../../../core/translate/app_translate.dart';
+import '../../../../core/widgets/app_snack_bar.dart';
 import '../data/cubit/logout_cubit/cubit.dart';
 import '../data/cubit/logout_cubit/cubit_state.dart';
 
@@ -119,14 +120,11 @@ class MenueView extends StatelessWidget {
                             );
 
                             if (!ok && context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    AppTranslations.getText(
-                                      context,
-                                      "could_not_open_website",
-                                    ),
-                                  ),
+                              AppSnackBar.error(
+                                context,
+                                AppTranslations.getText(
+                                  context,
+                                  "could_not_open_website",
                                 ),
                               );
                             }
@@ -423,7 +421,7 @@ class MenueView extends StatelessWidget {
   }
 
   Widget _profileAvatar(String? imagePath) {
-    const String baseUrl = ApiConstants.mediaBaseUrl;
+    final resolvedUrl = ApiConstants.resolveMediaUrl(imagePath);
 
     return Container(
       decoration: BoxDecoration(
@@ -437,11 +435,9 @@ class MenueView extends StatelessWidget {
         radius: 30.r,
         backgroundColor: Colors.grey[200],
         child: ClipOval(
-          child: (imagePath != null && imagePath.isNotEmpty)
+          child: resolvedUrl != null
               ? Image.network(
-                  imagePath.startsWith('http')
-                      ? imagePath
-                      : "$baseUrl$imagePath",
+                  resolvedUrl,
                   width: 60.r,
                   height: 60.r,
                   fit: BoxFit.cover,
