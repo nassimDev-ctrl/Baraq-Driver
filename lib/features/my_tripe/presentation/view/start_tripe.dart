@@ -535,7 +535,7 @@ class _LiveTripScreenState extends State<LiveTripScreen>
                         ),
                         decoration: BoxDecoration(
                           color: _isStartUnlocked
-                              ? const Color(0xFF9C4DB9)
+                              ? AppColors.main1
                               : Colors.grey,
                           borderRadius: BorderRadius.circular(8.r),
                         ),
@@ -644,7 +644,7 @@ class _LiveTripScreenState extends State<LiveTripScreen>
                     opacity: _tripDetails == null ? 0.5 : 1,
                     child: _buildCircleIcon(
                       IconAssets.masseage,
-                      const Color(0xFF9C4DB9),
+                      AppColors.main1,
                     ),
                   ),
                 ),
@@ -695,7 +695,7 @@ class _LiveTripScreenState extends State<LiveTripScreen>
               color: const Color(0xFFF8F3FB),
               borderRadius: BorderRadius.circular(16.r),
               border: Border.all(
-                color: const Color(0xFF9C4DB9).withValues(alpha: 0.15),
+                color: AppColors.main1.withValues(alpha: 0.15),
               ),
             ),
             child: Row(
@@ -703,9 +703,9 @@ class _LiveTripScreenState extends State<LiveTripScreen>
                 SizedBox(
                   width: 18.w,
                   height: 18.w,
-                  child: const CircularProgressIndicator(
+                  child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    color: Color(0xFF9C4DB9),
+                    color: AppColors.main1,
                   ),
                 ),
                 SizedBox(width: 10.w),
@@ -721,7 +721,7 @@ class _LiveTripScreenState extends State<LiveTripScreen>
                 ),
                 Icon(
                   Icons.sticky_note_2_outlined,
-                  color: const Color(0xFF9C4DB9),
+                  color: AppColors.main1,
                   size: 20.sp,
                 ),
               ],
@@ -746,7 +746,7 @@ class _LiveTripScreenState extends State<LiveTripScreen>
             color: const Color(0xFFF8F3FB),
             borderRadius: BorderRadius.circular(16.r),
             border: Border.all(
-              color: const Color(0xFF9C4DB9).withValues(alpha: 0.18),
+              color: AppColors.main1.withValues(alpha: 0.18),
             ),
           ),
           child: Row(
@@ -754,7 +754,7 @@ class _LiveTripScreenState extends State<LiveTripScreen>
             children: [
               Icon(
                 Icons.sticky_note_2_outlined,
-                color: const Color(0xFF9C4DB9),
+                color: AppColors.main1,
                 size: 22.sp,
               ),
               SizedBox(width: 10.w),
@@ -768,7 +768,7 @@ class _LiveTripScreenState extends State<LiveTripScreen>
                       style: TextStyle(
                         fontSize: 12.sp,
                         fontWeight: FontWeight.w700,
-                        color: const Color(0xFF9C4DB9),
+                        color: AppColors.main1,
                       ),
                     ),
                     SizedBox(height: 4.h),

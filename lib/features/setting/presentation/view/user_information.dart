@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:drever_warr/core/constant/api_constants.dart';
 import 'package:drever_warr/core/asset/icon_asset.dart';
 import 'package:drever_warr/core/asset/image_asset.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
@@ -537,7 +538,7 @@ class _UserInformationState extends State<UserInformation> {
     }
 
      
-    const String baseUrl = 'https://api.taxiwaar.com/';
+    const String baseUrl = ApiConstants.mediaBaseUrl;
 
     return Center(
       child: Stack(

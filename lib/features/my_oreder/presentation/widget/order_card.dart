@@ -60,7 +60,7 @@ class OrderCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   CustomText(
-                    trip.clientName ?? "عميل واري",
+                    trip.clientName ?? "عميل برق",
                     type: AppTextType.titleSmall,
                   ),
                   CustomText(

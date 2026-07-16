@@ -188,7 +188,7 @@ class _RegisterPhotoScreenState extends State<RegisterPhotoScreen> {
                                     border: Border.all(
                                       color: hasError
                                           ? Colors.red
-                                          : const Color(0xFF1595C7),
+                                          : AppColors.blue,
                                       width: 2,
                                     ),
                                     borderRadius: BorderRadius.circular(10),
@@ -292,7 +292,7 @@ class _RegisterPhotoScreenState extends State<RegisterPhotoScreen> {
                             ),
                             style: OutlinedButton.styleFrom(
                               minimumSize: Size(double.infinity, 50.h),
-                              side: const BorderSide(color: Color(0xFF9C4DB9)),
+                              side: BorderSide(color: AppColors.main1),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),

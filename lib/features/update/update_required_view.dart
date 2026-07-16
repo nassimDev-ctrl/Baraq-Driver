@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:drever_warr/core/constant/api_constants.dart';
+import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/asset/image_asset.dart';
 import 'package:drever_warr/core/translate/app_translate.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +34,7 @@ class _UpdateRequiredViewState extends State<UpdateRequiredView> {
     try {
       final platform = Platform.isIOS ? 'ios' : 'andriod';
       final response = await Dio().get(
-        'https://api.taxiwaar.com/versions/$platform/driver',
+        '${ApiConstants.baseUrl}versions/$platform/driver',
       );
 
       if (response.statusCode == 200 && mounted) {
@@ -110,12 +112,12 @@ class _UpdateRequiredViewState extends State<UpdateRequiredView> {
             height: 72.w,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: const Color(0xFF9C46D1).withValues(alpha: 0.1),
+              color: AppColors.main1.withValues(alpha: 0.1),
             ),
             child: Icon(
               Icons.system_update_rounded,
               size: 38.sp,
-              color: const Color(0xFF9C46D1),
+              color: AppColors.main1,
             ),
           ),
 
@@ -137,7 +139,7 @@ class _UpdateRequiredViewState extends State<UpdateRequiredView> {
             Container(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
               decoration: BoxDecoration(
-                color: const Color(0xFF9C46D1).withValues(alpha: 0.08),
+                color: AppColors.main1.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(20.r),
               ),
               child: Text(
@@ -145,7 +147,7 @@ class _UpdateRequiredViewState extends State<UpdateRequiredView> {
                 style: TextStyle(
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w600,
-                  color: const Color(0xFF9C46D1),
+                  color: AppColors.main1,
                 ),
               ),
             ),
@@ -196,7 +198,7 @@ class _UpdateRequiredViewState extends State<UpdateRequiredView> {
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF9C46D1),
+                  backgroundColor: AppColors.main1,
                   foregroundColor: Colors.white,
                   padding: EdgeInsets.symmetric(vertical: 14.h),
                   shape: RoundedRectangleBorder(
@@ -222,9 +224,9 @@ class _UpdateRequiredViewState extends State<UpdateRequiredView> {
                   ),
                 ),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFF9C46D1),
-                  side: const BorderSide(
-                    color: Color(0xFF9C46D1),
+                  foregroundColor: AppColors.main1,
+                  side: BorderSide(
+                    color: AppColors.main1,
                     width: 1.5,
                   ),
                   padding: EdgeInsets.symmetric(vertical: 14.h),

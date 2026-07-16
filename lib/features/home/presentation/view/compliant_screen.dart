@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../../core/constant/app_colors.dart';
 import '../../../../core/cash/preferences_service.dart';
 import '../../../../core/translate/app_translate.dart';
 import '../data/cubit/complain_cubit/cubit.dart';
@@ -207,12 +208,12 @@ class _CommentsPageState extends State<CommentsPage> {
                 width: 46,
                 height: 46,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFA349CD).withValues(alpha: 0.12),
+                  color: AppColors.main1.withValues(alpha: 0.12),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   icon,
-                  color: const Color(0xFFA349CD),
+                  color: AppColors.main1,
                   size: 24,
                 ),
               ),
@@ -287,12 +288,12 @@ class _CommentsPageState extends State<CommentsPage> {
                   width: 52,
                   height: 52,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFA349CD).withValues(alpha: 0.12),
+                    color: AppColors.main1.withValues(alpha: 0.12),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.add_a_photo_rounded,
-                    color: Color(0xFFA349CD),
+                    color: AppColors.main1,
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -428,7 +429,7 @@ class _CommentsPageState extends State<CommentsPage> {
                     child: ElevatedButton(
                       onPressed: isSending ? null : _handleSend,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFA349CD),
+                        backgroundColor: AppColors.main1,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),

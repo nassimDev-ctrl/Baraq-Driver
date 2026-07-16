@@ -43,7 +43,7 @@ class TripModel {
       id: json['_id'] ?? '',
       clientName: json['client'] is Map 
           ? (json['client']['firstName'] ?? "عميل") 
-          : "عميل واري",
+          : "عميل برق",
       clientPhone: json['client'] is Map
           ? (json['client']['mobilePhone'] ?? "")
           : "",

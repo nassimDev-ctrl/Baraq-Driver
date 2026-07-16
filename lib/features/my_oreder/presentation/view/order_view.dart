@@ -73,7 +73,7 @@ class _OrdersScreenState extends State<OrdersScreen>
   ActiveTripModel _mapToActiveTrip(dynamic trip) {
     return ActiveTripModel(
       id: trip.id,
-      clientName: trip.clientName ?? "عميل واري",
+      clientName: trip.clientName ?? "عميل برق",
       clientPhone: trip.clientPhone ?? "",
       sourceAddress: trip.sourceAddress,
       destinationAddress: trip.destinationAddress,
@@ -91,7 +91,7 @@ class _OrdersScreenState extends State<OrdersScreen>
   ActiveTripModel _mapScheduledTripToActiveTrip(ScheduledTripModel trip) {
     return ActiveTripModel(
       id: trip.id,
-      clientName: trip.clientName ?? "عميل واري",
+      clientName: trip.clientName ?? "عميل برق",
       clientPhone: trip.clientPhone ?? "",
       sourceAddress: trip.sourceAddress,
       destinationAddress: trip.destinationAddress,

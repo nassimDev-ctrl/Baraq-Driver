@@ -241,7 +241,7 @@ class _PersonalidentityState extends State<Personalidentity> {
   }) {
     final bool hasError =
         errorMessage != null && errorMessage.trim().isNotEmpty;
-    final Color borderColor = hasError ? Colors.red : const Color(0xFF1595C7);
+    final Color borderColor = hasError ? Colors.red : AppColors.blue;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,

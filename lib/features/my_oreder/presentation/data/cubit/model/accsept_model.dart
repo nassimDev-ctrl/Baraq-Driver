@@ -45,7 +45,7 @@ class ActiveTripModel {
     final String name = _buildName(
       client['firstName']?.toString(),
       client['lastName']?.toString(),
-      fallback: 'عميل واري',
+      fallback: 'عميل برق',
     );
 
     final String phone =

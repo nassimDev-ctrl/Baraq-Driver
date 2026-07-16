@@ -1,12 +1,13 @@
 import 'dart:developer';
 
+import 'package:drever_warr/core/constant/api_constants.dart';
 import 'package:drever_warr/core/logging/app_logger.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 
 class TripSocketService {
   late io.Socket socket;
-  final String serverUrl = 'https://api.taxiwaar.com';
+  final String serverUrl = ApiConstants.baseUrl.replaceAll(RegExp(r'/$'), '');
 
   void connect(String token) {
     socket = io.io(

@@ -6,6 +6,8 @@ class AppTranslations {
   static const Map<String, Map<String, String>> _localizedValues = {
     'en': {
       "phone_number": "Phone Number",
+      "brand_name": "Barq",
+      "driver_brand_name": "Barq Driver",
       "password": "Password",
       "forgot_password_question": "Forgot Password?",
       "login": "Login",
@@ -169,7 +171,7 @@ class AppTranslations {
       "no_orders_now": "No orders available",
       "no_scheduled_orders_now": "No scheduled orders available",
       "error_loading_data": "Error while loading data",
-      "default_client_name": "Waar Client",
+      "default_client_name": "Barq Client",
       "no_phone": "No phone number",
       "currency_syp_short": "SYP",
       "distance_km": "km",
@@ -233,9 +235,9 @@ class AppTranslations {
       "invalid_url": "Invalid URL",
       "password_does_not_match": "Password does not match",
       "invalid_email" : "Invalid Email",
-      "share_app_title": "Share the Waar App",
+      "share_app_title": "Share Barq Driver",
       "share_app_description":
-      "You can share the app link with your friends, or visit our website",
+      "You can share the Barq Driver app link with your friends, or visit our website",
       "website": "Website",
       "share": "Share",
       "could_not_open_website": "Could not open website",
@@ -259,6 +261,8 @@ class AppTranslations {
 
     },
     'ar': {
+      "brand_name": "برق",
+      "driver_brand_name": "برق سائق",
       "distances": "المسافات",
     "km": "كم",
     "rating": "التقييم",
@@ -422,7 +426,7 @@ class AppTranslations {
       "no_orders_now": "لا يوجد طلبات حالياً",
       "no_scheduled_orders_now": "لا يوجد طلبات مجدولة حالياً",
       "error_loading_data": "حدث خطأ أثناء تحميل البيانات",
-      "default_client_name": "عميل واري",
+      "default_client_name": "عميل برق",
       "no_phone": "بدون رقم",
       "currency_syp_short": "ل.س",
       "distance_km": "كم",
@@ -483,9 +487,9 @@ class AppTranslations {
       "trips":"الرحلات",
       "empty_field": "يجب ملء الحقل",
       "invalid_email" : "الايميل خطأ",
-      "share_app_title": "WAAR مشاركة تطبيق",
+      "share_app_title": "مشاركة تطبيق برق سائق",
       "share_app_description":
-      "يمكنك مشاركة رابط التطبيق مع أصدقائك، أو زيارة موقعنا الإلكتروني",
+      "يمكنك مشاركة رابط تطبيق برق سائق مع أصدقائك، أو زيارة موقعنا الإلكتروني",
       "website": "الموقع",
       "share": "مشاركة",
       "could_not_open_website": "تعذر فتح الموقع الإلكتروني",
@@ -509,6 +513,8 @@ class AppTranslations {
 
     },
     'ku': {
+      "brand_name": "Barq",
+      "driver_brand_name": "Barq Driver",
       "distances": "Dûrî",
       "km": "km",
       "rating": "Nirxandin",
@@ -658,7 +664,7 @@ class AppTranslations {
       "no_orders_now": "Niha daxwaz tune ne",
       "no_scheduled_orders_now": "Daxwazên plankirî tune ne",
       "error_loading_data": "Di barkirina daneyan de çewtî çêbû",
-      "default_client_name": "Mişterî Wari",
+      "default_client_name": "Mişterî Barq",
       "no_phone": "Hejmar tune ye",
       "currency_syp_short": "S.P",
       "distance_km": "km",
@@ -719,9 +725,9 @@ class AppTranslations {
       "trips": "Rêwîtî",
       "empty_field": "Ev qada vala ye",
       "invalid_email" : "E-name nederbasdar e",
-      "share_app_title": "Parvekirina serlêdana Waar",
+      "share_app_title": "Parvekirina serlêdana Barq Driver",
       "share_app_description":
-      "Tu dikarî girêdana serlêdanê bi hevalên xwe re parve bikî, an jî serdana malpera me bikî",
+      "Tu dikarî girêdana serlêdana Barq Driver bi hevalên xwe re parve bikî, an jî serdana malpera me bikî",
       "website": "Malper",
       "share": "Parve bike",
       "could_not_open_website": "Malper nehat vekirin",

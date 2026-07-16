@@ -1,3 +1,4 @@
+import 'package:drever_warr/core/constant/api_constants.dart';
 import 'package:drever_warr/core/asset/icon_asset.dart';
 import 'package:drever_warr/core/asset/image_asset.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
@@ -42,7 +43,7 @@ class _HeaderHomeViewState extends State<HeaderHomeView> {
   }
 
   String? _resolveImageUrl(String? imagePath) {
-    const String baseUrl = 'https://api.taxiwaar.com/';
+    const String baseUrl = ApiConstants.mediaBaseUrl;
 
     if (imagePath == null || imagePath.isEmpty) return null;
     if (imagePath.startsWith('http')) return imagePath;
@@ -167,7 +168,7 @@ class _HeaderHomeViewState extends State<HeaderHomeView> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20.r),
               color: isAvailable
-                  ? const Color(0xFF1595C7)
+                  ? AppColors.blue
                   : Colors.grey.shade400,
             ),
             padding: EdgeInsets.symmetric(horizontal: 2.w),
@@ -203,7 +204,7 @@ class _HeaderHomeViewState extends State<HeaderHomeView> {
   }
 
   Widget _profileAvatar(String? imagePath) {
-    const String baseUrl = 'https://api.taxiwaar.com/';
+    const String baseUrl = ApiConstants.mediaBaseUrl;
 
     final String? resolvedUrl = (imagePath == null || imagePath.isEmpty)
         ? null

@@ -54,9 +54,9 @@ class _SelectgenderState extends State<Selectgender> {
                   ? Container(
                       width: 10.w,
                       height: 10.h,
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Color(0xFF1595C7),
+                        color: AppColors.blue,
                       ),
                     )
                   : const SizedBox.shrink(),

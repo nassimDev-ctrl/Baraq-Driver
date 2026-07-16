@@ -39,12 +39,12 @@ class UrgentOrdersCard extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(
-            color: const Color(0xFF9C4DB9).withValues(alpha: 0.5),
+            color: AppColors.main1.withValues(alpha: 0.5),
             width: 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF9C4DB9).withValues(alpha: 0.2),
+              color: AppColors.main1.withValues(alpha: 0.2),
               blurRadius: 16,
               offset: const Offset(0, 6),
             ),
@@ -166,15 +166,15 @@ class UrgentOrdersCard extends StatelessWidget {
     String textKey;
 
     if (isStart) {
-      backgroundColor = const Color(0xFF9C4DB9);
+      backgroundColor = AppColors.main1;
       textColor = Colors.white;
       textKey = "start";
     } else if (isAccepted) {
       backgroundColor = Colors.white;
-      textColor = const Color(0xFF9C4DB9);
+      textColor = AppColors.main1;
       textKey = "accepted";
     } else {
-      backgroundColor = const Color(0xFF9C4DB9);
+      backgroundColor = AppColors.main1;
       textColor = Colors.white;
       textKey = "accept";
     }
@@ -183,7 +183,7 @@ class UrgentOrdersCard extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 25.w, vertical: 8.h),
       decoration: BoxDecoration(
         color: backgroundColor,
-        border: Border.all(color: const Color(0xFF9C4DB9), width: 1.2),
+        border: Border.all(color: AppColors.main1, width: 1.2),
         borderRadius: BorderRadius.circular(4.r),
       ),
       child: AnimatedSwitcher(

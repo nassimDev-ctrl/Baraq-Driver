@@ -1,4 +1,5 @@
  
+import 'package:drever_warr/core/constant/api_constants.dart';
 import 'package:drever_warr/core/asset/image_asset.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/constant/app_spacing.dart';
@@ -20,7 +21,7 @@ class ColumnImageNamePhoneProfaildriver extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const String baseUrl = 'https://api.taxiwaar.com/';  
+    const String baseUrl = ApiConstants.mediaBaseUrl;
 
     return Column(
       children: [

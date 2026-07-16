@@ -1,3 +1,4 @@
+import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/asset/icon_asset.dart';
 import 'package:drever_warr/core/widgets/custom_text.dart';
 import 'package:drever_warr/features/my_oreder/presentation/widget/card_point_order.dart';
@@ -64,7 +65,7 @@ class TripLocationPath extends StatelessWidget {
                   SvgPicture.asset(
                     IconAssets.locationsearch,
                     colorFilter: ColorFilter.mode(
-                      endIconColor ?? const Color(0xFF9C4DB9),
+                      endIconColor ?? AppColors.main1,
                       BlendMode.srcIn,
                     ),
                     height: 20,
@@ -110,7 +111,7 @@ class TripLocationPath extends StatelessWidget {
                   SvgPicture.asset(
                     IconAssets.locationsearch,
                     colorFilter: ColorFilter.mode(
-                      endIconColor ?? const Color(0xFF9C4DB9),
+                      endIconColor ?? AppColors.main1,
                       BlendMode.srcIn,
                     ),
                     height: 20,

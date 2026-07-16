@@ -4,9 +4,10 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:drever_warr/core/cash/preferences_service.dart';
+import 'package:drever_warr/core/constant/api_constants.dart';
 
 class ApiService {
-  static const _baseURL = 'https://api.taxiwaar.com/';
+  static const _baseURL = ApiConstants.baseUrl;
   static const int sendTimeOut = 60;
   static const int reciveTimeOut = 60;
   static const int sendTimeOutFormData = 300;

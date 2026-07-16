@@ -48,10 +48,10 @@ class ScheduledTripModel {
       final first = client['firstName'] ?? '';
       final last = client['lastName'] ?? '';
       fullName = '$first $last'.trim();
-      if (fullName.isEmpty) fullName = "عميل واري";
+      if (fullName.isEmpty) fullName = "عميل برق";
       phone = client['authUser']['mobilePhone']?.toString() ?? '';
     } else {
-      fullName = "عميل واري";
+      fullName = "عميل برق";
     }
 
     // Helper to safely extract coordinates

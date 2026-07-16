@@ -399,7 +399,7 @@ class MyApp extends StatelessWidget {
             child: MaterialApp(
               navigatorKey: navigatorKey,
               debugShowCheckedModeBanner: false,
-              title: 'Warr App',
+              title: 'Barq Driver',
               locale: currentLocale,
               builder: (context, widget) {
                 return Directionality(

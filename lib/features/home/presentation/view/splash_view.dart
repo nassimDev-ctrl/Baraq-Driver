@@ -1,3 +1,4 @@
+import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/asset/image_asset.dart';
 import 'package:drever_warr/features/home/presentation/view/home_view.dart';
 import 'package:drever_warr/features/presentation/view/waiting_review_screen.dart';
@@ -105,7 +106,7 @@ class _SplashViewState extends State<SplashView> {
       width: 60.w,
       height: 4.h,
       decoration: BoxDecoration(
-        color: isActive ? const Color(0xFF9C46D1) : Colors.grey.shade300,
+        color: isActive ? AppColors.main1 : Colors.grey.shade300,
         borderRadius: BorderRadius.circular(10.r),
       ),
     );

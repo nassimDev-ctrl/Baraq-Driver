@@ -170,7 +170,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20.r),
                           color: soundEnabled
-                              ? const Color(0xFF1595C7)
+                              ? AppColors.blue
                               : Colors.grey.shade400,
                         ),
                         padding: EdgeInsets.symmetric(horizontal: 2.w),
@@ -220,7 +220,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Container(
       width: 100.w,
       decoration: BoxDecoration(
-        color: const Color(0xFFA349CD),
+        color: AppColors.main1,
         borderRadius: BorderRadius.circular(12.r),
         boxShadow: [
           BoxShadow(

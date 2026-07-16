@@ -11,6 +11,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'package:drever_warr/core/asset/icon_asset.dart';
 import 'package:drever_warr/core/asset/image_asset.dart';
+import 'package:drever_warr/core/constant/api_constants.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/features/home/presentation/widget/contact_us_dialog.dart';
 import 'package:drever_warr/features/home/presentation/view/wallt_screen.dart';
@@ -30,8 +31,8 @@ import '../data/cubit/logout_cubit/cubit_state.dart';
 class MenueView extends StatelessWidget {
   const MenueView({super.key});
 
-  static const String _appShareLink = 'https://taxiwaar.com/';
-  static const String _websiteUrl = 'https://taxiwaar.com/';
+  static const String _appShareLink = 'https://waslninow.com/';
+  static const String _websiteUrl = 'https://waslninow.com/';
   static Future<PackageInfo>? _packageInfoFuture;
 
   static Future<PackageInfo> _getPackageInfo() {
@@ -237,7 +238,7 @@ class MenueView extends StatelessWidget {
                   final data = profileState.data.data;
                   name =
                       "${data?.firstName ?? ''} ${data?.lastName ?? ''}".trim();
-                  if (name.isEmpty) name = "سائق واصلني";
+                  if (name.isEmpty) name = "سائق برق";
                   phone = data?.authUser?.mobilePhone ?? "لا يوجد رقم";
                   imagePath = data?.profileImage;
                 } else if (profileState is ProfileFailure) {
@@ -422,7 +423,7 @@ class MenueView extends StatelessWidget {
   }
 
   Widget _profileAvatar(String? imagePath) {
-    const String baseUrl = 'https://api.taxiwaar.com/';
+    const String baseUrl = ApiConstants.mediaBaseUrl;
 
     return Container(
       decoration: BoxDecoration(
