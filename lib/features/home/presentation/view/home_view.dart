@@ -26,6 +26,7 @@ import 'package:drever_warr/features/home/presentation/data/cubit/cubit_wallat/c
 
 import '../../../../core/constant/app_colors.dart';
 import '../../../../core/translate/app_translate.dart';
+import '../../../../core/utils/navigator_key.dart';
 import '../data/cubit/cubit_update_location/cubit.dart';
 import '../data/cubit/cubit_update_location/cubit_state.dart';
 
@@ -36,7 +37,8 @@ class HomeView extends StatefulWidget {
   State<HomeView> createState() => _HomeViewState();
 }
 
-class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
+class _HomeViewState extends State<HomeView>
+    with TickerProviderStateMixin, RouteAware {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   GoogleMapController? _mapController;
@@ -81,12 +83,34 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final route = ModalRoute.of(context);
+    if (route is PageRoute) {
+      appRouteObserver.subscribe(this, route);
+    }
+  }
+
+  @override
   void dispose() {
+    appRouteObserver.unsubscribe(this);
     _markerAnimController?.dispose();
     _redirectTimer?.cancel();
     _positionSubscription?.cancel();
     _mapController?.dispose();
     super.dispose();
+  }
+
+  @override
+  void didPushNext() {
+    // Another page is on top — refresh PopScope so system back is not blocked.
+    if (mounted) setState(() {});
+  }
+
+  @override
+  void didPopNext() {
+    // Returned to Home.
+    if (mounted) setState(() {});
   }
 
   void _startInitialLoad() {
@@ -778,14 +802,17 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     return Directionality(
       textDirection: TextDirection.ltr,
       child: PopScope(
-        canPop: false,
+        // When Home is covered by another page, must allow pop so Android back
+        // returns to the previous screen instead of exiting the app.
+        canPop: !(ModalRoute.of(context)?.isCurrent ?? true),
         onPopInvokedWithResult: (didPop, result) async {
           if (didPop) return;
           if (!mounted) return;
 
-          // Only handle exit when Home is the top route (e.g. not Wallet).
-          final route = ModalRoute.of(context);
-          if (route == null || !route.isCurrent) return;
+          if (_scaffoldKey.currentState?.isDrawerOpen ?? false) {
+            _scaffoldKey.currentState!.closeDrawer();
+            return;
+          }
 
           final navigator = Navigator.of(context);
           if (navigator.canPop()) {

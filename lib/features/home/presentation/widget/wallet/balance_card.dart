@@ -1,4 +1,3 @@
-import 'package:drever_warr/core/asset/image_asset.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/translate/app_translate.dart';
 import 'package:drever_warr/core/widgets/auth/auth_ui_constants.dart';
@@ -34,13 +33,13 @@ class BalanceCard extends StatelessWidget {
             width: 72.r,
             height: 72.r,
             decoration: BoxDecoration(
-              color: const Color(0xFFF3F7FC),
+              color: AppColors.main1.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(20.r),
             ),
-            padding: EdgeInsets.all(10.r),
-            child: Image.asset(
-              ImageAssets.walletIllustration,
-              fit: BoxFit.contain,
+            child: Icon(
+              Icons.account_balance_wallet_rounded,
+              color: AppColors.main1,
+              size: 32.sp,
             ),
           ),
           SizedBox(width: 14.w),

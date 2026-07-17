@@ -98,6 +98,7 @@ class MyApp extends StatelessWidget {
             splitScreenMode: true,
             child: MaterialApp(
               navigatorKey: navigatorKey,
+              navigatorObservers: [appRouteObserver],
               debugShowCheckedModeBanner: false,
               title: 'Barq Driver',
               locale: currentLocale,

@@ -40,6 +40,13 @@ class MenueView extends StatelessWidget {
     return _packageInfoFuture ??= PackageInfo.fromPlatform();
   }
 
+  /// Close drawer first, then push so system back returns to Home.
+  static void _openPage(BuildContext context, Widget page) {
+    final navigator = Navigator.of(context);
+    navigator.pop();
+    navigator.push(MaterialPageRoute(builder: (_) => page));
+  }
+
   Future<void> _clearSessionData() async {
     await NotificationService.instance.clearToken();
     await CacheManager.clearSession();
@@ -249,14 +256,10 @@ class MenueView extends StatelessWidget {
                       imagePath: imagePath,
                       rating: rating,
                       onClose: () => Navigator.pop(context),
-                      onProfileTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const DriverProfail(),
-                          ),
-                        );
-                      },
+                      onProfileTap: () => _openPage(
+                        context,
+                        const DriverProfail(),
+                      ),
                     ),
                     Expanded(
                       child: ListView(
@@ -267,76 +270,55 @@ class MenueView extends StatelessWidget {
                             iconData: Icons.local_taxi_rounded,
                             title: 'orders',
                             accentColor: AppColors.main1,
-                            onTap: () => Navigator.push(
+                            onTap: () => _openPage(
                               context,
-                              MaterialPageRoute(
-                                builder: (_) => withTripFlow(
-                                  OrdersScreen(imagePath: imagePath),
-                                ),
-                              ),
+                              withTripFlow(OrdersScreen(imagePath: imagePath)),
                             ),
                           ),
                           BuildMenuItem(
                             iconData: Icons.history_rounded,
                             title: 'my_trips',
                             accentColor: const Color(0xFF7C3AED),
-                            onTap: () {
-                              final navigator = Navigator.of(context);
-                              navigator.pop();
-                              navigator.push(
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      withTripFlow(const OngoingJourney()),
-                                ),
-                              );
-                            },
+                            onTap: () => _openPage(
+                              context,
+                              withTripFlow(const OngoingJourney()),
+                            ),
                           ),
                           BuildMenuItem(
                             iconData: Icons.account_balance_wallet_outlined,
                             title: 'wallet',
                             accentColor: AppColors.button,
-                            onTap: () {
-                              final navigator = Navigator.of(context);
-                              navigator.pop(); // close drawer
-                              navigator.push(
-                                MaterialPageRoute(
-                                  builder: (_) => const WalletScreen(),
-                                ),
-                              );
-                            },
+                            onTap: () => _openPage(
+                              context,
+                              const WalletScreen(),
+                            ),
                           ),
                           DrawerSectionTitle('menu_section_account'),
                           BuildMenuItem(
                             iconData: Icons.person_outline_rounded,
                             title: 'my_profile',
                             accentColor: const Color(0xFF0EA5E9),
-                            onTap: () => Navigator.push(
+                            onTap: () => _openPage(
                               context,
-                              MaterialPageRoute(
-                                builder: (_) => const DriverProfail(),
-                              ),
+                              const DriverProfail(),
                             ),
                           ),
                           BuildMenuItem(
                             iconData: Icons.notifications_none_rounded,
                             title: 'notifications',
                             accentColor: const Color(0xFFF59E0B),
-                            onTap: () => Navigator.push(
+                            onTap: () => _openPage(
                               context,
-                              MaterialPageRoute(
-                                builder: (_) => const NotificationScreen(),
-                              ),
+                              const NotificationScreen(),
                             ),
                           ),
                           BuildMenuItem(
                             iconData: Icons.settings_outlined,
                             title: 'settings',
                             accentColor: AuthUiConstants.mutedText,
-                            onTap: () => Navigator.push(
+                            onTap: () => _openPage(
                               context,
-                              MaterialPageRoute(
-                                builder: (_) => const SettingsScreen(),
-                              ),
+                              const SettingsScreen(),
                             ),
                           ),
                           DrawerSectionTitle('menu_section_more'),
@@ -353,12 +335,9 @@ class MenueView extends StatelessWidget {
                             iconData: Icons.feedback_outlined,
                             title: 'feedback_complaints',
                             accentColor: const Color(0xFFEF4444),
-                            onTap: () => Navigator.push(
+                            onTap: () => _openPage(
                               context,
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    withTripFlow(const CommentsPage()),
-                              ),
+                              withTripFlow(const CommentsPage()),
                             ),
                           ),
                           BuildMenuItem(

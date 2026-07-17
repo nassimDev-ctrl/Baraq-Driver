@@ -1,5 +1,4 @@
 import 'package:drever_warr/core/asset/image_asset.dart';
-import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/constant/app_spacing.dart';
 import 'package:drever_warr/core/translate/app_translate.dart';
 import 'package:drever_warr/core/widgets/auth/auth_gradient_header.dart';
@@ -73,25 +72,6 @@ class TripsHeader extends StatelessWidget {
                     ),
                     textAlign: TextAlign.end,
                   ),
-                  SizedBox(height: 12.h),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Icon(
-                        Icons.location_on_rounded,
-                        color: AppColors.button,
-                        size: 18.sp,
-                      ),
-                      Expanded(
-                        child: CustomPaint(
-                          painter: _DashedRoutePainter(
-                            color: AppColors.accentOrange.withValues(alpha: 0.9),
-                          ),
-                          child: SizedBox(height: 2.h),
-                        ),
-                      ),
-                    ],
-                  ),
                 ],
               ),
             ),
@@ -100,35 +80,4 @@ class TripsHeader extends StatelessWidget {
       ),
     );
   }
-}
-
-class _DashedRoutePainter extends CustomPainter {
-  _DashedRoutePainter({required this.color});
-
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..strokeWidth = 2
-      ..style = PaintingStyle.stroke;
-
-    const dashWidth = 6.0;
-    const dashSpace = 4.0;
-    double startX = 0;
-    final y = size.height / 2;
-    while (startX < size.width) {
-      canvas.drawLine(
-        Offset(startX, y),
-        Offset((startX + dashWidth).clamp(0, size.width), y),
-        paint,
-      );
-      startX += dashWidth + dashSpace;
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _DashedRoutePainter oldDelegate) =>
-      oldDelegate.color != color;
 }
