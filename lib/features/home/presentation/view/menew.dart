@@ -3,6 +3,7 @@ import 'package:drever_warr/core/cash/preferences_service.dart';
 import 'package:drever_warr/core/constant/api_constants.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/constant/app_spacing.dart';
+import 'package:drever_warr/core/di/app_providers.dart';
 import 'package:drever_warr/core/service/notification_service.dart';
 import 'package:drever_warr/core/translate/app_translate.dart';
 import 'package:drever_warr/core/widgets/app_snack_bar.dart';
@@ -197,8 +198,7 @@ class MenueView extends StatelessWidget {
         if (state is LogoutSuccess) {
           await _clearSessionData();
           if (context.mounted) {
-            Navigator.pushAndRemoveUntil(
-              context,
+            Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
               MaterialPageRoute(builder: (_) => const LoginView()),
               (route) => false,
             );
@@ -270,8 +270,9 @@ class MenueView extends StatelessWidget {
                             onTap: () => Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) =>
-                                    OrdersScreen(imagePath: imagePath),
+                                builder: (_) => withTripFlow(
+                                  OrdersScreen(imagePath: imagePath),
+                                ),
                               ),
                             ),
                           ),
@@ -282,7 +283,8 @@ class MenueView extends StatelessWidget {
                             onTap: () => Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => const OngoingJourney(),
+                                builder: (_) =>
+                                    withTripFlow(const OngoingJourney()),
                               ),
                             ),
                           ),
@@ -290,12 +292,15 @@ class MenueView extends StatelessWidget {
                             iconData: Icons.account_balance_wallet_outlined,
                             title: 'wallet',
                             accentColor: AppColors.button,
-                            onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const WalletScreen(),
-                              ),
-                            ),
+                            onTap: () {
+                              final navigator = Navigator.of(context);
+                              navigator.pop(); // close drawer
+                              navigator.push(
+                                MaterialPageRoute(
+                                  builder: (_) => const WalletScreen(),
+                                ),
+                              );
+                            },
                           ),
                           DrawerSectionTitle('menu_section_account'),
                           BuildMenuItem(
@@ -348,7 +353,8 @@ class MenueView extends StatelessWidget {
                             onTap: () => Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => const CommentsPage(),
+                                builder: (_) =>
+                                    withTripFlow(const CommentsPage()),
                               ),
                             ),
                           ),

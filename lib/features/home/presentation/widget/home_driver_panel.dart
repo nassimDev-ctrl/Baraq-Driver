@@ -1,5 +1,6 @@
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/constant/app_spacing.dart';
+import 'package:drever_warr/core/di/app_providers.dart';
 import 'package:drever_warr/core/translate/app_translate.dart';
 import 'package:drever_warr/core/widgets/auth/auth_ui_constants.dart';
 import 'package:drever_warr/features/home/presentation/data/cubit/driver_available_cubit/cubit.dart';
@@ -178,9 +179,11 @@ class _ActiveTripBanner extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => LiveTripScreen(
-                  trip: trip,
-                  imagePath: imagePath,
+                builder: (_) => withTripFlow(
+                  LiveTripScreen(
+                    trip: trip,
+                    imagePath: imagePath,
+                  ),
                 ),
               ),
             );
@@ -384,7 +387,9 @@ class _QuickActions extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => OrdersScreen(imagePath: imagePath),
+                  builder: (_) => withTripFlow(
+                    OrdersScreen(imagePath: imagePath),
+                  ),
                 ),
               );
             },
@@ -399,7 +404,9 @@ class _QuickActions extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const OngoingJourney()),
+                MaterialPageRoute(
+                  builder: (_) => withTripFlow(const OngoingJourney()),
+                ),
               );
             },
           ),

@@ -6,6 +6,7 @@ import 'package:drever_warr/features/my_oreder/presentation/data/cubit/cubit_ord
 import 'package:drever_warr/features/my_oreder/presentation/data/cubit/cubit_order/cubit_stat.dart';
 import 'package:drever_warr/features/my_oreder/presentation/data/cubit/model/accsept_model.dart';
 import 'package:drever_warr/features/my_tripe/presentation/view/start_tripe.dart';
+import 'package:drever_warr/core/di/app_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -127,9 +128,11 @@ class _OrdersScreenState extends State<OrdersScreen>
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => LiveTripScreen(
-                    trip: state.trip,
-                    imagePath: widget.imagePath,
+                  builder: (context) => withTripFlow(
+                    LiveTripScreen(
+                      trip: state.trip,
+                      imagePath: widget.imagePath,
+                    ),
                   ),
                 ),
               );
@@ -338,9 +341,11 @@ class _OrdersScreenState extends State<OrdersScreen>
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => LiveTripScreen(
-                            trip: activeTrip,
-                            imagePath: widget.imagePath,
+                          builder: (context) => withTripFlow(
+                            LiveTripScreen(
+                              trip: activeTrip,
+                              imagePath: widget.imagePath,
+                            ),
                           ),
                         ),
                       );

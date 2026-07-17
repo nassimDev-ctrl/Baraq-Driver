@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:drever_warr/core/cash/preferences_service.dart';
+import 'package:drever_warr/core/di/app_providers.dart';
 import 'package:drever_warr/core/service/socket_service.dart';
 import 'package:drever_warr/core/widgets/custom_text.dart';
 import 'package:drever_warr/features/home/presentation/data/cubit/cubit_finsh_trips/cubit.dart';
@@ -186,8 +187,10 @@ class _OngoingJourneyState extends State<OngoingJourney>
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => DetailsOfTheCompletedTrip(
-                    tripId: trip.id.toString(),
+                  builder: (context) => withTripFlow(
+                    DetailsOfTheCompletedTrip(
+                      tripId: trip.id.toString(),
+                    ),
                   ),
                 ),
               );
@@ -239,9 +242,11 @@ class _OngoingJourneyState extends State<OngoingJourney>
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => EndTripe(
-                          trip: trip,
-                          socketService: _socketService,
+                        builder: (context) => withTripFlow(
+                          EndTripe(
+                            trip: trip,
+                            socketService: _socketService,
+                          ),
                         ),
                       ),
                     );

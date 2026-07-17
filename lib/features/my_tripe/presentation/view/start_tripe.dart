@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:drever_warr/features/my_tripe/presentation/widget/chat_screen.dart';
+import 'package:drever_warr/core/di/app_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -457,9 +458,11 @@ class _LiveTripScreenState extends State<LiveTripScreen>
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => EndTripe(
-                      trip: widget.trip,
-                      socketService: _socketService,
+                    builder: (context) => withTripFlow(
+                      EndTripe(
+                        trip: widget.trip,
+                        socketService: _socketService,
+                      ),
                     ),
                   ),
                 );
@@ -629,9 +632,11 @@ class _LiveTripScreenState extends State<LiveTripScreen>
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => DriverChatScreen(
-                          socketService: _socketService,
-                          trip: _tripDetails!,
+                        builder: (context) => withTripFlow(
+                          DriverChatScreen(
+                            socketService: _socketService,
+                            trip: _tripDetails!,
+                          ),
                         ),
                       ),
                     );

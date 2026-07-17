@@ -8,6 +8,7 @@ class AppColors {
   static Color error = Colors.red;
   static Color button = Color(0xFF5CAD1F); // green CTA only
   static const Color blue = Color(0xFF031D4E); // dark blue for headers/background
+  static const Color accentOrange = Color(0xFFF97316); // wallet / accent CTA
   static Color lightgrey = Color(0xFF999999);
 }
 

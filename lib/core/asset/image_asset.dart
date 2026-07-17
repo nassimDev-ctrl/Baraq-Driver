@@ -17,7 +17,10 @@ class ImageAssets {
   static const carMarker = 'asets/image/car_pin.png';
   static const logoWarr = 'asets/image/barq_logo.jpg';
   static const taxi = 'asets/image/taxi.png';
+  static const taxiWebp = 'asets/image/taxi.webp';
   static const gep = 'asets/image/gep.png';
   static const van = 'asets/image/van.png';
-   static const profail = 'asets/image/personnel.png';
+  static const profail = 'asets/image/personnel.png';
+  static const driverCar = 'asets/image/driver_car.png';
+  static const walletIllustration = 'asets/image/wallet_illustration.png';
 }

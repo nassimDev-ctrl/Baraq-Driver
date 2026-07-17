@@ -12,6 +12,9 @@ class AuthGradientHeader extends StatelessWidget {
     this.mapOpacity = 0.12,
     this.overlayTopAlpha = 0.02,
     this.overlayBottomAlpha = 0.18,
+    this.backgroundImage = ImageAssets.mape,
+    this.backgroundFit = BoxFit.cover,
+    this.backgroundAlignment = Alignment.center,
   });
 
   final double height;
@@ -19,6 +22,9 @@ class AuthGradientHeader extends StatelessWidget {
   final double mapOpacity;
   final double overlayTopAlpha;
   final double overlayBottomAlpha;
+  final String backgroundImage;
+  final BoxFit backgroundFit;
+  final Alignment backgroundAlignment;
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +46,11 @@ class AuthGradientHeader extends StatelessWidget {
               children: [
                 Opacity(
                   opacity: mapOpacity,
-                  child: Image.asset(ImageAssets.mape, fit: BoxFit.cover),
+                  child: Image.asset(
+                    backgroundImage,
+                    fit: backgroundFit,
+                    alignment: backgroundAlignment,
+                  ),
                 ),
                 DecoratedBox(
                   decoration: BoxDecoration(

@@ -603,10 +603,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
 
     if (!mounted) return;
 
-    Navigator.pushReplacement(
-      context,
+    Navigator.of(context, rootNavigator: true).pushReplacement(
       MaterialPageRoute(
-        builder: (context) => LoginView(),
+        builder: (context) => const LoginView(),
       ),
     );
   }
@@ -782,6 +781,17 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         canPop: false,
         onPopInvokedWithResult: (didPop, result) async {
           if (didPop) return;
+          if (!mounted) return;
+
+          // Only handle exit when Home is the top route (e.g. not Wallet).
+          final route = ModalRoute.of(context);
+          if (route == null || !route.isCurrent) return;
+
+          final navigator = Navigator.of(context);
+          if (navigator.canPop()) {
+            navigator.pop();
+            return;
+          }
 
           final shouldExit = await _showExitAppDialog();
           if (shouldExit && mounted) {

@@ -1,7 +1,7 @@
 import 'package:drever_warr/core/cash/preferences_service.dart';
 import 'package:drever_warr/core/constant/app_spacing.dart';
+import 'package:drever_warr/core/di/home_session.dart';
 import 'package:drever_warr/core/service/notification_service.dart';
-import 'package:drever_warr/features/home/presentation/view/home_view.dart';
 import 'package:drever_warr/features/presentation/data/repo/cubit/cubit_login/cubit.dart';
 import 'package:drever_warr/features/presentation/data/repo/cubit/cubit_login/cubit_state.dart';
 import 'package:drever_warr/features/presentation/view/forget_password_login.dart';
@@ -50,7 +50,7 @@ class LoginView extends StatelessWidget {
     if (status == 'active' || status == 'change-category') {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => HomeView()),
+        MaterialPageRoute(builder: (_) => const HomeSession()),
       );
     } else {
       Navigator.pushReplacement(

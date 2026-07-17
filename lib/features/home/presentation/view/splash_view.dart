@@ -1,6 +1,6 @@
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/asset/image_asset.dart';
-import 'package:drever_warr/features/home/presentation/view/home_view.dart';
+import 'package:drever_warr/core/di/home_session.dart';
 import 'package:drever_warr/features/presentation/view/waiting_review_screen.dart';
 import 'package:drever_warr/features/presentation/view/location_drever.dart';
 import 'package:flutter/material.dart';
@@ -53,7 +53,7 @@ class _SplashViewState extends State<SplashView> {
 
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const HomeView()),
+      MaterialPageRoute(builder: (context) => const HomeSession()),
     );
   }
 

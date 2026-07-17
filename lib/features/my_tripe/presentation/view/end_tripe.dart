@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:drever_warr/features/home/presentation/data/cubit/cubit_update_location/cubit_state.dart';
+import 'package:drever_warr/core/di/app_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geocoding/geocoding.dart';
@@ -547,8 +548,10 @@ class _EndTripeState extends State<EndTripe> with TickerProviderStateMixin {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => DetailsOfTheCompletedTrip(
-                    tripId: widget.trip.id.toString(),
+                  builder: (context) => withTripFlow(
+                    DetailsOfTheCompletedTrip(
+                      tripId: widget.trip.id.toString(),
+                    ),
                   ),
                 ),
               );
