@@ -280,13 +280,16 @@ class MenueView extends StatelessWidget {
                             iconData: Icons.history_rounded,
                             title: 'my_trips',
                             accentColor: const Color(0xFF7C3AED),
-                            onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    withTripFlow(const OngoingJourney()),
-                              ),
-                            ),
+                            onTap: () {
+                              final navigator = Navigator.of(context);
+                              navigator.pop();
+                              navigator.push(
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      withTripFlow(const OngoingJourney()),
+                                ),
+                              );
+                            },
                           ),
                           BuildMenuItem(
                             iconData: Icons.account_balance_wallet_outlined,

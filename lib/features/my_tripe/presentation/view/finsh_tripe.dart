@@ -1,29 +1,26 @@
-import 'dart:async';
-
 import 'package:drever_warr/core/cash/preferences_service.dart';
+import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/di/app_providers.dart';
 import 'package:drever_warr/core/service/socket_service.dart';
-import 'package:drever_warr/core/widgets/custom_text.dart';
+import 'package:drever_warr/core/translate/app_translate.dart';
+import 'package:drever_warr/core/widgets/auth/auth_ui_constants.dart';
 import 'package:drever_warr/features/home/presentation/data/cubit/cubit_finsh_trips/cubit.dart';
 import 'package:drever_warr/features/home/presentation/data/cubit/cubit_finsh_trips/cubit_stat.dart';
 import 'package:drever_warr/features/home/presentation/data/cubit/model/model_finsh_trips.dart';
+import 'package:drever_warr/features/my_oreder/presentation/data/cubit/cubit_current_trip/cubit.dart';
+import 'package:drever_warr/features/my_oreder/presentation/data/cubit/cubit_current_trip/cubit_state.dart';
 import 'package:drever_warr/features/my_oreder/presentation/data/cubit/model/accsept_model.dart';
 import 'package:drever_warr/features/my_tripe/presentation/view/details_trip.dart';
 import 'package:drever_warr/features/my_tripe/presentation/view/end_tripe.dart';
-import 'package:drever_warr/features/my_tripe/presentation/widget/countainer_journy_ongoing.dart';
-import 'package:drever_warr/features/presentation/widgets/icon_bak.dart';
+import 'package:drever_warr/features/my_tripe/presentation/widget/trips/trips_header.dart';
+import 'package:drever_warr/features/my_tripe/presentation/widget/trips/trips_list.dart';
+import 'package:drever_warr/features/my_tripe/presentation/widget/trips/trips_segmented_tabs.dart';
+import 'package:drever_warr/features/my_tripe/presentation/widget/trips/trips_skeleton.dart';
+import 'package:drever_warr/features/my_tripe/presentation/widget/trips/trips_statistics.dart';
+import 'package:drever_warr/features/my_tripe/presentation/widget/trips/trips_ui_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-import '../../../../core/asset/icon_asset.dart';
-import '../../../../core/asset/image_asset.dart';
-import '../../../../core/constant/app_colors.dart';
-import '../../../../core/translate/app_translate.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-
-import '../../../my_oreder/presentation/data/cubit/cubit_current_trip/cubit.dart';
-import '../../../my_oreder/presentation/data/cubit/cubit_current_trip/cubit_state.dart';
 
 class OngoingJourney extends StatefulWidget {
   const OngoingJourney({super.key});
@@ -59,7 +56,7 @@ class _OngoingJourneyState extends State<OngoingJourney>
   }
 
   void _onTabChanged() {
-    if (!mounted) return;
+    if (!mounted || _tabController.indexIsChanging) return;
     setState(() {});
   }
 
@@ -71,328 +68,285 @@ class _OngoingJourneyState extends State<OngoingJourney>
     super.dispose();
   }
 
+  void _openCurrentTrip(ActiveTripModel trip) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => withTripFlow(
+          EndTripe(
+            trip: trip,
+            socketService: _socketService,
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _openFinishedTrip(FinishedTripModel trip) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => withTripFlow(
+          DetailsOfTheCompletedTrip(
+            tripId: trip.id.toString(),
+          ),
+        ),
+      ),
+    );
+  }
+
+  int _tripsTodayCount(
+    List<ActiveTripModel> current,
+    List<FinishedTripModel> finished,
+  ) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    var count = current.length;
+
+    for (final trip in finished) {
+      final raw = trip.completedAt ?? trip.startedAt ?? trip.confirmedAt;
+      if (raw == null || raw.isEmpty) continue;
+      final parsed = DateTime.tryParse(raw)?.toLocal();
+      if (parsed == null) continue;
+      final day = DateTime(parsed.year, parsed.month, parsed.day);
+      if (day == today) count++;
+    }
+    return count;
+  }
+
+  num _totalEarnings(List<FinishedTripModel> finished) {
+    return finished.fold<num>(0, (sum, trip) => sum + trip.totalPrice);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F7FB),
       body: BlocBuilder<GetFinishedTripsCubit, GetFinishedTripsState>(
-        builder: (context, state) {
-          if (state is GetFinishedTripsLoading) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is GetFinishedTripsFailure) {
-            return Center(child: Text(state.errMessage));
-          } else if (state is GetFinishedTripsSuccess) {
-            return Column(
-              children: [
-                const IconBak(),
-                SizedBox(height: 20.h),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 40.w),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      CustomText(
-                        "trips",
-                        color: Colors.blue.shade400,
-                        type: AppTextType.titleMedium,
+        builder: (context, finishedState) {
+          return BlocBuilder<GetStartedTripsCubit, GetStartedTripsState>(
+            builder: (context, currentState) {
+              final finishedTrips = finishedState is GetFinishedTripsSuccess
+                  ? finishedState.trips
+                  : const <FinishedTripModel>[];
+              final currentTrips = currentState is GetStartedTripsSuccess
+                  ? currentState.trips
+                  : const <ActiveTripModel>[];
+
+              final isInitialLoading =
+                  (finishedState is GetFinishedTripsLoading ||
+                          finishedState is GetFinishedTripsInitial) &&
+                      (currentState is GetStartedTripsLoading ||
+                          currentState is GetStartedTripsInitial);
+
+              final finishedFailed = finishedState is GetFinishedTripsFailure;
+              final currentFailed = currentState is GetStartedTripsFailure;
+
+              return Column(
+                children: [
+                  const TripsHeader(),
+                  Expanded(
+                    child: Transform.translate(
+                      offset: Offset(0, -18.h),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: TripsUiConstants.horizontalPadding.w,
+                        ),
+                        child: Column(
+                          children: [
+                            if (isInitialLoading)
+                              const Expanded(child: SingleChildScrollView(child: TripsSkeleton()))
+                            else if (finishedFailed && currentFailed)
+                              Expanded(
+                                child: _TripsErrorState(
+                                  message: finishedState.errMessage,
+                                  onRetry: () {
+                                    context
+                                        .read<GetFinishedTripsCubit>()
+                                        .fetchFinishedTrips();
+                                    context
+                                        .read<GetStartedTripsCubit>()
+                                        .fetchStartedTrips();
+                                  },
+                                ),
+                              )
+                            else ...[
+                              TripsStatistics(
+                                totalTrips:
+                                    currentTrips.length + finishedTrips.length,
+                                tripsToday: _tripsTodayCount(
+                                  currentTrips,
+                                  finishedTrips,
+                                ),
+                                totalEarnings: _totalEarnings(finishedTrips),
+                              ),
+                              SizedBox(
+                                height: TripsUiConstants.sectionSpacing.h,
+                              ),
+                              TripsSegmentedTabs(
+                                selectedIndex: _tabController.index,
+                                onChanged: (index) {
+                                  _tabController.animateTo(index);
+                                  setState(() {});
+                                },
+                              ),
+                              SizedBox(
+                                height: TripsUiConstants.sectionSpacing.h,
+                              ),
+                              Expanded(
+                                child: TabBarView(
+                                  controller: _tabController,
+                                  children: [
+                                    _CurrentTabBody(
+                                      state: currentState,
+                                      onTripTap: _openCurrentTrip,
+                                      onBackHome: () =>
+                                          Navigator.maybePop(context),
+                                      onRetry: () => context
+                                          .read<GetStartedTripsCubit>()
+                                          .fetchStartedTrips(),
+                                    ),
+                                    _FinishedTabBody(
+                                      state: finishedState,
+                                      onTripTap: _openFinishedTrip,
+                                      onBackHome: () =>
+                                          Navigator.maybePop(context),
+                                      onRetry: () => context
+                                          .read<GetFinishedTripsCubit>()
+                                          .fetchFinishedTrips(),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
                       ),
-                    ],
+                    ),
                   ),
-                ),
-                SizedBox(height: 20.h),
-                _buildTabs(),
-                SizedBox(height: 10.h),
-                Expanded(
-                  child: TabBarView(
-                    controller: _tabController,
-                    children: [
-                      _buildCurrentTripTab(),
-                      _buildFinishedTripsTab(state.trips),
-
-                    ],
-                  ),
-                ),
-              ],
-            );
-          }
-
-          return const SizedBox();
+                ],
+              );
+            },
+          );
         },
       ),
     );
   }
-
-  Widget _buildTabs() {
-    return TabBar(
-      controller: _tabController,
-      indicatorColor: Colors.transparent,
-      dividerColor: Colors.transparent,
-      tabs: [
-        _buildTab(
-          title: AppTranslations.getText(context, "current_trip"),
-          index: 0,
-        ),
-        _buildTab(
-          title: "finished_trips",
-          index: 1,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTab({required String title, required int index}) {
-    final bool isSelected = _tabController.index == index;
-
-    return Tab(
-      child: Column(
-        children: [
-          CustomText(
-            title,
-            type: AppTextType.titleSmall,
-            color: isSelected ? AppColors.main1 : Colors.black,
-          ),
-          const SizedBox(height: 6),
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 250),
-            height: 4,
-            width: 80.w,
-            decoration: BoxDecoration(
-              color: isSelected ? AppColors.main1 : Colors.grey.shade300,
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFinishedTripsTab(List<FinishedTripModel> trips) {
-    if (trips.isEmpty) {
-      return Center(
-        child: Text(
-          AppTranslations.getText(context, "no_finished_trips"),
-        ),
-      );
-    }
-
-    return ListView.builder(
-      padding: EdgeInsets.symmetric(horizontal: 0.w, vertical: 10.h),
-      itemCount: trips.length,
-      itemBuilder: (context, index) {
-        final trip = trips[index];
-
-        return Padding(
-          padding: EdgeInsets.symmetric(vertical: 8.0.h),
-          child: GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => withTripFlow(
-                    DetailsOfTheCompletedTrip(
-                      tripId: trip.id.toString(),
-                    ),
-                  ),
-                ),
-              );
-            },
-            child: CountainerJournyOngoing(
-              time: trip.time,
-              date: trip.date,
-              carName: trip.carName,
-              totalPrice: trip.totalPrice.toStringAsFixed(0),
-              startAddress: trip.startAddress,
-              latitude: trip.startLat,
-              longitude: trip.startLng,
-              mapHeight: 160,
-            )
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildCurrentTripTab() {
-    return BlocBuilder<GetStartedTripsCubit, GetStartedTripsState>(
-      builder: (context, state) {
-        if (state is GetStartedTripsLoading) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (state is GetStartedTripsFailure) {
-          return Center(child: Text(state.errMessage));
-        } else if (state is GetStartedTripsSuccess) {
-          final trips = state.trips;
-
-          if (trips.isEmpty) {
-            return Center(
-              child: Text(
-                AppTranslations.getText(context, "no_current_trip"),
-              ),
-            );
-          }
-
-          return ListView.builder(
-            padding: EdgeInsets.symmetric(vertical: 10.h),
-            itemCount: trips.length,
-            itemBuilder: (context, index) {
-              final trip = trips[index];
-
-              return Padding(
-                padding: EdgeInsets.symmetric(vertical: 8.0.h),
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => withTripFlow(
-                          EndTripe(
-                            trip: trip,
-                            socketService: _socketService,
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                  child: CountainerJournyOngoing(
-                    time: trip.sourceAddress,
-                    date: "",
-                    carName: "",
-                    totalPrice: trip.totalPrice.toStringAsFixed(0),
-                    startAddress: trip.destinationAddress,
-                    latitude: trip.startLat,
-                    longitude: trip.startLng,
-                    mapHeight: 420,
-                  )
-                ),
-              );
-            },
-          );
-        }
-
-        return const SizedBox();
-      },
-    );
-  }
 }
 
-class CountainerCurrentJourney extends StatelessWidget {
-  final ActiveTripModel trip;
-
-  const CountainerCurrentJourney({
-    super.key,
-    required this.trip,
+class _CurrentTabBody extends StatelessWidget {
+  const _CurrentTabBody({
+    required this.state,
+    required this.onTripTap,
+    required this.onBackHome,
+    required this.onRetry,
   });
+
+  final GetStartedTripsState state;
+  final ValueChanged<ActiveTripModel> onTripTap;
+  final VoidCallback onBackHome;
+  final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppColors.main1,
-          borderRadius: BorderRadius.circular(15.r),
-          border: const Border(bottom: BorderSide(color: Colors.white)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.white.withValues(alpha: 0.2),
-              spreadRadius: 1,
-              blurRadius: 12,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
+    final currentState = state;
+    if (currentState is GetStartedTripsLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (currentState is GetStartedTripsFailure) {
+      return _TripsErrorState(
+        message: currentState.errMessage,
+        onRetry: onRetry,
+      );
+    }
+    if (currentState is GetStartedTripsSuccess) {
+      return TripsList.current(
+        currentTrips: currentState.trips,
+        onCurrentTap: onTripTap,
+        onBackHome: onBackHome,
+      );
+    }
+    return const SizedBox.shrink();
+  }
+}
+
+class _FinishedTabBody extends StatelessWidget {
+  const _FinishedTabBody({
+    required this.state,
+    required this.onTripTap,
+    required this.onBackHome,
+    required this.onRetry,
+  });
+
+  final GetFinishedTripsState state;
+  final ValueChanged<FinishedTripModel> onTripTap;
+  final VoidCallback onBackHome;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final finishedState = state;
+    if (finishedState is GetFinishedTripsLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (finishedState is GetFinishedTripsFailure) {
+      return _TripsErrorState(
+        message: finishedState.errMessage,
+        onRetry: onRetry,
+      );
+    }
+    if (finishedState is GetFinishedTripsSuccess) {
+      return TripsList.finished(
+        finishedTrips: finishedState.trips,
+        onFinishedTap: onTripTap,
+        onBackHome: onBackHome,
+      );
+    }
+    return const SizedBox.shrink();
+  }
+}
+
+class _TripsErrorState extends StatelessWidget {
+  const _TripsErrorState({
+    required this.message,
+    required this.onRetry,
+  });
+
+  final String message;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(24.w),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            SizedBox(height: 10.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24.w),
-                  child: CustomText(
-                    color: AppColors.secondary1,
-                    trip.status.isNotEmpty ? trip.status : "current trip",
-                    type: AppTextType.titleSmall,
-                  ),
-                ),
-              ],
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 8.h),
-              child: SizedBox(
-                height: 130.h,
-                child: Image.asset(
-                  ImageAssets.mape,
-                  fit: BoxFit.contain,
-                ),
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12.w),
-                  child: CustomText(
-                    color: AppColors.secondary1,
-                    trip.clientName.isNotEmpty ? trip.clientName : "عميل غير معروف",
-                    type: AppTextType.bodyMedium,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 6.h),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8.w),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  CustomText(
-                    color: AppColors.secondary1,
-                    "${trip.totalPrice.toStringAsFixed(0)} ",
-                    type: AppTextType.bodyMedium,
-                  ),
-                  Row(
-                    children: [
-                      CustomText(
-                        color: AppColors.secondary1,
-                        trip.sourceAddress,
-                        type: AppTextType.bodyMedium,
-                        maxLines: 1,
-                      ),
-                      SizedBox(width: 5.w),
-                      SvgPicture.asset(
-                        IconAssets.locationsearch,
-                        height: 15.h,
-                        width: 15.w,
-                        colorFilter: ColorFilter.mode(
-                          AppColors.secondary1,
-                          BlendMode.srcIn,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 8.h),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8.w),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  CustomText(
-                    color: AppColors.secondary1,
-                    "${trip.distance.toStringAsFixed(1)} km",
-                    type: AppTextType.bodyMedium,
-                  ),
-                  CustomText(
-                    color: AppColors.secondary1,
-                    trip.destinationAddress,
-                    type: AppTextType.bodyMedium,
-                    maxLines: 1,
-                  ),
-                ],
-              ),
+            Icon(
+              Icons.wifi_off_rounded,
+              size: 40.sp,
+              color: AuthUiConstants.iconMuted,
             ),
             SizedBox(height: 12.h),
+            Text(
+              message.isNotEmpty
+                  ? message
+                  : AppTranslations.getText(context, 'error_occurred'),
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: AuthUiConstants.textPrimary,
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            SizedBox(height: 16.h),
+            TextButton.icon(
+              onPressed: onRetry,
+              icon: const Icon(Icons.refresh_rounded),
+              label: Text(AppTranslations.getText(context, 'retry')),
+              style: TextButton.styleFrom(foregroundColor: AppColors.main1),
+            ),
           ],
         ),
       ),
