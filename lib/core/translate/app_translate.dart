@@ -108,6 +108,9 @@ class AppTranslations {
       "arabic": "Arabic",
       "english": "English",
       "personal_info": "Personal Information",
+      "personal_info_subtitle": "Update your profile details and vehicle info",
+      "password_edit_hint": "Tap the edit icon to change your password via OTP",
+      "please_enter_phone_first": "Please enter your phone number first",
       "sound_vibration": "Sound & Vibration",
       "location_permission": "Location Permissions",
       "enter_password_header": "Enter password to edit mobile number",
@@ -304,6 +307,9 @@ class AppTranslations {
       "work_not_saved" : "Your current work will not be saved unless you return",
       "leave": "Leave",
       "stay":"Stay",
+      "exit_confirm_title": "Exit the app?",
+      "exit_confirm_message": "Are you sure you want to exit Barq Driver?",
+      "exit_app": "Exit",
       "current_trip":"Current Trips",
       "no_current_trip":"There are no Current Trips",
       "trips":"Journeys",
@@ -439,6 +445,9 @@ class AppTranslations {
       "arabic": "العربية",
       "english": "English",
       "personal_info": "معلوماتك الشخصية",
+      "personal_info_subtitle": "حدّث بيانات ملفك ومعلومات المركبة",
+      "password_edit_hint": "اضغط أيقونة التعديل لتغيير كلمة المرور عبر رمز التحقق",
+      "please_enter_phone_first": "يرجى إدخال رقم الهاتف أولاً",
       "sound_vibration": "الصوت والاهتزاز",
       "location_permission": "صلاحيات الموقع",
       "add_new_favorite": "أضف موقع مفضل جديد",
@@ -657,6 +666,9 @@ class AppTranslations {
       "work_not_saved" : "لن يتم حفظ عملك الحالي إلا إذا عدت.",
       "leave": "غادر",
       "stay":"البقاء",
+      "exit_confirm_title": "الخروج من التطبيق؟",
+      "exit_confirm_message": "هل أنت متأكد أنك تريد الخروج من تطبيق برق للسائق؟",
+      "exit_app": "خروج",
       "current_trip":"الرحلات الحالية",
       "no_current_trip":"لايوجد رحلات حالية",
       "trips":"الرحلات",
@@ -993,6 +1005,9 @@ class AppTranslations {
       "work_not_saved": "Karê te yê niha nayê tomarkirin heke tu venegerî",
       "leave": "Derkeve",
       "stay": "Bimîne",
+      "exit_confirm_title": "Ji sepanê derkeve?",
+      "exit_confirm_message": "Ma tu bi rastî dixwazî ji sepana Barq Driver derkevî?",
+      "exit_app": "Derkeve",
       "current_trip": "Rêwîtiyên niha",
       "There are no Current Trips": "Rêwîtiyên niha tune ne",
       "trips": "Rêwîtî",
@@ -1051,8 +1066,6 @@ class AppTranslations {
 
     if (language == Language.arabic) {
       return 'ar';
-    } else if (language == Language.kurdish) {
-      return 'ku';
     } else {
       return 'en';
     }

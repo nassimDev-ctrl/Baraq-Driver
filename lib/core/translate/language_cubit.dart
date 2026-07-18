@@ -1,7 +1,7 @@
 import 'package:drever_warr/core/cash/preferences_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-enum Language { english, arabic, kurdish }  
+enum Language { english, arabic }
 
 class LanguageCubit extends Cubit<Language> {
   static const _langKey = 'app_language';
@@ -15,25 +15,17 @@ class LanguageCubit extends Cubit<Language> {
 
     if (savedLang == 'en') {
       emit(Language.english);
-    } else if (savedLang == 'ku') {
-
-      emit(Language.kurdish);
     } else {
+      // Arabic default; migrate any legacy 'ku' to Arabic.
+      if (savedLang == 'ku') {
+        await CacheManager.saveData(_langKey, 'ar');
+      }
       emit(Language.arabic);
     }
   }
 
- 
   Future<void> setLanguage(Language lang) async {
-    String langCode;
-    if (lang == Language.english) {
-      langCode = 'en';
-    } else if (lang == Language.kurdish) {
-      langCode = 'ku';
-    } else {
-      langCode = 'ar';
-    }
-
+    final langCode = lang == Language.english ? 'en' : 'ar';
     await CacheManager.saveData(_langKey, langCode);
     emit(lang);
   }

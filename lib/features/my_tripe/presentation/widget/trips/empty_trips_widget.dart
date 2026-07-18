@@ -1,4 +1,3 @@
-import 'package:drever_warr/core/asset/image_asset.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
 import 'package:drever_warr/core/translate/app_translate.dart';
 import 'package:drever_warr/core/widgets/auth/auth_ui_constants.dart';
@@ -27,12 +26,46 @@ class EmptyTripsWidget extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Image.asset(
-            ImageAssets.taxiWebp,
-            height: 110.h,
-            fit: BoxFit.contain,
+          SizedBox(
+            width: 108.r,
+            height: 108.r,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Container(
+                  width: 108.r,
+                  height: 108.r,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColors.main1.withValues(alpha: 0.06),
+                  ),
+                ),
+                Container(
+                  width: 78.r,
+                  height: 78.r,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColors.main1.withValues(alpha: 0.12),
+                  ),
+                ),
+                Container(
+                  width: 56.r,
+                  height: 56.r,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    boxShadow: TripsUiConstants.cardShadow,
+                  ),
+                  child: Icon(
+                    Icons.route_rounded,
+                    size: 28.sp,
+                    color: AppColors.main1,
+                  ),
+                ),
+              ],
+            ),
           ),
-          SizedBox(height: 16.h),
+          SizedBox(height: 18.h),
           Text(
             AppTranslations.getText(context, 'empty_trips_title'),
             textAlign: TextAlign.center,

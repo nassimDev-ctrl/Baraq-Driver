@@ -1,13 +1,9 @@
-import 'dart:io';
-
-import 'package:drever_warr/core/constant/api_constants.dart';
-import 'package:drever_warr/core/asset/icon_asset.dart';
-import 'package:drever_warr/core/asset/image_asset.dart';
 import 'package:drever_warr/core/constant/app_colors.dart';
+import 'package:drever_warr/core/translate/app_translate.dart';
 import 'package:drever_warr/core/utils/validator.dart';
-import 'package:drever_warr/core/widgets/custom_text_field_all.dart';
-import 'package:drever_warr/core/widgets/custom_button.dart';
-import 'package:drever_warr/core/widgets/custom_text.dart';
+import 'package:drever_warr/core/widgets/app_snack_bar.dart';
+import 'package:drever_warr/core/widgets/auth/app_text_field.dart';
+import 'package:drever_warr/core/widgets/auth/auth_ui_constants.dart';
 import 'package:drever_warr/features/presentation/data/repo/cubit/cubit_category/cubit.dart';
 import 'package:drever_warr/features/presentation/data/repo/cubit/cubit_category/cubit_stat.dart';
 import 'package:drever_warr/features/presentation/data/repo/cubit/cubit_governorates/cubit.dart';
@@ -15,19 +11,20 @@ import 'package:drever_warr/features/presentation/data/repo/cubit/cubit_governor
 import 'package:drever_warr/features/presentation/data/repo/cubit/cubit_verificationRepo/cubit.dart';
 import 'package:drever_warr/features/presentation/data/repo/cubit/cubit_verificationRepo/cubite_state.dart';
 import 'package:drever_warr/features/presentation/data/repo/model/model_governorates.dart';
-import 'package:drever_warr/features/presentation/widgets/icon_bak.dart';
 import 'package:drever_warr/features/setting/data/cubit/cubit_profail/cubit.dart';
 import 'package:drever_warr/features/setting/data/cubit/cubit_profail/cubit_stat.dart';
 import 'package:drever_warr/features/setting/data/cubit/updet_profail/cubit.dart';
 import 'package:drever_warr/features/setting/data/cubit/updet_profail/cubit_stat.dart';
-import 'package:drever_warr/features/setting/presentation/view/verfication_code_change_password.dart';
 import 'package:drever_warr/features/setting/presentation/view/password_for_edet_phone.dart';
+import 'package:drever_warr/features/setting/presentation/view/verfication_code_change_password.dart';
+import 'package:drever_warr/features/setting/presentation/widget/personal_info/personal_info_avatar.dart';
+import 'package:drever_warr/features/setting/presentation/widget/personal_info/personal_info_header.dart';
+import 'package:drever_warr/features/setting/presentation/widget/personal_info/personal_info_section.dart';
+import 'package:drever_warr/features/setting/presentation/widget/personal_info/personal_info_ui_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:drever_warr/core/widgets/app_snack_bar.dart';
 
 class UserInformation extends StatefulWidget {
   const UserInformation({super.key});
@@ -42,29 +39,36 @@ class _UserInformationState extends State<UserInformation> {
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController _governorateController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-
   final TextEditingController _categoryController = TextEditingController();
+
   final GlobalKey _categoryKey = GlobalKey();
   final GlobalKey _governorateKey = GlobalKey();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   String? _selectedGovernorateId;
   String? _selectedCategoryId;
   String? _pickedImagePath;
 
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  bool carCategoryError = false;
-
   @override
   void initState() {
     super.initState();
-
     context.read<ProfileCubit>().getProfileData();
     context.read<CarCategoryCubit>().getCarCategories();
   }
 
+  @override
+  void dispose() {
+    nameController.dispose();
+    lastNameController.dispose();
+    phoneController.dispose();
+    _governorateController.dispose();
+    passwordController.dispose();
+    _categoryController.dispose();
+    super.dispose();
+  }
+
   void _syncCategoryControllerFromLoadedCategories() {
     final state = context.read<CarCategoryCubit>().state;
-
     if (state is! CarCategorySuccess) return;
 
     if (_selectedCategoryId == null || _selectedCategoryId!.isEmpty) {
@@ -75,7 +79,7 @@ class _UserInformationState extends State<UserInformation> {
     for (final category in state.categories) {
       final id = category.id?.toString();
       if (id == _selectedCategoryId) {
-        _categoryController.text = category.name ?? "";
+        _categoryController.text = category.name ?? '';
         return;
       }
     }
@@ -84,541 +88,379 @@ class _UserInformationState extends State<UserInformation> {
   }
 
   Future<void> _pickImage() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-
+    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (image != null) {
-      setState(() {
-        _pickedImagePath = image.path;
-      });
+      setState(() => _pickedImagePath = image.path);
     }
+  }
+
+  Future<void> _pickCategory() async {
+    final cubit = context.read<CarCategoryCubit>();
+    var state = cubit.state;
+
+    if (state is! CarCategorySuccess) {
+      await cubit.getCarCategories();
+      if (!mounted) return;
+      state = cubit.state;
+    }
+    if (state is! CarCategorySuccess) return;
+    final categoryState = state;
+
+    final button =
+        _categoryKey.currentContext!.findRenderObject() as RenderBox;
+    if (!mounted) return;
+    final overlay =
+        Overlay.of(context).context.findRenderObject() as RenderBox;
+    final position = button.localToGlobal(Offset.zero, ancestor: overlay);
+
+    final selected = await showMenu<String>(
+      context: context,
+      position: RelativeRect.fromLTRB(
+        position.dx,
+        position.dy + button.size.height,
+        position.dx + button.size.width,
+        0,
+      ),
+      constraints: BoxConstraints(
+        maxHeight: 180.h,
+        minWidth: button.size.width,
+        maxWidth: button.size.width,
+      ),
+      items: categoryState.categories.map((category) {
+        return PopupMenuItem<String>(
+          value: category.id,
+          child: Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: Text(category.name ?? ''),
+          ),
+        );
+      }).toList(),
+    );
+
+    if (!mounted || selected == null) return;
+    setState(() {
+      _selectedCategoryId = selected;
+      _categoryController.text = categoryState.categories
+              .firstWhere((element) => element.id == selected)
+              .name ??
+          '';
+    });
+  }
+
+  Future<void> _pickGovernorate() async {
+    final cubit = context.read<GovernoratesCubit>();
+    var state = cubit.state;
+
+    if (state is! GovernoratesSuccess) {
+      await cubit.getGovernorates();
+      if (!mounted) return;
+      state = cubit.state;
+    }
+    if (state is! GovernoratesSuccess) return;
+
+    final button =
+        _governorateKey.currentContext!.findRenderObject() as RenderBox;
+    if (!mounted) return;
+    final overlay =
+        Overlay.of(context).context.findRenderObject() as RenderBox;
+    final position = button.localToGlobal(Offset.zero, ancestor: overlay);
+
+    final selected = await showMenu<GovernorateModel>(
+      context: context,
+      position: RelativeRect.fromLTRB(
+        position.dx,
+        position.dy + button.size.height,
+        position.dx + button.size.width,
+        0,
+      ),
+      constraints: BoxConstraints(
+        maxHeight: 180.h,
+        minWidth: button.size.width,
+        maxWidth: button.size.width,
+      ),
+      items: state.governorates.map((gov) {
+        return PopupMenuItem<GovernorateModel>(
+          value: gov,
+          child: Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: Text(gov.name),
+          ),
+        );
+      }).toList(),
+    );
+
+    if (!mounted || selected == null) return;
+    setState(() {
+      _governorateController.text = selected.name;
+      _selectedGovernorateId = selected.id;
+    });
+  }
+
+  void _save() {
+    if (!_formKey.currentState!.validate()) return;
+    context.read<UpdateProfileCubit>().updateUserData(
+          firstName: nameController.text,
+          lastName: lastNameController.text,
+          governorate: _selectedGovernorateId ?? '',
+          category: _selectedCategoryId ?? '',
+          imagePath: _pickedImagePath,
+        );
   }
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocListener(
-        listeners: [
-          BlocListener<ProfileCubit, ProfileState>(
-            listener: (context, state) {
-              if (state is ProfileSuccess) {
-                final profile = state.data.data;
-                if (profile != null) {
-                  nameController.text = profile.firstName ?? "";
-                  lastNameController.text = profile.lastName ?? "";
-                  phoneController.text =
-                      profile.authUser?.mobilePhone?.replaceFirst("963", "") ?? "";
-
-                  _governorateController.text = profile.city?.name ?? "";
-                  _selectedGovernorateId = profile.city?.id?.toString();
-
-                  _selectedCategoryId = profile.car?.category?.toString();
-                  _syncCategoryControllerFromLoadedCategories();
-                }
-              }
-            },
-          ),
-
-          BlocListener<CarCategoryCubit, CarCategoryState>(
-            listener: (context, state) {
-              if (state is CarCategorySuccess) {
+      listeners: [
+        BlocListener<ProfileCubit, ProfileState>(
+          listener: (context, state) {
+            if (state is ProfileSuccess) {
+              final profile = state.data.data;
+              if (profile != null) {
+                nameController.text = profile.firstName ?? '';
+                lastNameController.text = profile.lastName ?? '';
+                phoneController.text =
+                    profile.authUser?.mobilePhone?.replaceFirst('963', '') ??
+                        '';
+                _governorateController.text = profile.city?.name ?? '';
+                _selectedGovernorateId = profile.city?.id?.toString();
+                _selectedCategoryId = profile.car?.category?.toString();
                 _syncCategoryControllerFromLoadedCategories();
               }
-            },
-          ),
-
-          BlocListener<UpdateProfileCubit, UpdateProfileState>(
-            listener: (context, state) {
-              if (state is UpdateProfileSuccess) {
-                AppSnackBar.success(context, state.message);
-                context.read<ProfileCubit>().getProfileData();
-              } else if (state is UpdateProfileFailure) {
-                AppSnackBar.error(context, state.errMessage);
-              }
-            },
-          ),
-
-          BlocListener<VerificationCubit, VerificationState>(
-            listener: (context, state) {
-              if (state is CreateVerificationCodeSuccess) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => VerificationCodeforgetpassword2(
-                      mobilePhone: phoneController.text,
+            }
+          },
+        ),
+        BlocListener<CarCategoryCubit, CarCategoryState>(
+          listener: (context, state) {
+            if (state is CarCategorySuccess) {
+              _syncCategoryControllerFromLoadedCategories();
+            }
+          },
+        ),
+        BlocListener<UpdateProfileCubit, UpdateProfileState>(
+          listener: (context, state) {
+            if (state is UpdateProfileSuccess) {
+              AppSnackBar.success(context, state.message);
+              context.read<ProfileCubit>().getProfileData();
+            } else if (state is UpdateProfileFailure) {
+              AppSnackBar.error(context, state.errMessage);
+            }
+          },
+        ),
+        BlocListener<VerificationCubit, VerificationState>(
+          listener: (context, state) {
+            if (state is CreateVerificationCodeSuccess) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => VerificationCodeforgetpassword2(
+                    mobilePhone: phoneController.text,
+                  ),
+                ),
+              );
+            } else if (state is VerificationFailure) {
+              AppSnackBar.error(context, state.errMessage);
+            }
+          },
+        ),
+      ],
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF5F7FB),
+        body: BlocBuilder<ProfileCubit, ProfileState>(
+          builder: (context, profileState) {
+            if (profileState is ProfileLoading) {
+              return Column(
+                children: [
+                  const PersonalInfoHeader(),
+                  Expanded(
+                    child: Center(
+                      child: CircularProgressIndicator(color: AppColors.main1),
                     ),
                   ),
-                );
-              } else if (state is VerificationFailure) {
-                AppSnackBar.error(context, state.errMessage);
-              }
-            },
-          ),
-        ],
-      child: Scaffold(
-        backgroundColor: AppColors.secondary1,
-        body: SafeArea(
-          child: BlocBuilder<ProfileCubit, ProfileState>(
-            builder: (context, profileState) {
-              if (profileState is ProfileLoading) {
-                return const Center(child: CircularProgressIndicator());
-              }
+                ],
+              );
+            }
 
-              return SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: 16.w),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      const IconBak(),
-                      SizedBox(height: 20.h),
+            String? networkImage;
+            if (profileState is ProfileSuccess) {
+              networkImage = profileState.data.data?.profileImage;
+            }
 
-
-                      _buildProfileImage(profileState),
-
-                      SizedBox(height: 30.h),
-                      _buildSectionTitle("personal_info"),
-
-
-                      _buildInputLabel("first_name"),
-                      AppCustomTextField(
-                        iconImage: IconAssets.editee,
-                        controller: nameController,
-                        hintText: "",
-                        validator: (val) =>
-                            Validators.isEmptyValue(val, context),
-                      ),
-                      _buildInputLabel("last_name"),
-                      AppCustomTextField(
-                        iconImage: IconAssets.editee,
-                        controller: lastNameController,
-                        hintText: "",
-                        validator: (val) =>
-                            Validators.isEmptyValue(val, context),
-                      ),
-
-
-                      _buildInputLabel("phone_number"),
-                      AppCustomTextField(
-                        countryCode: "+963",
-                        readOnly: true,
-                        onIconTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const PasswordForgetPhone(),
-                            ),
-                          );
-                        },
-                        controller: phoneController,
-                        iconImage: IconAssets.editee,
-                        hintText: "",
-                        validator: (_) => null,
-                      ),
-
-
-                      _buildInputLabel("governorate"),
-                      _buildGovernoratePicker(context),
-
-                      _buildFieldSection(
-                        label: "category",
-                        child: BlocBuilder<CarCategoryCubit, CarCategoryState>(
-                          builder: (context, state) {
-                            return GestureDetector(
-                              onTap: () async {
-                                final cubit = context.read<CarCategoryCubit>();
-
-                                if (state is! CarCategorySuccess) {
-                                  await cubit.getCarCategories();
-                                }
-
-                                if (!mounted) return;
-                                if (cubit.state is! CarCategorySuccess) return;
-
-                                final categoryState =
-                                cubit.state as CarCategorySuccess;
-
-                                final RenderBox button =
-                                _categoryKey.currentContext!
-                                    .findRenderObject()
-                                as RenderBox;
-                                if (!context.mounted) return;
-                                final RenderBox overlay =
-                                Overlay.of(context)
-                                    .context
-                                    .findRenderObject()
-                                as RenderBox;
-
-                                final Offset position = button
-                                    .localToGlobal(
-                                  Offset.zero,
-                                  ancestor: overlay,
-                                );
-
-                                final selected = await showMenu<String>(
-                                  context: context,
-                                    position: RelativeRect.fromLTRB(
-                                      position.dx,
-                                      position.dy + button.size.height,
-                                      position.dx + button.size.width,
-                                      0,
-                                    ),
-                                    constraints: BoxConstraints(
-                                      maxHeight: 180.h,
-                                      minWidth: button.size.width,
-                                      maxWidth: button.size.width,
-                                    ),
-                                    items: categoryState.categories.map((category) {
-                                      return PopupMenuItem<String>(
-                                        value: category.id,
-                                        child: Align(
-                                          alignment: Alignment.centerRight,
-                                          child: Text(category.name ?? ""),
-                                        ),
-                                      );
-                                    }).toList(),
-                                  );
-
-                                  if (!context.mounted) return;
-                                  if (selected != null) {
-                                    setState(() {
-                                      _selectedCategoryId = selected;
-                                      _categoryController.text =
-                                          categoryState.categories
-                                              .firstWhere(
-                                                (element) =>
-                                            element.id == selected,
-                                          )
-                                              .name ??
-                                              "";
-                                    });
-                                  }
-                              },
-                              child: AbsorbPointer(
-                                child: Container(
-                                  key: _categoryKey,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8),
-
-                                  ),
-                                  child: AppCustomTextField(
-                                    iconImage: IconAssets.drowpdawn,
-                                    controller: _categoryController,
-                                    hintText: "",
-                                    validator: (val) =>
-                                    val!.isEmpty ? "مطلوب" : null,
+            return Column(
+              children: [
+                const PersonalInfoHeader(),
+                Expanded(
+                  child: Transform.translate(
+                    offset: Offset(0, -22.h),
+                    child: Form(
+                      key: _formKey,
+                      child: ListView(
+                        physics: const BouncingScrollPhysics(),
+                        padding: EdgeInsets.fromLTRB(
+                          PersonalInfoUiConstants.horizontalPadding.w,
+                          0,
+                          PersonalInfoUiConstants.horizontalPadding.w,
+                          28.h,
+                        ),
+                        children: [
+                          PersonalInfoAvatar(
+                            networkImagePath: networkImage,
+                            pickedImagePath: _pickedImagePath,
+                            onEdit: _pickImage,
+                          ),
+                          SizedBox(height: 18.h),
+                          PersonalInfoSectionCard(
+                            titleKey: 'personal_info',
+                            children: [
+                              SizedBox(height: 8.h),
+                              AppTextField(
+                                controller: nameController,
+                                hintKey: 'first_name',
+                                icon: Icons.person_outline_rounded,
+                                validator: (val) =>
+                                    Validators.isEmptyValue(val, context),
+                              ),
+                              SizedBox(height: 12.h),
+                              AppTextField(
+                                controller: lastNameController,
+                                hintKey: 'last_name',
+                                icon: Icons.badge_outlined,
+                                validator: (val) =>
+                                    Validators.isEmptyValue(val, context),
+                              ),
+                              SizedBox(height: 12.h),
+                              AppPhoneField(
+                                controller: phoneController,
+                                readOnly: true,
+                                validator: (_) => null,
+                                suffix: IconButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) =>
+                                            const PasswordForgetPhone(),
+                                      ),
+                                    );
+                                  },
+                                  icon: Icon(
+                                    Icons.edit_rounded,
+                                    color: AppColors.main1,
+                                    size: 18.sp,
                                   ),
                                 ),
                               ),
-                            );
-                          },
-                        ),
-                      ),
-
-
-                      _buildInputLabel("password"),
-                      AppCustomTextField(
-                        onIconTap: () {
-
-                          if (phoneController.text.isNotEmpty) {
-
-                            context.read<VerificationCubit>().sendVerificationCode(
-                              mobilePhone:
-                              "963${phoneController.text}",
-                              typeOfUse:
-                              "reset-password",
-                            );
-                          } else {
-                            AppSnackBar.error(
-                              context,
-                              "يرجى إدخال رقم الهاتف أولاً",
-                            );
-                          }
-                        },
-                        iconImage: IconAssets.editee,
-                        controller: passwordController,
-                        hintText: "*****",
-                        isPassword: true,
-                        readOnly: true,
-                        validator: (val) => Validators.validatePassword(val, context),
-                      ),
-
-                      SizedBox(height: 40.h),
-
-
-                      BlocBuilder<UpdateProfileCubit, UpdateProfileState>(
-                        builder: (context, updateState) {
-                          if (updateState is UpdateProfileLoading) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-                          return CustomButton(
-                            title: "save_changes",
-                            onTap: () {
-                              if (_formKey.currentState!.validate()) {
-                                context.read<UpdateProfileCubit>().updateUserData(
-                                  firstName: nameController.text,
-                                  lastName: lastNameController.text,
-                                  governorate: _selectedGovernorateId ?? "",
-                                  category: _selectedCategoryId ?? "",
-                                  imagePath:
-                                  _pickedImagePath, // 👈 تمرير المسار الذي اخترناه
-                                );
-                              }
-                            },
-                          );
-
-                        },
-                      ),
-                      SizedBox(height: 40.h),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-      ),
-    );
-
-  }
-
-  Widget _buildFieldSection({
-    required String label,
-    required Widget child,
-    String? errorMessage,
-  }) {
-    final bool hasError =
-        errorMessage != null && errorMessage.trim().isNotEmpty;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        _buildLabel(label),
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            border: hasError
-                ? Border.all(color: Colors.red, width: 1.5)
-                : Border.all(color: Colors.transparent, width: 0),
-          ),
-          child: child,
-        ),
-        if (hasError) ...[
-          SizedBox(height: 6.h),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 4.w),
-            child: CustomText(
-              errorMessage,
-              type: AppTextType.bodySmall,
-              color: Colors.red,
-              textAlign: TextAlign.right,
-            ),
-          ),
-        ],
-      ],
-    );
-  }
-
-  Widget _buildLabel(String text) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          CustomText(
-            text,
-            textAlign: TextAlign.right,
-            type: AppTextType.bodyMedium,
-          ),
-        ],
-      ),
-    );
-  }
-
-
-
-  Widget _buildGovernoratePicker(BuildContext context) {
-    return BlocBuilder<GovernoratesCubit, GovernoratesState>(
-      builder: (context, state) {
-        return GestureDetector(
-          onTap: () async {
-            final cubit = context.read<GovernoratesCubit>();
-
-            if (state is! GovernoratesSuccess) {
-              await cubit.getGovernorates();
-            }
-
-            if (!mounted) return;
-            if (cubit.state is! GovernoratesSuccess) return;
-
-            final governorateState = cubit.state as GovernoratesSuccess;
-
-            final RenderBox button = _governorateKey.currentContext!
-                .findRenderObject() as RenderBox;
-            if (!context.mounted) return;
-            final RenderBox overlay =
-            Overlay.of(context).context.findRenderObject() as RenderBox;
-
-            final Offset position = button.localToGlobal(
-              Offset.zero,
-              ancestor: overlay,
-            );
-
-            final selected = await showMenu<GovernorateModel>(
-              context: context,
-                position: RelativeRect.fromLTRB(
-                  position.dx,
-                  position.dy + button.size.height,
-                  position.dx + button.size.width,
-                  0,
-                ),
-                constraints: BoxConstraints(
-                  maxHeight: 180.h,
-                  minWidth: button.size.width,
-                  maxWidth: button.size.width,
-                ),
-                items: governorateState.governorates.map((gov) {
-                  return PopupMenuItem<GovernorateModel>(
-                    value: gov,
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: Text(gov.name),
-                    ),
-                  );
-                }).toList(),
-              );
-
-            if (!context.mounted) return;
-            if (selected != null) {
-              setState(() {
-                _governorateController.text = selected.name;
-                _selectedGovernorateId = selected.id;
-              });
-            }
-          },
-          child: AbsorbPointer(
-            child: Container(
-              key: _governorateKey,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: AppCustomTextField(
-                iconImage: IconAssets.drowpdawn,
-                controller: _governorateController,
-                hintText: "",
-                validator: (val) => Validators.isEmptyValue(val, context),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-  Widget _buildProfileImage(ProfileState state) {
-    String? networkImageUrl;
-    if (state is ProfileSuccess) {
-      networkImageUrl = state.data.data?.profileImage;
-    }
-
-     
-    final resolvedUrl = ApiConstants.resolveMediaUrl(networkImageUrl);
-
-    return Center(
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Container(
-            height: 100.h,
-            width: 100.w,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: AppColors.blue.withValues(alpha: 0.5),
-                width: 1,
-              ),
-            ),
-            child: ClipOval(
-              child: _pickedImagePath != null
-                  ? Image.file(
-                      File(_pickedImagePath!),
-                      fit: BoxFit.cover,
-                    )  
-                  : resolvedUrl != null
-                  ? Image.network(
-                      resolvedUrl,
-                      fit: BoxFit.cover,
-                      
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return Center(
-                          child: CircularProgressIndicator(
-                            value: loadingProgress.expectedTotalBytes != null
-                                ? loadingProgress.cumulativeBytesLoaded /
-                                      loadingProgress.expectedTotalBytes!
-                                : null,
+                            ],
                           ),
-                        );
-                      },
-                      
-                      errorBuilder: (context, error, stackTrace) {
-                        return Image.asset(
-                          ImageAssets.imageprofail,
-                          fit: BoxFit.cover,
-                        );
-                      },
-                    )
-                  : Image.asset(ImageAssets.imageprofail, fit: BoxFit.cover),
-            ),
-          ),
-          Positioned(
-            bottom: 0,
-            right: 0,
-            child: GestureDetector(
-              onTap: _pickImage,
-              child: Container(
-                padding: EdgeInsets.all(5.w),
-                decoration: BoxDecoration(
-                  color: AppColors.blue,
-                  shape: BoxShape.circle,
-                ),
-                child: SvgPicture.asset(
-                  IconAssets.editee,
-                  height: 15.h,
-                  colorFilter: ColorFilter.mode(
-                    Colors.white,
-                    BlendMode.srcIn,
+                          SizedBox(
+                            height: PersonalInfoUiConstants.sectionSpacing.h,
+                          ),
+                          PersonalInfoSectionCard(
+                            titleKey: 'vehicle_info',
+                            children: [
+                              SizedBox(height: 8.h),
+                              KeyedSubtree(
+                                key: _governorateKey,
+                                child: AppPickerField(
+                                  controller: _governorateController,
+                                  hintKey: 'governorate',
+                                  icon: Icons.location_city_rounded,
+                                  onTap: _pickGovernorate,
+                                  validator: (val) =>
+                                      Validators.isEmptyValue(val, context),
+                                ),
+                              ),
+                              SizedBox(height: 12.h),
+                              KeyedSubtree(
+                                key: _categoryKey,
+                                child: AppPickerField(
+                                  controller: _categoryController,
+                                  hintKey: 'category',
+                                  icon: Icons.directions_car_outlined,
+                                  onTap: _pickCategory,
+                                  validator: (val) => val == null || val.isEmpty
+                                      ? AppTranslations.getText(
+                                          context,
+                                          'validate_empty',
+                                        )
+                                      : null,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: PersonalInfoUiConstants.sectionSpacing.h,
+                          ),
+                          PersonalInfoSectionCard(
+                            titleKey: 'password',
+                            children: [
+                              SizedBox(height: 8.h),
+                              AppTextField(
+                                controller: passwordController,
+                                hintKey: 'password',
+                                icon: Icons.lock_outline_rounded,
+                                obscureText: true,
+                                readOnly: true,
+                                validator: (_) => null,
+                                suffix: IconButton(
+                                  onPressed: () {
+                                    if (phoneController.text.isNotEmpty) {
+                                      context
+                                          .read<VerificationCubit>()
+                                          .sendVerificationCode(
+                                            mobilePhone:
+                                                '963${phoneController.text}',
+                                            typeOfUse: 'reset-password',
+                                          );
+                                    } else {
+                                      AppSnackBar.error(
+                                        context,
+                                        AppTranslations.getText(
+                                          context,
+                                          'please_enter_phone_first',
+                                        ),
+                                      );
+                                    }
+                                  },
+                                  icon: Icon(
+                                    Icons.edit_rounded,
+                                    color: AppColors.main1,
+                                    size: 18.sp,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 8.h),
+                              Text(
+                                AppTranslations.getText(
+                                  context,
+                                  'password_edit_hint',
+                                ),
+                                style: TextStyle(
+                                  color: AuthUiConstants.mutedText,
+                                  fontSize: 11.5.sp,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 22.h),
+                          BlocBuilder<UpdateProfileCubit, UpdateProfileState>(
+                            builder: (context, updateState) {
+                              return PersonalInfoSaveButton(
+                                isLoading:
+                                    updateState is UpdateProfileLoading,
+                                onPressed: _save,
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-   
-  Widget _buildSectionTitle(String title) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 8.w),
-      child: CustomText(
-        title,
-        type: AppTextType.titleMedium,
-        color: AppColors.blue,
-      ),
-    );
-  }
-
-  Widget _buildInputLabel(String label) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 12.h, vertical: 12.h),
-      child: CustomText(
-        label,
-        type: AppTextType.titleSmall,
-        color: AppColors.secondary2,
+              ],
+            );
+          },
+        ),
       ),
     );
   }

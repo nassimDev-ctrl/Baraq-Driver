@@ -10,7 +10,6 @@ import 'package:drever_warr/features/presentation/widgets/login.dart';
 import 'package:drever_warr/features/my_oreder/presentation/data/cubit/cubit_current_trip/cubit.dart';
 import 'package:drever_warr/features/my_oreder/presentation/data/cubit/cubit_order/cubit.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
@@ -26,7 +25,6 @@ import 'package:drever_warr/features/home/presentation/data/cubit/cubit_wallat/c
 
 import '../../../../core/constant/app_colors.dart';
 import '../../../../core/translate/app_translate.dart';
-import '../../../../core/utils/navigator_key.dart';
 import '../data/cubit/cubit_update_location/cubit.dart';
 import '../data/cubit/cubit_update_location/cubit_state.dart';
 
@@ -38,7 +36,7 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView>
-    with TickerProviderStateMixin, RouteAware {
+    with TickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   GoogleMapController? _mapController;
@@ -83,34 +81,12 @@ class _HomeViewState extends State<HomeView>
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final route = ModalRoute.of(context);
-    if (route is PageRoute) {
-      appRouteObserver.subscribe(this, route);
-    }
-  }
-
-  @override
   void dispose() {
-    appRouteObserver.unsubscribe(this);
     _markerAnimController?.dispose();
     _redirectTimer?.cancel();
     _positionSubscription?.cancel();
     _mapController?.dispose();
     super.dispose();
-  }
-
-  @override
-  void didPushNext() {
-    // Another page is on top — refresh PopScope so system back is not blocked.
-    if (mounted) setState(() {});
-  }
-
-  @override
-  void didPopNext() {
-    // Returned to Home.
-    if (mounted) setState(() {});
   }
 
   void _startInitialLoad() {
@@ -417,135 +393,6 @@ class _HomeViewState extends State<HomeView>
         lower.contains('403');
   }
 
-  Future<bool> _showExitAppDialog() async {
-    final result = await showDialog<bool>(
-      context: context,
-      barrierDismissible: false,
-      builder: (dialogContext) {
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          insetPadding: EdgeInsets.symmetric(horizontal: 24.w),
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 22.w, vertical: 24.h),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(22.r),
-              border: Border.all(
-                color: AppColors.main1.withValues(alpha: 0.45),
-                width: 1,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.main1,
-                  offset: const Offset(0, 3),
-                  blurRadius: 0,
-                ),
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.08),
-                  offset: const Offset(0, 10),
-                  blurRadius: 18,
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 60.w,
-                  height: 60.w,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.red.withValues(alpha: 0.08),
-                  ),
-                  child: Icon(
-                    Icons.close_rounded,
-                    size: 34.sp,
-                    color: Colors.red,
-                  ),
-                ),
-                SizedBox(height: 16.h),
-                Text(
-                  AppTranslations.getText(context, "leave_app"),
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 17.sp,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-                SizedBox(height: 8.h),
-                Text(
-                  AppTranslations.getText(context, "work_not_saved"),
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 13.sp,
-                    height: 1.4,
-                    color: Colors.black54,
-                  ),
-                ),
-                SizedBox(height: 22.h),
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: () {
-                          Navigator.pop(dialogContext, false);
-                        },
-                        style: OutlinedButton.styleFrom(
-                          side: BorderSide(
-                            color: AppColors.main1,
-                            width: 1.2,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12.r),
-                          ),
-                          padding: EdgeInsets.symmetric(vertical: 13.h),
-                        ),
-                        child: Text(
-                          AppTranslations.getText(context, "stay"),
-                          style: TextStyle(
-                            color: AppColors.main1,
-                            fontSize: 15.sp,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 12.w),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.pop(dialogContext, true);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.main1,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12.r),
-                          ),
-                          padding: EdgeInsets.symmetric(vertical: 13.h),
-                          elevation: 0,
-                        ),
-                        child: Text(
-                          AppTranslations.getText(context, "leave"),
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 15.sp,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-
-    return result ?? false;
-  }
 
   String _extractStateMessage(dynamic state) {
     try {
@@ -801,35 +648,11 @@ class _HomeViewState extends State<HomeView>
 
     return Directionality(
       textDirection: TextDirection.ltr,
-      child: PopScope(
-        // When Home is covered by another page, must allow pop so Android back
-        // returns to the previous screen instead of exiting the app.
-        canPop: !(ModalRoute.of(context)?.isCurrent ?? true),
-        onPopInvokedWithResult: (didPop, result) async {
-          if (didPop) return;
-          if (!mounted) return;
-
-          if (_scaffoldKey.currentState?.isDrawerOpen ?? false) {
-            _scaffoldKey.currentState!.closeDrawer();
-            return;
-          }
-
-          final navigator = Navigator.of(context);
-          if (navigator.canPop()) {
-            navigator.pop();
-            return;
-          }
-
-          final shouldExit = await _showExitAppDialog();
-          if (shouldExit && mounted) {
-            SystemNavigator.pop();
-          }
-        },
-        child: Scaffold(
-          drawerScrimColor: Colors.transparent,
-          key: _scaffoldKey,
-          drawer: const MenueView(),
-          body: MultiBlocListener(
+      child: Scaffold(
+        drawerScrimColor: Colors.transparent,
+        key: _scaffoldKey,
+        drawer: const MenueView(),
+        body: MultiBlocListener(
             listeners: [
               BlocListener<ProfileCubit, ProfileState>(
                 listener: (context, state) {
@@ -1005,7 +828,6 @@ class _HomeViewState extends State<HomeView>
             ),
           ),
         ),
-      ),
     );
   }
 }

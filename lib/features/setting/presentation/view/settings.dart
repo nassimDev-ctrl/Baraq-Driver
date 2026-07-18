@@ -30,8 +30,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         return 'ar';
       case Language.english:
         return 'en';
-      case Language.kurdish:
-        return 'ku';
     }
   }
 
@@ -41,8 +39,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         return 'العربية';
       case Language.english:
         return 'English';
-      case Language.kurdish:
-        return 'الكردية الكرمانجية';
     }
   }
 

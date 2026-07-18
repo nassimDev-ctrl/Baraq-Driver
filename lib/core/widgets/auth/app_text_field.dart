@@ -53,6 +53,8 @@ class AppTextField extends StatelessWidget {
     this.keyboardType,
     this.textDirection,
     this.obscureText = false,
+    this.readOnly = false,
+    this.onTap,
     this.suffix,
     this.maxLines = 1,
   });
@@ -66,6 +68,8 @@ class AppTextField extends StatelessWidget {
   final TextInputType? keyboardType;
   final TextDirection? textDirection;
   final bool obscureText;
+  final bool readOnly;
+  final VoidCallback? onTap;
   final Widget? suffix;
   final int maxLines;
 
@@ -76,6 +80,8 @@ class AppTextField extends StatelessWidget {
       focusNode: focusNode,
       validator: validator,
       obscureText: obscureText,
+      readOnly: readOnly,
+      onTap: onTap,
       keyboardType: keyboardType,
       textDirection: textDirection,
       maxLines: obscureText ? 1 : maxLines,
@@ -113,6 +119,9 @@ class AppPhoneField extends StatelessWidget {
     this.hintKey = 'phone_number',
     this.icon = Icons.phone_outlined,
     this.textInputAction = TextInputAction.next,
+    this.readOnly = false,
+    this.onTap,
+    this.suffix,
   });
 
   final TextEditingController controller;
@@ -122,6 +131,9 @@ class AppPhoneField extends StatelessWidget {
   final String hintKey;
   final IconData icon;
   final TextInputAction textInputAction;
+  final bool readOnly;
+  final VoidCallback? onTap;
+  final Widget? suffix;
 
   @override
   Widget build(BuildContext context) {
@@ -129,6 +141,8 @@ class AppPhoneField extends StatelessWidget {
       controller: controller,
       focusNode: focusNode,
       validator: validator,
+      readOnly: readOnly,
+      onTap: onTap,
       keyboardType: TextInputType.phone,
       textDirection: TextDirection.ltr,
       textInputAction: textInputAction,
@@ -170,6 +184,7 @@ class AppPhoneField extends StatelessWidget {
             ],
           ),
         ),
+        suffixIcon: suffix,
       ).copyWith(
         prefixIconConstraints: BoxConstraints(minWidth: 86.w, minHeight: 0),
       ),

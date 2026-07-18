@@ -7,7 +7,6 @@ import 'package:drever_warr/core/utils/service_locator.dart';
 import 'package:drever_warr/features/home/presentation/view/splash_view.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -74,23 +73,11 @@ class MyApp extends StatelessWidget {
       ],
       child: BlocBuilder<LanguageCubit, Language>(
         builder: (context, language) {
-          late final Locale currentLocale;
-          late final TextDirection currentDirection;
-
-          switch (language) {
-            case Language.english:
-              currentLocale = const Locale('en');
-              currentDirection = TextDirection.rtl;
-              break;
-            case Language.kurdish:
-              currentLocale = const Locale('ku');
-              currentDirection = TextDirection.rtl;
-              break;
-            case Language.arabic:
-              currentLocale = const Locale('ar');
-              currentDirection = TextDirection.ltr;
-              break;
-          }
+          final isEnglish = language == Language.english;
+          final currentLocale = Locale(isEnglish ? 'en' : 'ar');
+          // Keep existing app direction mapping.
+          final currentDirection =
+              isEnglish ? TextDirection.rtl : TextDirection.ltr;
 
           return ScreenUtilInit(
             designSize: const Size(375, 866),
@@ -98,7 +85,6 @@ class MyApp extends StatelessWidget {
             splitScreenMode: true,
             child: MaterialApp(
               navigatorKey: navigatorKey,
-              navigatorObservers: [appRouteObserver],
               debugShowCheckedModeBanner: false,
               title: 'Barq Driver',
               locale: currentLocale,
@@ -112,13 +98,10 @@ class MyApp extends StatelessWidget {
                 GlobalMaterialLocalizations.delegate,
                 GlobalWidgetsLocalizations.delegate,
                 GlobalCupertinoLocalizations.delegate,
-                KurdishMaterialLocalizationsDelegate(),
-                KurdishCupertinoLocalizationsDelegate(),
               ],
               supportedLocales: const [
                 Locale('ar'),
                 Locale('en'),
-                Locale('ku'),
               ],
               localeResolutionCallback: (deviceLocale, supportedLocales) {
                 return currentLocale;
@@ -152,36 +135,4 @@ class MyApp extends StatelessWidget {
       ),
     );
   }
-}
-
-class KurdishMaterialLocalizationsDelegate
-    extends LocalizationsDelegate<MaterialLocalizations> {
-  const KurdishMaterialLocalizationsDelegate();
-
-  @override
-  bool isSupported(Locale locale) => locale.languageCode == 'ku';
-
-  @override
-  Future<MaterialLocalizations> load(Locale locale) async {
-    return await GlobalMaterialLocalizations.delegate.load(const Locale('en'));
-  }
-
-  @override
-  bool shouldReload(KurdishMaterialLocalizationsDelegate old) => false;
-}
-
-class KurdishCupertinoLocalizationsDelegate
-    extends LocalizationsDelegate<CupertinoLocalizations> {
-  const KurdishCupertinoLocalizationsDelegate();
-
-  @override
-  bool isSupported(Locale locale) => locale.languageCode == 'ku';
-
-  @override
-  Future<CupertinoLocalizations> load(Locale locale) async {
-    return await GlobalCupertinoLocalizations.delegate.load(const Locale('en'));
-  }
-
-  @override
-  bool shouldReload(KurdishCupertinoLocalizationsDelegate old) => false;
 }

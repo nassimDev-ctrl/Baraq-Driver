@@ -40,11 +40,20 @@ class MenueView extends StatelessWidget {
     return _packageInfoFuture ??= PackageInfo.fromPlatform();
   }
 
-  /// Close drawer first, then push so system back returns to Home.
+  /// Close drawer safely, then push on the HomeSession navigator
+  /// so session cubits (Wallet, Profile, …) remain available.
   static void _openPage(BuildContext context, Widget page) {
     final navigator = Navigator.of(context);
-    navigator.pop();
-    navigator.push(MaterialPageRoute(builder: (_) => page));
+    final scaffold = Scaffold.maybeOf(context);
+
+    if (scaffold?.isDrawerOpen ?? false) {
+      scaffold!.closeDrawer();
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!navigator.mounted) return;
+      navigator.push(MaterialPageRoute(builder: (_) => page));
+    });
   }
 
   Future<void> _clearSessionData() async {

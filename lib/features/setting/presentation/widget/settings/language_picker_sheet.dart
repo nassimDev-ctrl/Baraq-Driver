@@ -63,15 +63,6 @@ Future<void> showLanguagePickerSheet({
                   onSelected(Language.english);
                 },
               ),
-              SizedBox(height: 8.h),
-              _LangOption(
-                label: 'الكردية الكرمانجية',
-                selected: currentLanguage == Language.kurdish,
-                onTap: () {
-                  Navigator.pop(context);
-                  onSelected(Language.kurdish);
-                },
-              ),
             ],
           ),
         ),

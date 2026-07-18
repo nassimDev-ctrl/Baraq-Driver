@@ -108,8 +108,6 @@ class _ProfileBodyState extends State<_ProfileBody> {
     switch (_lang) {
       case 'en':
         return city.nameEn ?? city.name ?? '';
-      case 'ku':
-        return city.nameKu ?? city.name ?? '';
       default:
         return city.nameAr ?? city.name ?? '';
     }
