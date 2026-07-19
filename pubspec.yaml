@@ -51,9 +51,14 @@ dev_dependencies:
 
 package_rename_config:
   android:
-    package_name: com.taxiwaar.driver
+    app_name: برق سائق
+    package_name: com.waslne.driver
+    override_old_package: com.taxiwaar.driver
+    lang: kotlin
   ios:
+    app_name: برق سائق
     bundle_name: Barq Driver
+    package_name: com.waslne.driver
 
 flutter_launcher_icons:
   android: true

@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    namespace = "com.taxiwaar.driver"
+    namespace = "com.waslne.driver"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -43,7 +43,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.taxiwaar.driver"
+        applicationId = "com.waslne.driver"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode

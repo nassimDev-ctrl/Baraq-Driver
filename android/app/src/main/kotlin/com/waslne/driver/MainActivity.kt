@@ -1,4 +1,4 @@
-package com.taxiwaar.driver
+package com.waslne.driver
 
 import io.flutter.embedding.android.FlutterActivity
 
