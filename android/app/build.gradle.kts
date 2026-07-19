@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    namespace = "com.waslne.driver"
+    namespace = "com.barq.driver"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -43,7 +43,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.waslne.driver"
+        applicationId = "com.barq.driver"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode

@@ -1,4 +1,4 @@
-package com.waslne.driver
+package com.barq.driver
 
 import io.flutter.embedding.android.FlutterActivity
 
